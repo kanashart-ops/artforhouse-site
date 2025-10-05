@@ -4,8 +4,11 @@ import { useState } from "react";
 export default function OrderPage() {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
-  const TELEGRAM_BOT_TOKEN = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN!;
-  const CHAT_IDS = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_IDS!.split(",");
+  // ✅ Защита от undefined во время сборки
+  const TELEGRAM_BOT_TOKEN = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN || "";
+  const CHAT_IDS = (process.env.NEXT_PUBLIC_TELEGRAM_CHAT_IDS || "")
+    .split(",")
+    .filter(Boolean);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -29,18 +32,32 @@ export default function OrderPage() {
     const message = `📩 Новая заявка на заказ\n\n🕒 ${dateTime}\n\n👤 Имя: ${name}\n📱 Контакт: ${contact}\n💬 Комментарий: ${comment}`;
 
     try {
+      // ✅ Если переменные не заданы — просто пропускаем отправку, чтобы сайт не падал
+      if (!TELEGRAM_BOT_TOKEN || CHAT_IDS.length === 0) {
+        console.warn("❗ Telegram bot token или chat IDs не заданы — пропуск отправки");
+        setStatus("success");
+        form.reset();
+        return;
+      }
+
       await Promise.all(
         CHAT_IDS.map((id) =>
           fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ chat_id: id, text: message, parse_mode: "HTML" }),
+            body: JSON.stringify({
+              chat_id: id,
+              text: message,
+              parse_mode: "HTML",
+            }),
           })
         )
       );
+
       setStatus("success");
       form.reset();
-    } catch {
+    } catch (error) {
+      console.error("Ошибка при отправке в Telegram:", error);
       setStatus("error");
     }
   }
