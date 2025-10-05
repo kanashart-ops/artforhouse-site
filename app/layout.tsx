@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description:
     "Интерьерные картины: масло, акрил, премиум жикле. Мировая доставка.",
   icons: {
-    icon: "/favicon.png", // 🔹 путь к иконке (лежит в public/)
+    icon: "/favicon.png",
     shortcut: "/favicon.png",
     apple: "/favicon.png",
   },
@@ -27,7 +27,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#ffffff" />
         <link rel="icon" href="/favicon.png" type="image/png" />
 
-        {/* ✅ Google Analytics 4 */}
+        {/* ✅ Google Analytics */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-W0Q5PME6MH"
           strategy="afterInteractive"
@@ -40,6 +40,39 @@ export default function RootLayout({
             gtag('config', 'G-W0Q5PME6MH');
           `}
         </Script>
+
+        {/* ✅ Yandex.Metrika */}
+        <Script id="yandex-metrika" strategy="afterInteractive">
+          {`
+            (function(m,e,t,r,i,k,a){
+              m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+              m[i].l=1*new Date();
+              for (var j=0;j<document.scripts.length;j++){
+                if (document.scripts[j].src===r){return;}
+              }
+              k=e.createElement(t),a=e.getElementsByTagName(t)[0],
+              k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+            })(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+            ym(104389322, "init", {
+              ssr:true,
+              webvisor:true,
+              clickmap:true,
+              ecommerce:"dataLayer",
+              accurateTrackBounce:true,
+              trackLinks:true
+            });
+          `}
+        </Script>
+        <noscript>
+          <div>
+            <img
+              src="https://mc.yandex.ru/watch/104389322"
+              style={{ position: "absolute", left: "-9999px" }}
+              alt=""
+            />
+          </div>
+        </noscript>
       </head>
 
       <body className="flex flex-col min-h-screen bg-white text-gray-900">
