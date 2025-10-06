@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { Suspense } from "react";
 import GoogleAnalyticsTracker from "@/app/analytics";
 
 export const metadata: Metadata = {
@@ -79,7 +80,9 @@ export default function RootLayout({
 
       <body className="flex flex-col min-h-screen bg-white text-gray-900">
         {/* 📊 Трекер маршрутов для Google Analytics */}
-        <GoogleAnalyticsTracker />
+        <Suspense fallback={null}>
+          <GoogleAnalyticsTracker />
+        </Suspense>
 
         <Header />
         <main className="flex-1">{children}</main>
