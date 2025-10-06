@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import GoogleAnalyticsTracker from "@/app/analytics";
 
 export const metadata: Metadata = {
   title: "Art for House",
@@ -76,6 +77,9 @@ export default function RootLayout({
       </head>
 
       <body className="flex flex-col min-h-screen bg-white text-gray-900">
+        {/* 📊 Трекер для Google Analytics (фиксирует переходы по страницам) */}
+        <GoogleAnalyticsTracker />
+
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
