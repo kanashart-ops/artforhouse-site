@@ -9,7 +9,7 @@ const shopItems = [
     size: "70x100 см, масло, акрил",
     price: "1000 BYN",
     description:
-      "Картина выполнена на натуральном холсте на подрамнике. Текстура, глубина и легкость мазков передают символ свободы и воздуха. Создаёт ощущение света и пространства в интерьере.",
+      "Картина выполнена на натуральном холсте на подрамнике. Текстура, глубина и лёгкость мазков передают символ свободы и воздуха. Создаёт ощущение света и пространства в интерьере.",
     media: [
       { type: "image", src: "/images/shop/1.jpg" },
       { type: "image", src: "/images/shop/2.jpg" },
@@ -18,6 +18,8 @@ const shopItems = [
       { type: "image", src: "/images/shop/5.jpg" },
       { type: "video", src: "/videos/1v.mp4" },
       { type: "video", src: "/videos/2v.mp4" },
+      { type: "video", src: "/videos/3v.mp4" },
+      { type: "video", src: "/videos/4v.mp4" },
     ],
   },
   {
@@ -25,11 +27,13 @@ const shopItems = [
     size: "2 картины, каждая 50x100 см, масло",
     price: "250 BYN (каждая)",
     description:
-      "Две картины, объединённые одной идеей — движением, грацией и свободой.\nЛошади символизируют силу, внутреннюю гармонию и уверенность.\n\n🎨 Обе картины можно увидеть вживую в кафе «Завтраки» по адресу: Минск, ул. Зыбицкая, 2.",
+      "Две картины, объединённые одной идеей — движением, грацией и свободой.\nЛошади символизируют силу, внутреннюю гармонию и уверенность. Масло на холсте, живые мазки и приглушённые тона создают ощущение динамики и спокойствия одновременно.\n\n🎨 Обе картины можно увидеть вживую в кафе «Завтраки» (Минск, ул. Зыбицкая 2).",
     media: [
       { type: "image", src: "/images/shop/6.jpg" },
       { type: "image", src: "/images/shop/7.jpg" },
+      { type: "image", src: "/images/shop/8.jpg" },
       { type: "video", src: "/videos/6v.mp4" },
+      { type: "video", src: "/videos/7v.mp4" },
     ],
   },
   {
@@ -37,11 +41,47 @@ const shopItems = [
     size: "70x100 см, масло",
     price: "1950 BYN",
     description:
-      "Картина написана маслом на натуральном холсте на подрамнике. Тёплые мазки и мягкая текстура создают уютную атмосферу дождливого дня.\n\n🎨 Картину можно увидеть вживую в кафе «Завтраки», Минск, ул. Зыбицкая, 2.",
+      "Картина написана маслом на натуральном холсте на подрамнике. Тёплые мазки и мягкая текстура создают уютную атмосферу дождливого дня, наполненного нежностью и светом.\n\n🎨 Можно увидеть вживую в кафе «Завтраки», Минск, ул. Зыбицкая 2.",
     media: [
       { type: "image", src: "/images/shop/10.jpg" },
       { type: "image", src: "/images/shop/11.jpg" },
+      { type: "image", src: "/images/shop/12.jpg" },
+      { type: "image", src: "/images/shop/14.jpg" },
+      { type: "image", src: "/images/shop/15.jpg" },
       { type: "video", src: "/videos/14v.mp4" },
+    ],
+  },
+  {
+    title: "Отражение желания",
+    size: "50x70 см, масло",
+    price: "270 BYN",
+    description:
+      "Современный образ, наполненный иронией и притягательностью. Девушка с сигаретой на фоне мировых брендов — символ эпохи потребления и поиска себя.\nКонтраст мягких мазков и острого взгляда делает работу выразительной и запоминающейся.",
+    media: [
+      { type: "image", src: "/images/shop/17.jpg" },
+      { type: "video", src: "/videos/17v.mp4" },
+    ],
+  },
+  {
+    title: "Ирисы",
+    size: "20x30 см, масло",
+    price: "100 BYN",
+    description:
+      "Нежная работа, написанная маслом на натуральном холсте на подрамнике. Ирисы — символ весны и обновления, добавляют интерьеру лёгкость и гармонию.",
+    media: [
+      { type: "image", src: "/images/shop/23.jpg" },
+      { type: "image", src: "/images/shop/22.jpg" },
+    ],
+  },
+  {
+    title: "Двое",
+    size: "50x70 см, акрил, золочение",
+    price: "60 BYN",
+    description:
+      "Картина выполнена акрилом с элементами золочения на натуральном холсте. «Двое» — символ единства и внутреннего равновесия. Работа отражает баланс света и тени, тепла и прохлады — идеально впишется в современный интерьер.",
+    media: [
+      { type: "image", src: "/images/shop/30.jpg" },
+      { type: "video", src: "/videos/30v.mp4" },
     ],
   },
 ];
@@ -52,7 +92,6 @@ export default function ShopPage() {
   const [showContacts, setShowContacts] = useState(false);
   const [touchStartX, setTouchStartX] = useState(0);
 
-  // навигация по клавиатуре
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (!selectedItem) return;
@@ -65,17 +104,15 @@ export default function ShopPage() {
   });
 
   const nextMedia = () =>
-    setCurrentIndex((prev) => (prev + 1) % selectedItem!.media.length);
+    setCurrentIndex((p) => (p + 1) % selectedItem!.media.length);
   const prevMedia = () =>
-    setCurrentIndex((prev) => (prev - 1 + selectedItem!.media.length) % selectedItem!.media.length);
-
+    setCurrentIndex((p) => (p - 1 + selectedItem!.media.length) % selectedItem!.media.length);
   const closeModal = () => {
     setSelectedItem(null);
     setShowContacts(false);
   };
 
-  const handleTouchStart = (e: React.TouchEvent) =>
-    setTouchStartX(e.touches[0].clientX);
+  const handleTouchStart = (e: React.TouchEvent) => setTouchStartX(e.touches[0].clientX);
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (!selectedItem) return;
     const delta = e.changedTouches[0].clientX - touchStartX;
@@ -85,9 +122,7 @@ export default function ShopPage() {
 
   return (
     <main className="p-6 md:p-10 max-w-6xl mx-auto">
-      <h1 className="text-4xl font-bold text-center mb-10 text-gray-900">
-        Картины в наличии
-      </h1>
+      <h1 className="text-4xl font-bold text-center mb-10 text-gray-900">Картины в наличии</h1>
 
       {/* карточки */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -108,9 +143,7 @@ export default function ShopPage() {
               className="w-full h-80 object-contain bg-gray-50 rounded-t-lg"
             />
             <div className="p-5">
-              <h2 className="text-xl font-bold text-gray-900 mb-1">
-                {item.title}
-              </h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-1">{item.title}</h2>
               <p className="text-gray-700 text-sm mb-2">{item.size}</p>
               <p className="text-lg font-bold text-amber-700">{item.price}</p>
             </div>
@@ -135,9 +168,9 @@ export default function ShopPage() {
               ×
             </button>
 
-            {/* МЕДИА */}
+            {/* медиа */}
             <div
-              className="relative flex-1 bg-black flex items-center justify-center overflow-hidden touch-pan-y"
+              className="relative flex-1 bg-black flex items-center justify-center overflow-hidden"
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
             >
@@ -158,8 +191,6 @@ export default function ShopPage() {
                   className="object-contain max-h-[80vh] w-auto h-auto"
                 />
               )}
-
-              {/* стрелки */}
               <button
                 className="hidden sm:block absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 text-white text-3xl p-2 rounded-full hover:bg-black"
                 onClick={prevMedia}
@@ -174,17 +205,13 @@ export default function ShopPage() {
               </button>
             </div>
 
-            {/* ОПИСАНИЕ */}
-            <div className="w-full sm:w-[380px] p-5 sm:p-6 flex flex-col border-t sm:border-t-0 sm:border-l border-gray-200 bg-white max-h-[80vh] sm:max-h-none overflow-y-auto">
+            {/* описание */}
+            <div className="w-full sm:w-[380px] p-5 sm:p-6 flex flex-col border-t sm:border-l border-gray-200 bg-white max-h-[80vh] overflow-y-auto">
               <h2 className="text-2xl font-bold mb-3 text-gray-900 text-center sm:text-left">
                 {selectedItem.title}
               </h2>
-              <p className="text-gray-700 font-medium mb-2 text-center sm:text-left">
-                {selectedItem.size}
-              </p>
-              <p className="text-xl font-bold text-amber-700 mb-6 text-center sm:text-left">
-                {selectedItem.price}
-              </p>
+              <p className="text-gray-700 font-medium mb-2 text-center sm:text-left">{selectedItem.size}</p>
+              <p className="text-xl font-bold text-amber-700 mb-6 text-center sm:text-left">{selectedItem.price}</p>
 
               <p className="text-gray-800 leading-relaxed whitespace-pre-line text-[16px] mb-6">
                 {selectedItem.description}
@@ -202,38 +229,18 @@ export default function ShopPage() {
                   <p className="mb-4 font-medium text-gray-800 text-base">
                     Свяжитесь со мной любым удобным способом:
                   </p>
-
                   <div className="flex justify-center gap-6 text-gray-700 text-[30px]">
-                    <a
-                      href="https://t.me/AnnPab"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-sky-500 transition transform hover:scale-110"
-                      title="Telegram"
-                    >
-                      <Send size={34} />
+                    <a href="https://t.me/AnnPab" target="_blank" rel="noopener noreferrer" title="Telegram">
+                      <Send size={34} className="hover:text-sky-500 transition" />
                     </a>
-                    <a
-                      href="https://www.instagram.com/art_for_house.by/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-pink-500 transition transform hover:scale-110"
-                      title="Instagram"
-                    >
-                      <Instagram size={34} />
+                    <a href="https://www.instagram.com/art_for_house.by/" target="_blank" rel="noopener noreferrer" title="Instagram">
+                      <Instagram size={34} className="hover:text-pink-500 transition" />
                     </a>
-                    <a
-                      href="tel:+375293517220"
-                      className="hover:text-green-600 transition transform hover:scale-110"
-                      title="Позвонить"
-                    >
-                      <Phone size={34} />
+                    <a href="tel:+375293517220" title="Позвонить">
+                      <Phone size={34} className="hover:text-green-600 transition" />
                     </a>
                   </div>
-
-                  <p className="mt-4 text-sm text-gray-600 select-all">
-                    ☎ +375 (29) 351-72-20
-                  </p>
+                  <p className="mt-4 text-sm text-gray-600 select-all">☎ +375 (29) 351-72-20</p>
                 </div>
               )}
             </div>
@@ -243,11 +250,11 @@ export default function ShopPage() {
 
       <style jsx global>{`
         @keyframes slideIn {
-          0% {
+          from {
             opacity: 0;
             transform: translateY(20px);
           }
-          100% {
+          to {
             opacity: 1;
             transform: translateY(0);
           }
@@ -256,16 +263,10 @@ export default function ShopPage() {
           animation: slideIn 0.4s ease-out;
         }
 
-        /* мобильная адаптация */
         @media (max-width: 640px) {
           video,
           img {
             max-height: 70vh !important;
-          }
-          .modal-mobile {
-            flex-direction: column !important;
-            height: auto !important;
-            max-height: 90vh !important;
           }
         }
       `}</style>
