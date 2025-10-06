@@ -3,9 +3,10 @@
 import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
+// ✅ строгий тип вместо any
 declare global {
   interface Window {
-    gtag?: (...args: any[]) => void;
+    gtag?: (...args: unknown[]) => void;
   }
 }
 
@@ -15,12 +16,15 @@ export default function GoogleAnalyticsTracker() {
 
   useEffect(() => {
     if (!pathname) return;
+
     const url = pathname + (searchParams.toString() ? `?${searchParams}` : "");
 
-    // 👇 Отправляем событие просмотра страницы
-    window.gtag?.("config", "G-W0Q5PME6MH", {
-      page_path: url,
-    });
+    // ✅ безопасная проверка наличия GA
+    if (typeof window !== "undefined" && window.gtag) {
+      window.gtag("config", "G-W0Q5PME6MH", {
+        page_path: url,
+      });
+    }
   }, [pathname, searchParams]);
 
   return null;
