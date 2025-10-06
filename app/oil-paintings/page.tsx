@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export default function OilPaintingsPage() {
   return (
     <main className="flex flex-col">
@@ -56,24 +58,39 @@ export default function OilPaintingsPage() {
           Примеры картин маслом
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          <a href="/gallery" className="block bg-white rounded shadow hover:shadow-lg transition overflow-hidden">
-            <img
+          <a
+            href="/gallery"
+            className="block bg-white rounded shadow hover:shadow-lg transition overflow-hidden"
+          >
+            <Image
               src="/images/gallery/oil1.jpg"
               alt="Пример картины маслом 1"
+              width={600}
+              height={400}
               className="w-full h-64 object-cover hover:scale-105 transition-transform"
             />
           </a>
-          <a href="/gallery" className="block bg-white rounded shadow hover:shadow-lg transition overflow-hidden">
-            <img
+          <a
+            href="/gallery"
+            className="block bg-white rounded shadow hover:shadow-lg transition overflow-hidden"
+          >
+            <Image
               src="/images/gallery/oil2.jpg"
               alt="Пример картины маслом 2"
+              width={600}
+              height={400}
               className="w-full h-64 object-cover hover:scale-105 transition-transform"
             />
           </a>
-          <a href="/gallery" className="block bg-white rounded shadow hover:shadow-lg transition overflow-hidden">
-            <img
+          <a
+            href="/gallery"
+            className="block bg-white rounded shadow hover:shadow-lg transition overflow-hidden"
+          >
+            <Image
               src="/images/gallery/oil3.jpg"
               alt="Пример картины маслом 3"
+              width={600}
+              height={400}
               className="w-full h-64 object-cover hover:scale-105 transition-transform"
             />
           </a>

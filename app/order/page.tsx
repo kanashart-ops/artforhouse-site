@@ -1,5 +1,7 @@
 "use client";
+
 import { useState } from "react";
+import Image from "next/image";
 
 export default function OrderPage() {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -82,9 +84,11 @@ export default function OrderPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Масло */}
           <div className="p-6 bg-white shadow rounded-xl hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center">
-            <img
+            <Image
               src="/images/order/444.jpg"
               alt="Картина маслом"
+              width={600}
+              height={400}
               className="w-full h-56 object-cover rounded-lg mb-4 hover:scale-105 transition-transform duration-500"
             />
             <h3 className="text-2xl font-bold mb-3 text-gray-900">Масло</h3>
@@ -96,9 +100,11 @@ export default function OrderPage() {
 
           {/* Акрил */}
           <div className="p-6 bg-white shadow rounded-xl hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center">
-            <img
+            <Image
               src="/images/order/333.jpg"
               alt="Картина акрилом"
+              width={600}
+              height={400}
               className="w-full h-56 object-cover rounded-lg mb-4 hover:scale-105 transition-transform duration-500"
             />
             <h3 className="text-2xl font-bold mb-3 text-gray-900">Акрил</h3>
@@ -110,9 +116,11 @@ export default function OrderPage() {
 
           {/* Роспись стен */}
           <div className="p-6 bg-white shadow rounded-xl hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center">
-            <img
+            <Image
               src="/images/order/222.jpg"
               alt="Роспись стен"
+              width={600}
+              height={400}
               className="w-full h-56 object-cover rounded-lg mb-4 hover:scale-105 transition-transform duration-500"
             />
             <h3 className="text-2xl font-bold mb-3 text-gray-900">Роспись стен</h3>

@@ -77,7 +77,7 @@ export default function RootLayout({
       </head>
 
       <body className="flex flex-col min-h-screen bg-white text-gray-900">
-        {/* 📊 Трекер для Google Analytics (фиксирует переходы по страницам) */}
+        {/* 📊 Трекер маршрутов для Google Analytics */}
         <GoogleAnalyticsTracker />
 
         <Header />

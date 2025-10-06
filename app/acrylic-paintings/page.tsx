@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export default function AcrylicPaintingsPage() {
   return (
     <main className="flex flex-col">
@@ -56,23 +58,29 @@ export default function AcrylicPaintingsPage() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
           <a href="/gallery" className="block bg-white rounded shadow hover:shadow-lg transition overflow-hidden">
-            <img
+            <Image
               src="/images/gallery/acrylic1.jpg"
               alt="Пример картины акрилом 1"
+              width={600}
+              height={400}
               className="w-full h-64 object-cover hover:scale-105 transition-transform"
             />
           </a>
           <a href="/gallery" className="block bg-white rounded shadow hover:shadow-lg transition overflow-hidden">
-            <img
+            <Image
               src="/images/gallery/acrylic2.jpg"
               alt="Пример картины акрилом 2"
+              width={600}
+              height={400}
               className="w-full h-64 object-cover hover:scale-105 transition-transform"
             />
           </a>
           <a href="/gallery" className="block bg-white rounded shadow hover:shadow-lg transition overflow-hidden">
-            <img
+            <Image
               src="/images/gallery/acrylic3.jpg"
               alt="Пример картины акрилом 3"
+              width={600}
+              height={400}
               className="w-full h-64 object-cover hover:scale-105 transition-transform"
             />
           </a>
