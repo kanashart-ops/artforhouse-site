@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Suspense } from "react";
 import GoogleAnalyticsTracker from "@/app/analytics";
+import { Analytics } from "@vercel/analytics/react"; // ✅ добавили Vercel Analytics
 
 export const metadata: Metadata = {
   title: "Art for House",
@@ -87,6 +88,9 @@ export default function RootLayout({
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+
+        {/* 📈 Vercel Analytics */}
+        <Analytics /> 
       </body>
     </html>
   );
