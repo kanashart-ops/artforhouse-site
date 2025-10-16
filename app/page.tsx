@@ -3,15 +3,6 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import ReactCountryFlag from "react-country-flag";
-import Link from "next/link";
-import {
-  Instagram,
-  Send,
-  MessageCircle,
-  Phone,
-  Mail,
-  Video,
-} from "lucide-react";
 
 export default function HomePage() {
   // =========================
@@ -71,7 +62,7 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-black/50"></div>
         <div className="relative z-10 px-6">
           <h1 className="text-6xl font-extrabold mb-6">Art for House</h1>
-          <p className="text-xl max-w-2xl mx-auto mb-8">
+          <p className="text-xl max-w-2xl mx-auto mt-6 mb-10 leading-relaxed">
             Интерьерные картины и настенные росписи премиум-качества.
             Масло, акрил, жикле. Доставка по Беларуси и миру.
           </p>
@@ -94,7 +85,6 @@ export default function HomePage() {
       <section className="py-20 px-6 bg-white">
         <div className="max-w-5xl mx-auto text-center">
           <h2 className="text-4xl font-bold mb-6 text-gray-900">Anna Pobitko</h2>
-
           <p className="text-lg text-gray-700 leading-relaxed mb-4">
             Я — художник и основатель студии <span className="font-semibold text-amber-600">Art for House</span>.
             Это творческое пространство, где каждая картина становится отражением истории своего владельца.
@@ -149,55 +139,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Модалка */}
-      {modalIndex !== null && (
-        <div
-          className="fixed inset-0 bg-black/90 flex items-center justify-center z-50"
-          onClick={() => setModalIndex(null)}
-        >
-          <div
-            className="relative max-w-6xl w-full flex items-center justify-center px-10"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className="absolute top-4 right-6 text-white text-3xl font-bold"
-              onClick={() => setModalIndex(null)}
-            >
-              ×
-            </button>
-            <button
-              className="absolute left-4 text-white text-4xl bg-black/40 px-3 py-1 rounded-full hover:bg-black"
-              onClick={() =>
-                setModalIndex((prev) =>
-                  prev === null ? null : (prev - 1 + galleryWorks.length) % galleryWorks.length
-                )
-              }
-            >
-              ‹
-            </button>
-            <button
-              className="absolute right-4 text-white text-4xl bg-black/40 px-3 py-1 rounded-full hover:bg-black"
-              onClick={() =>
-                setModalIndex((prev) =>
-                  prev === null ? null : (prev + 1) % galleryWorks.length
-                )
-              }
-            >
-              ›
-            </button>
-
-            <Image
-              src={galleryWorks[modalIndex].src}
-              alt={galleryWorks[modalIndex].alt}
-              width={1200}
-              height={800}
-              unoptimized
-              className="max-h-[80vh] object-contain rounded"
-            />
-          </div>
-        </div>
-      )}
-
       {/* Мировая доставка */}
       <section className="py-16 px-6 bg-gray-50">
         <div className="max-w-5xl mx-auto text-center">
@@ -238,42 +179,6 @@ export default function HomePage() {
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Соцсети (новый блок) */}
-      <section className="py-16 px-6 bg-gray-100 text-center">
-        <h2 className="text-3xl font-bold mb-8 text-gray-900">Следите за Art for House</h2>
-        <div className="flex flex-wrap justify-center gap-10">
-          <Link href="https://www.instagram.com/art_for_house.by" target="_blank" className="flex flex-col items-center gap-2 text-gray-700 hover:text-pink-600 transition transform hover:scale-110">
-            <Instagram size={40} />
-            <span className="text-base font-medium">Instagram</span>
-          </Link>
-
-          <Link href="https://www.tiktok.com/@artforhouse" target="_blank" className="flex flex-col items-center gap-2 text-gray-700 hover:text-black transition transform hover:scale-110">
-            <Video size={40} />
-            <span className="text-base font-medium">TikTok</span>
-          </Link>
-
-          <Link href="https://t.me/AnnPab" target="_blank" className="flex flex-col items-center gap-2 text-gray-700 hover:text-sky-500 transition transform hover:scale-110">
-            <Send size={40} />
-            <span className="text-base font-medium">Telegram</span>
-          </Link>
-
-          <Link href="https://wa.me/375293517220" target="_blank" className="flex flex-col items-center gap-2 text-gray-700 hover:text-green-500 transition transform hover:scale-110">
-            <MessageCircle size={40} />
-            <span className="text-base font-medium">WhatsApp</span>
-          </Link>
-
-          <Link href="viber://chat?number=%2B375293517220" target="_blank" className="flex flex-col items-center gap-2 text-gray-700 hover:text-purple-500 transition transform hover:scale-110">
-            <MessageCircle size={40} />
-            <span className="text-base font-medium">Viber</span>
-          </Link>
-
-          <a href="mailto:gribovsksya@gmail.com" className="flex flex-col items-center gap-2 text-gray-700 hover:text-red-600 transition transform hover:scale-110">
-            <Mail size={40} />
-            <span className="text-base font-medium">Email</span>
-          </a>
         </div>
       </section>
     </main>
