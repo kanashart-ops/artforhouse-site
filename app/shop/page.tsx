@@ -248,6 +248,14 @@ export default function ShopPage() {
         </div>
       )}
 
+      {/* уведомление о справочном характере цен */}
+      <div className="mt-16 text-center text-sm text-gray-600 max-w-3xl mx-auto leading-relaxed px-4 border-t border-gray-200 pt-6">
+        <p>
+          ⚠️ Сайт <span className="font-semibold text-gray-800">Art for House</span> не является интернет-магазином.
+          Вся представленная информация, включая стоимость картин, носит справочный характер и не является публичной офертой.
+        </p>
+      </div>
+
       <style jsx global>{`
         @keyframes slideIn {
           from {
