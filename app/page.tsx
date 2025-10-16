@@ -3,10 +3,18 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import ReactCountryFlag from "react-country-flag";
+import Link from "next/link";
+import {
+  Instagram,
+  Send,
+  MessageCircle,
+  Phone,
+  Mail,
+  Video,
+} from "lucide-react";
 
 export default function HomePage() {
   // =========================
-  // 1) ДАННЫЕ КАРТИН
   const galleryWorks = [
     { src: "/images/gallery/work1.jpg", alt: "Работа 1" },
     { src: "/images/gallery/work2.jpg", alt: "Работа 2" },
@@ -17,12 +25,9 @@ export default function HomePage() {
   ];
 
   const featuredWorks = galleryWorks.slice(0, 3);
-
-  // =========================
   const [modalIndex, setModalIndex] = useState<number | null>(null);
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null);
 
-  // =========================
   const faqs = [
     { q: "Какие форматы и размеры картин доступны для заказа?", a: "Вы можете выбрать стандартный размер или заказать картину по индивидуальным параметрам." },
     { q: "Сколько времени занимает создание картины?", a: "В среднем от 1 до 4 недель, в зависимости от размера, техники и сложности сюжета." },
@@ -34,7 +39,6 @@ export default function HomePage() {
     { q: "Если картина не подойдёт по размеру или стилю?", a: "Мы заранее согласовываем все детали и делаем визуализацию, чтобы избежать такой ситуации." },
   ];
 
-  // =========================
   useEffect(() => {
     if (modalIndex === null) return;
     const onKey = (e: KeyboardEvent) => {
@@ -86,21 +90,26 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Обо мне и студии */}
+      {/* Обо мне */}
       <section className="py-20 px-6 bg-white">
         <div className="max-w-5xl mx-auto text-center">
           <h2 className="text-4xl font-bold mb-6 text-gray-900">Anna Pobitko</h2>
+
           <p className="text-lg text-gray-700 leading-relaxed mb-4">
-            Я — художник и основатель студии <span className="font-semibold text-amber-600">Art for House</span>. Это творческое пространство, где каждая картина становится отражением истории своего владельца.
+            Я — художник и основатель студии <span className="font-semibold text-amber-600">Art for House</span>.
+            Это творческое пространство, где каждая картина становится отражением истории своего владельца.
           </p>
           <p className="text-lg text-gray-700 leading-relaxed mb-4">
-            Искусство сопровождает меня с детства: первые рисунки, художественная школа, а затем первые серьёзные проекты.
+            Искусство сопровождает меня с детства: первые рисунки, художественная школа, участие в выставках, а затем — первые серьёзные заказы. Со временем хобби превратилось в дело всей жизни.
           </p>
           <p className="text-lg text-gray-700 leading-relaxed mb-4">
-            Сегодня я создаю интерьерные картины на заказ, работаю с маслом и акрилом, а также реализую арт-проекты для тех, кто ценит красоту и индивидуальность.
+            Сегодня я создаю <strong>интерьерные картины на заказ</strong>, работаю с <strong>маслом и акрилом</strong>, а также реализую <strong>арт-проекты для частных и корпоративных клиентов</strong>. В каждой работе для меня важно сохранить атмосферу дома и подчеркнуть индивидуальность пространства.
+          </p>
+          <p className="text-lg text-gray-700 leading-relaxed mb-4">
+            Мои картины украшают дома, офисы и коллекции в <strong>Беларуси, Польше, Литве, Испании, ОАЭ и других странах Европы</strong>.
           </p>
           <p className="text-lg text-gray-700 leading-relaxed">
-            Мои картины украшают дома и коллекции в Минске, Дубае и других странах Европы.
+            Я верю, что искусство — это не просто украшение интерьера, а способ выразить себя, создать настроение и вдохновение в каждом дне.
           </p>
         </div>
       </section>
@@ -109,9 +118,7 @@ export default function HomePage() {
       <section className="py-20 px-6 bg-gray-50">
         <div className="max-w-6xl mx-auto text-center">
           <h2 className="text-4xl font-bold mb-6 text-gray-900">Работы</h2>
-          <p className="text-lg text-gray-700 mb-10">
-            Ознакомьтесь с примерами картин и росписей.
-          </p>
+          <p className="text-lg text-gray-700 mb-10">Ознакомьтесь с примерами картин и росписей.</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {featuredWorks.map((work, i) => (
@@ -158,7 +165,6 @@ export default function HomePage() {
             >
               ×
             </button>
-
             <button
               className="absolute left-4 text-white text-4xl bg-black/40 px-3 py-1 rounded-full hover:bg-black"
               onClick={() =>
@@ -232,6 +238,42 @@ export default function HomePage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Соцсети (новый блок) */}
+      <section className="py-16 px-6 bg-gray-100 text-center">
+        <h2 className="text-3xl font-bold mb-8 text-gray-900">Следите за Art for House</h2>
+        <div className="flex flex-wrap justify-center gap-10">
+          <Link href="https://www.instagram.com/art_for_house.by" target="_blank" className="flex flex-col items-center gap-2 text-gray-700 hover:text-pink-600 transition transform hover:scale-110">
+            <Instagram size={40} />
+            <span className="text-base font-medium">Instagram</span>
+          </Link>
+
+          <Link href="https://www.tiktok.com/@artforhouse" target="_blank" className="flex flex-col items-center gap-2 text-gray-700 hover:text-black transition transform hover:scale-110">
+            <Video size={40} />
+            <span className="text-base font-medium">TikTok</span>
+          </Link>
+
+          <Link href="https://t.me/AnnPab" target="_blank" className="flex flex-col items-center gap-2 text-gray-700 hover:text-sky-500 transition transform hover:scale-110">
+            <Send size={40} />
+            <span className="text-base font-medium">Telegram</span>
+          </Link>
+
+          <Link href="https://wa.me/375293517220" target="_blank" className="flex flex-col items-center gap-2 text-gray-700 hover:text-green-500 transition transform hover:scale-110">
+            <MessageCircle size={40} />
+            <span className="text-base font-medium">WhatsApp</span>
+          </Link>
+
+          <Link href="viber://chat?number=%2B375293517220" target="_blank" className="flex flex-col items-center gap-2 text-gray-700 hover:text-purple-500 transition transform hover:scale-110">
+            <MessageCircle size={40} />
+            <span className="text-base font-medium">Viber</span>
+          </Link>
+
+          <a href="mailto:gribovsksya@gmail.com" className="flex flex-col items-center gap-2 text-gray-700 hover:text-red-600 transition transform hover:scale-110">
+            <Mail size={40} />
+            <span className="text-base font-medium">Email</span>
+          </a>
         </div>
       </section>
     </main>
