@@ -1,50 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
+
+import React from "react";
 import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
-
-const IMG_EXT = "jpg";
-
-function makeRange(prefix: string, start: number, end: number, category: string) {
-  const items = [];
-  for (let i = start; i <= end; i++) {
-    items.push({
-      src: `/images/gallery/${prefix}${i}.${IMG_EXT}`,
-      category,
-      name: `${prefix}${i}`,
-    });
-  }
-  return items;
-}
-
-const CATEGORIES = [
-  "Все",
-  "пейзаж",
-  "премиум",
-  "абстракция",
-  "анималистика",
-  "растения",
-  "интерьерная роспись",
-  "в интерьере",
-  "я",
-] as const;
-type Category = (typeof CATEGORIES)[number];
+import { CATEGORIES, type Category, galleryItems } from "@/lib/galleryData";
 
 export default function GalleryPage() {
-  const galleryItems = useMemo(
-    () => [
-      ...makeRange("a", 1, 21, "пейзаж"),
-      ...makeRange("aa", 1, 20, "абстракция"),
-      ...makeRange("w", 1, 4, "анималистика"),
-      ...makeRange("q", 1, 35, "в интерьере"),
-      ...makeRange("x", 1, 13, "премиум"),
-      ...makeRange("s", 1, 13, "растения"),
-      ...makeRange("e", 1, 3, "интерьерная роспись"),
-      ...makeRange("d", 1, 11, "я"),
-    ],
-    []
-  );
-
   const [selectedCategory, setSelectedCategory] = useState<Category>("Все");
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
   const [visible, setVisible] = useState(false);
@@ -56,12 +18,13 @@ export default function GalleryPage() {
       selectedCategory === "Все"
         ? galleryItems
         : galleryItems.filter((item) => item.category === selectedCategory),
-    [galleryItems, selectedCategory]
+    [selectedCategory]
   );
 
   const [loadedImages, setLoadedImages] = useState<boolean[]>(
     new Array(filteredItems.length).fill(false)
   );
+
   useEffect(() => {
     setLoadedImages(new Array(filteredItems.length).fill(false));
   }, [filteredItems.length]);
@@ -82,9 +45,13 @@ export default function GalleryPage() {
     setFade(false);
     setTimeout(() => {
       if (direction === "next") {
-        setCurrentIndex(currentIndex === filteredItems.length - 1 ? 0 : currentIndex + 1);
+        setCurrentIndex(
+          currentIndex === filteredItems.length - 1 ? 0 : currentIndex + 1
+        );
       } else {
-        setCurrentIndex(currentIndex === 0 ? filteredItems.length - 1 : currentIndex - 1);
+        setCurrentIndex(
+          currentIndex === 0 ? filteredItems.length - 1 : currentIndex - 1
+        );
       }
       setFade(true);
     }, 200);
@@ -103,6 +70,7 @@ export default function GalleryPage() {
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStartX(e.touches[0].clientX);
   };
+
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (currentIndex === null) return;
     const delta = e.changedTouches[0].clientX - touchStartX;
@@ -112,12 +80,16 @@ export default function GalleryPage() {
 
   return (
     <main className="p-10 max-w-7xl mx-auto">
-      <h1 className="text-3xl font-bold mb-3 text-center text-gray-900">Галерея</h1>
+      <h1 className="text-3xl font-bold mb-3 text-center text-gray-900">
+        Галерея
+      </h1>
 
       <div className="mb-8 text-center text-gray-700">
         <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 border border-gray-200">
           <span className="font-medium">Категория:</span>
-          <span className="font-semibold text-gray-900">{selectedCategory}</span>
+          <span className="font-semibold text-gray-900">
+            {selectedCategory}
+          </span>
           <span className="opacity-60">•</span>
           <span>Найдено: {filteredItems.length}</span>
         </span>
