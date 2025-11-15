@@ -9,16 +9,16 @@ type MobileArtItem = {
   category: string;
 };
 
+// Всегда отдаём правильный домен artforhouse.by
 function absoluteUrl(path: string) {
-  const base =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://mat4house.by"; // сюда ставишь свой домен
+  const base = "https://artforhouse.by"; 
   return `${base}${path}`;
 }
 
 export async function GET() {
   const items: MobileArtItem[] = galleryItems.map((item) => ({
-    id: item.name, // уникальный id
-    title: item.name, // пока имя файла, позже можно сделать красивые названия
+    id: item.name,
+    title: item.name,
     imageUrl: absoluteUrl(item.src),
     category: String(item.category),
   }));
