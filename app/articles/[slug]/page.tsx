@@ -3,16 +3,18 @@ import { notFound } from "next/navigation";
 import { fetchArticleBySlug } from "@/lib/articles";
 import type { Article } from "@/lib/articles";
 
-type PageProps = {
-  params: {
+type ArticlePageProps = {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
-export default async function ArticlePage({ params }: PageProps) {
-  const slug = decodeURIComponent(params.slug);
+export default async function ArticlePage({ params }: ArticlePageProps) {
+  const { slug } = await params;
 
-  const article: Article | null = await fetchArticleBySlug(slug);
+  const article: Article | null = await fetchArticleBySlug(
+    decodeURIComponent(slug)
+  );
 
   if (!article) {
     notFound();
@@ -21,22 +23,22 @@ export default async function ArticlePage({ params }: PageProps) {
   return (
     <main className="max-w-3xl mx-auto px-6 py-16">
       <h1 className="text-4xl font-bold mb-4 text-gray-900">
-        {article!.title}
+        {article.title}
       </h1>
 
       <p className="text-sm text-gray-500 mb-8">
-        {new Date(article!.createdAt).toLocaleDateString("ru-RU", {
+        {new Date(article.createdAt).toLocaleDateString("ru-RU", {
           year: "numeric",
           month: "long",
           day: "numeric",
         })}
       </p>
 
-      {article!.coverImage && (
+      {article.coverImage && (
         <div className="relative w-full mb-10">
           <img
-            src={article!.coverImage}
-            alt={article!.title}
+            src={article.coverImage}
+            alt={article.title}
             className="w-full max-h-[420px] object-cover rounded-xl"
           />
         </div>
@@ -57,7 +59,7 @@ export default async function ArticlePage({ params }: PageProps) {
           [&_figcaption]:mt-2 [&_figcaption]:text-sm [&_figcaption]:text-gray-500 [&_figcaption]:text-center
           [&_iframe]:w-full [&_iframe]:aspect-video [&_iframe]:rounded-xl [&_iframe]:mt-6
         "
-        dangerouslySetInnerHTML={{ __html: article!.contentHtml }}
+        dangerouslySetInnerHTML={{ __html: article.contentHtml }}
       />
     </main>
   );
