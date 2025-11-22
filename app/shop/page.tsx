@@ -1,5 +1,7 @@
 "use client";
+
 import { useState, useEffect } from "react";
+import type React from "react";
 import Image from "next/image";
 import { Send, Instagram, Phone } from "lucide-react";
 
@@ -20,20 +22,6 @@ const shopItems = [
       { type: "video", src: "/videos/2v.mp4" },
       { type: "video", src: "/videos/3v.mp4" },
       { type: "video", src: "/videos/4v.mp4" },
-    ],
-  },
-  {
-    title: "В потоке свободы",
-    size: "2 картины, каждая 50x100 см, масло",
-    price: "250 BYN (каждая)",
-    description:
-      "Две картины, объединённые одной идеей — движением, грацией и свободой.\nЛошади символизируют силу, внутреннюю гармонию и уверенность. Масло на холсте, живые мазки и приглушённые тона создают ощущение динамики и спокойствия одновременно.\n\n🎨 Обе картины можно увидеть вживую в кафе «Завтраки» (Минск, ул. Зыбицкая 2).",
-    media: [
-      { type: "image", src: "/images/shop/6.jpg" },
-      { type: "image", src: "/images/shop/7.jpg" },
-      { type: "image", src: "/images/shop/8.jpg" },
-      { type: "video", src: "/videos/6v.mp4" },
-      { type: "video", src: "/videos/7v.mp4" },
     ],
   },
   {
@@ -63,17 +51,6 @@ const shopItems = [
     ],
   },
   {
-    title: "Ирисы",
-    size: "20x30 см, масло",
-    price: "100 BYN",
-    description:
-      "Нежная работа, написанная маслом на натуральном холсте на подрамнике. Ирисы — символ весны и обновления, добавляют интерьеру лёгкость и гармонию.",
-    media: [
-      { type: "image", src: "/images/shop/23.jpg" },
-      { type: "image", src: "/images/shop/22.jpg" },
-    ],
-  },
-  {
     title: "Двое",
     size: "50x70 см, акрил, золочение",
     price: "60 BYN",
@@ -87,7 +64,8 @@ const shopItems = [
 ];
 
 export default function ShopPage() {
-  const [selectedItem, setSelectedItem] = useState<typeof shopItems[0] | null>(null);
+  const [selectedItem, setSelectedItem] =
+    useState<(typeof shopItems)[0] | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showContacts, setShowContacts] = useState(false);
   const [touchStartX, setTouchStartX] = useState(0);
@@ -104,15 +82,22 @@ export default function ShopPage() {
   });
 
   const nextMedia = () =>
-    setCurrentIndex((p) => (p + 1) % selectedItem!.media.length);
+    setCurrentIndex((p) => (p + 1) % (selectedItem?.media.length ?? 1));
+
   const prevMedia = () =>
-    setCurrentIndex((p) => (p - 1 + selectedItem!.media.length) % selectedItem!.media.length);
+    setCurrentIndex((p) =>
+      (p - 1 + (selectedItem?.media.length ?? 1)) %
+      (selectedItem?.media.length ?? 1)
+    );
+
   const closeModal = () => {
     setSelectedItem(null);
     setShowContacts(false);
   };
 
-  const handleTouchStart = (e: React.TouchEvent) => setTouchStartX(e.touches[0].clientX);
+  const handleTouchStart = (e: React.TouchEvent) =>
+    setTouchStartX(e.touches[0].clientX);
+
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (!selectedItem) return;
     const delta = e.changedTouches[0].clientX - touchStartX;
@@ -122,7 +107,9 @@ export default function ShopPage() {
 
   return (
     <main className="p-6 md:p-10 max-w-6xl mx-auto">
-      <h1 className="text-4xl font-bold text-center mb-10 text-gray-900">Картины в наличии</h1>
+      <h1 className="text-4xl font-bold text-center mb-10 text-gray-900">
+        Картины в наличии
+      </h1>
 
       {/* карточки */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -143,7 +130,9 @@ export default function ShopPage() {
               className="w-full h-80 object-contain bg-gray-50 rounded-t-lg"
             />
             <div className="p-5">
-              <h2 className="text-xl font-bold text-gray-900 mb-1">{item.title}</h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-1">
+                {item.title}
+              </h2>
               <p className="text-gray-700 text-sm mb-2">{item.size}</p>
               <p className="text-lg font-bold text-amber-700">{item.price}</p>
             </div>
@@ -210,8 +199,12 @@ export default function ShopPage() {
               <h2 className="text-2xl font-bold mb-3 text-gray-900 text-center sm:text-left">
                 {selectedItem.title}
               </h2>
-              <p className="text-gray-700 font-medium mb-2 text-center sm:text-left">{selectedItem.size}</p>
-              <p className="text-xl font-bold text-amber-700 mb-6 text-center sm:text-left">{selectedItem.price}</p>
+              <p className="text-gray-700 font-medium mb-2 text-center sm:text-left">
+                {selectedItem.size}
+              </p>
+              <p className="text-xl font-bold text-amber-700 mb-6 text-center sm:text-left">
+                {selectedItem.price}
+              </p>
 
               <p className="text-gray-800 leading-relaxed whitespace-pre-line text-[16px] mb-6">
                 {selectedItem.description}
@@ -230,17 +223,38 @@ export default function ShopPage() {
                     Свяжитесь со мной любым удобным способом:
                   </p>
                   <div className="flex justify-center gap-6 text-gray-700 text-[30px]">
-                    <a href="https://t.me/AnnPab" target="_blank" rel="noopener noreferrer" title="Telegram">
-                      <Send size={34} className="hover:text-sky-500 transition" />
+                    <a
+                      href="https://t.me/AnnPab"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Telegram"
+                    >
+                      <Send
+                        size={34}
+                        className="hover:text-sky-500 transition"
+                      />
                     </a>
-                    <a href="https://www.instagram.com/art_for_house.by/" target="_blank" rel="noopener noreferrer" title="Instagram">
-                      <Instagram size={34} className="hover:text-pink-500 transition" />
+                    <a
+                      href="https://www.instagram.com/art_for_house.by/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Instagram"
+                    >
+                      <Instagram
+                        size={34}
+                        className="hover:text-pink-500 transition"
+                      />
                     </a>
                     <a href="tel:+375293517220" title="Позвонить">
-                      <Phone size={34} className="hover:text-green-600 transition" />
+                      <Phone
+                        size={34}
+                        className="hover:text-green-600 transition"
+                      />
                     </a>
                   </div>
-                  <p className="mt-4 text-sm text-gray-600 select-all">☎ +375 (29) 351-72-20</p>
+                  <p className="mt-4 text-sm text-gray-600 select-all">
+                    ☎ +375 (29) 351-72-20
+                  </p>
                 </div>
               )}
             </div>
@@ -251,8 +265,11 @@ export default function ShopPage() {
       {/* уведомление о справочном характере цен */}
       <div className="mt-16 text-center text-sm text-gray-600 max-w-3xl mx-auto leading-relaxed px-4 border-t border-gray-200 pt-6">
         <p>
-          ⚠️ Сайт <span className="font-semibold text-gray-800">Art for House</span> не является интернет-магазином.
-          Вся представленная информация, включая стоимость картин, носит справочный характер и не является публичной офертой.
+          ⚠️ Сайт{" "}
+          <span className="font-semibold text-gray-800">Art for House</span> не
+          является интернет-магазином. Вся представленная информация, включая
+          стоимость картин, носит справочный характер и не является публичной
+          офертой.
         </p>
       </div>
 
