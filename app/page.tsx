@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import ReactCountryFlag from "react-country-flag";
 
 type Article = {
@@ -119,24 +120,24 @@ export default function HomePage() {
           </p>
 
           <div className="flex flex-wrap gap-4 justify-center">
-            <a
+            <Link
               href="/gallery"
               className="px-8 py-3 bg-white text-gray-900 font-semibold rounded-full shadow hover:bg-gray-100 transition"
             >
               Галерея
-            </a>
-            <a
+            </Link>
+            <Link
               href="/shop"
               className="px-8 py-3 bg-white text-gray-900 font-semibold rounded-full shadow hover:bg-gray-100 transition"
             >
               В наличии
-            </a>
-            <a
+            </Link>
+            <Link
               href="/order"
               className="px-8 py-3 bg-white text-gray-900 font-semibold rounded-full shadow hover:bg-gray-100 transition"
             >
               Заказ
-            </a>
+            </Link>
           </div>
         </div>
       </section>
@@ -166,7 +167,7 @@ export default function HomePage() {
             <>
               <div className="grid gap-6 md:grid-cols-3">
                 {articles.map((article) => (
-                  <a
+                  <Link
                     key={article.slug}
                     href={`/articles/${article.slug}`}
                     className="block bg-gray-50 rounded-xl p-5 shadow hover:shadow-md transition cursor-pointer h-full"
@@ -186,17 +187,17 @@ export default function HomePage() {
                     <p className="text-sm text-gray-600 line-clamp-3">
                       {article.excerpt}
                     </p>
-                  </a>
+                  </Link>
                 ))}
               </div>
 
               <div className="mt-10 flex justify-center">
-                <a
+                <Link
                   href="/articles"
                   className="px-8 py-3 bg-gray-900 text-white font-semibold rounded-full shadow hover:bg-gray-800 transition"
                 >
                   Смотреть все статьи
-                </a>
+                </Link>
               </div>
             </>
           )}
@@ -227,7 +228,10 @@ export default function HomePage() {
           </p>
           <p className="text-lg text-gray-700 leading-relaxed mb-4">
             Мои картины украшают дома, офисы и коллекции в{" "}
-            <strong>Беларуси, Польше, Литве, Испании, ОАЭ и других странах Европы</strong>.
+            <strong>
+              Беларуси, Польше, Литве, Испании, ОАЭ и других странах Европы
+            </strong>
+            .
           </p>
           <p className="text-lg text-gray-700 leading-relaxed">
             Я верю, что искусство — это не просто украшение интерьера, а способ
@@ -263,12 +267,12 @@ export default function HomePage() {
           </div>
 
           <div className="mt-10">
-            <a
+            <Link
               href="/gallery"
               className="px-8 py-3 bg-gray-900 text-white font-semibold rounded-full shadow hover:bg-gray-800 transition"
             >
               Смотреть все работы
-            </a>
+            </Link>
           </div>
         </div>
       </section>
