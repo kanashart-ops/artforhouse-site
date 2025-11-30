@@ -44,7 +44,7 @@ export const galleryItems: GalleryItem[] = [
   ...makeRange("aa", 1, 20, "абстракция"),
   ...makeRange("w", 1, 4, "анималистика"),
   ...makeRange("q", 1, 35, "в интерьере"),
-  ...makeRange("x", 1, 13, "премиум"),
+  ...makeRange("x", 1, 15, "премиум"),
   ...makeRange("s", 1, 13, "растения"),
   ...makeRange("e", 1, 3, "интерьерная роспись"),
   ...makeRange("d", 1, 11, "я"),
