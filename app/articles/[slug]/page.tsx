@@ -4,27 +4,57 @@ import { fetchArticleBySlug } from "@/lib/articles";
 import type { Article } from "@/lib/articles";
 
 type ArticlePageProps = {
-  params: Promise<{
-    slug: string;
-  }>;
+  params: Promise<{ slug: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export default async function ArticlePage({ params }: ArticlePageProps) {
+function firstString(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function stripAppBreadcrumb(html: string) {
+  // Удаляем "Articles / ..." если оно попало в HTML как текст/абзац/хедер/див.
+  // 1) <p>Articles / ...</p>
+  html = html.replace(
+    /<p[^>]*>\s*Articles\s*\/\s*[^<]+<\/p>\s*/i,
+    ""
+  );
+
+  // 2) <div>Articles / ...</div>
+  html = html.replace(
+    /<(div|span)[^>]*>\s*Articles\s*\/\s*[^<]+<\/\1>\s*/i,
+    ""
+  );
+
+  // 3) "Articles / ..." как голый текст в начале
+  html = html.replace(/^\s*Articles\s*\/\s*[^\n<]+\s*/i, "");
+
+  return html;
+}
+
+export default async function ArticlePage({
+  params,
+  searchParams,
+}: ArticlePageProps) {
   const { slug } = await params;
+
+  const sp = (await searchParams) ?? {};
+  const appParam = firstString(sp.app);
+  const isApp = appParam === "1";
 
   const article: Article | null = await fetchArticleBySlug(
     decodeURIComponent(slug)
   );
 
-  if (!article) {
-    notFound();
-  }
+  if (!article) notFound();
+
+  const contentHtml = isApp
+    ? stripAppBreadcrumb(article.contentHtml)
+    : article.contentHtml;
 
   return (
     <main className="max-w-3xl mx-auto px-6 py-16">
-      <h1 className="text-4xl font-bold mb-4 text-gray-900">
-        {article.title}
-      </h1>
+      <h1 className="text-4xl font-bold mb-4 text-gray-900">{article.title}</h1>
 
       <p className="text-sm text-gray-500 mb-8">
         {new Date(article.createdAt).toLocaleDateString("ru-RU", {
@@ -59,7 +89,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           [&_figcaption]:mt-2 [&_figcaption]:text-sm [&_figcaption]:text-gray-500 [&_figcaption]:text-center
           [&_iframe]:w-full [&_iframe]:aspect-video [&_iframe]:rounded-xl [&_iframe]:mt-6
         "
-        dangerouslySetInnerHTML={{ __html: article.contentHtml }}
+        dangerouslySetInnerHTML={{ __html: contentHtml }}
       />
     </main>
   );
