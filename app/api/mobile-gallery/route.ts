@@ -1,6 +1,7 @@
 // app/api/mobile-gallery/route.ts
 import { NextResponse } from "next/server";
 import { galleryItems } from "@/lib/galleryData";
+import { getGalleryItems } from "@/lib/contentStore";
 
 type MobileArtItem = {
   id: string;
@@ -12,10 +13,13 @@ type MobileArtItem = {
 // Всегда отдаём правильный домен artforhouse.by
 function absoluteUrl(path: string) {
   const base = "https://artforhouse.by"; 
+  const base = "https://artforhouse.by";
   return `${base}${path}`;
 }
 
 export async function GET() {
+  const galleryItems = await getGalleryItems();
+
   const items: MobileArtItem[] = galleryItems.map((item) => ({
     id: item.name,
     title: item.name,

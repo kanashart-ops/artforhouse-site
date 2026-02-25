@@ -1,0 +1,647 @@
+[
+  {
+    "src": "/images/gallery/a1.jpg",
+    "category": "пейзаж",
+    "name": "a1"
+  },
+  {
+    "src": "/images/gallery/a2.jpg",
+    "category": "пейзаж",
+    "name": "a2"
+  },
+  {
+    "src": "/images/gallery/a3.jpg",
+    "category": "пейзаж",
+    "name": "a3"
+  },
+  {
+    "src": "/images/gallery/a4.jpg",
+    "category": "пейзаж",
+    "name": "a4"
+  },
+  {
+    "src": "/images/gallery/a5.jpg",
+    "category": "пейзаж",
+    "name": "a5"
+  },
+  {
+    "src": "/images/gallery/a6.jpg",
+    "category": "пейзаж",
+    "name": "a6"
+  },
+  {
+    "src": "/images/gallery/a7.jpg",
+    "category": "пейзаж",
+    "name": "a7"
+  },
+  {
+    "src": "/images/gallery/a8.jpg",
+    "category": "пейзаж",
+    "name": "a8"
+  },
+  {
+    "src": "/images/gallery/a9.jpg",
+    "category": "пейзаж",
+    "name": "a9"
+  },
+  {
+    "src": "/images/gallery/a10.jpg",
+    "category": "пейзаж",
+    "name": "a10"
+  },
+  {
+    "src": "/images/gallery/a11.jpg",
+    "category": "пейзаж",
+    "name": "a11"
+  },
+  {
+    "src": "/images/gallery/a12.jpg",
+    "category": "пейзаж",
+    "name": "a12"
+  },
+  {
+    "src": "/images/gallery/a13.jpg",
+    "category": "пейзаж",
+    "name": "a13"
+  },
+  {
+    "src": "/images/gallery/a14.jpg",
+    "category": "пейзаж",
+    "name": "a14"
+  },
+  {
+    "src": "/images/gallery/a15.jpg",
+    "category": "пейзаж",
+    "name": "a15"
+  },
+  {
+    "src": "/images/gallery/a16.jpg",
+    "category": "пейзаж",
+    "name": "a16"
+  },
+  {
+    "src": "/images/gallery/a17.jpg",
+    "category": "пейзаж",
+    "name": "a17"
+  },
+  {
+    "src": "/images/gallery/a18.jpg",
+    "category": "пейзаж",
+    "name": "a18"
+  },
+  {
+    "src": "/images/gallery/a19.jpg",
+    "category": "пейзаж",
+    "name": "a19"
+  },
+  {
+    "src": "/images/gallery/a20.jpg",
+    "category": "пейзаж",
+    "name": "a20"
+  },
+  {
+    "src": "/images/gallery/a21.jpg",
+    "category": "пейзаж",
+    "name": "a21"
+  },
+  {
+    "src": "/images/gallery/aa1.jpg",
+    "category": "абстракция",
+    "name": "aa1"
+  },
+  {
+    "src": "/images/gallery/aa2.jpg",
+    "category": "абстракция",
+    "name": "aa2"
+  },
+  {
+    "src": "/images/gallery/aa3.jpg",
+    "category": "абстракция",
+    "name": "aa3"
+  },
+  {
+    "src": "/images/gallery/aa4.jpg",
+    "category": "абстракция",
+    "name": "aa4"
+  },
+  {
+    "src": "/images/gallery/aa5.jpg",
+    "category": "абстракция",
+    "name": "aa5"
+  },
+  {
+    "src": "/images/gallery/aa6.jpg",
+    "category": "абстракция",
+    "name": "aa6"
+  },
+  {
+    "src": "/images/gallery/aa7.jpg",
+    "category": "абстракция",
+    "name": "aa7"
+  },
+  {
+    "src": "/images/gallery/aa8.jpg",
+    "category": "абстракция",
+    "name": "aa8"
+  },
+  {
+    "src": "/images/gallery/aa9.jpg",
+    "category": "абстракция",
+    "name": "aa9"
+  },
+  {
+    "src": "/images/gallery/aa10.jpg",
+    "category": "абстракция",
+    "name": "aa10"
+  },
+  {
+    "src": "/images/gallery/aa11.jpg",
+    "category": "абстракция",
+    "name": "aa11"
+  },
+  {
+    "src": "/images/gallery/aa12.jpg",
+    "category": "абстракция",
+    "name": "aa12"
+  },
+  {
+    "src": "/images/gallery/aa13.jpg",
+    "category": "абстракция",
+    "name": "aa13"
+  },
+  {
+    "src": "/images/gallery/aa14.jpg",
+    "category": "абстракция",
+    "name": "aa14"
+  },
+  {
+    "src": "/images/gallery/aa15.jpg",
+    "category": "абстракция",
+    "name": "aa15"
+  },
+  {
+    "src": "/images/gallery/aa16.jpg",
+    "category": "абстракция",
+    "name": "aa16"
+  },
+  {
+    "src": "/images/gallery/aa17.jpg",
+    "category": "абстракция",
+    "name": "aa17"
+  },
+  {
+    "src": "/images/gallery/aa18.jpg",
+    "category": "абстракция",
+    "name": "aa18"
+  },
+  {
+    "src": "/images/gallery/aa19.jpg",
+    "category": "абстракция",
+    "name": "aa19"
+  },
+  {
+    "src": "/images/gallery/aa20.jpg",
+    "category": "абстракция",
+    "name": "aa20"
+  },
+  {
+    "src": "/images/gallery/w1.jpg",
+    "category": "анималистика",
+    "name": "w1"
+  },
+  {
+    "src": "/images/gallery/w2.jpg",
+    "category": "анималистика",
+    "name": "w2"
+  },
+  {
+    "src": "/images/gallery/w3.jpg",
+    "category": "анималистика",
+    "name": "w3"
+  },
+  {
+    "src": "/images/gallery/w4.jpg",
+    "category": "анималистика",
+    "name": "w4"
+  },
+  {
+    "src": "/images/gallery/q1.jpg",
+    "category": "в интерьере",
+    "name": "q1"
+  },
+  {
+    "src": "/images/gallery/q2.jpg",
+    "category": "в интерьере",
+    "name": "q2"
+  },
+  {
+    "src": "/images/gallery/q3.jpg",
+    "category": "в интерьере",
+    "name": "q3"
+  },
+  {
+    "src": "/images/gallery/q4.jpg",
+    "category": "в интерьере",
+    "name": "q4"
+  },
+  {
+    "src": "/images/gallery/q5.jpg",
+    "category": "в интерьере",
+    "name": "q5"
+  },
+  {
+    "src": "/images/gallery/q6.jpg",
+    "category": "в интерьере",
+    "name": "q6"
+  },
+  {
+    "src": "/images/gallery/q7.jpg",
+    "category": "в интерьере",
+    "name": "q7"
+  },
+  {
+    "src": "/images/gallery/q8.jpg",
+    "category": "в интерьере",
+    "name": "q8"
+  },
+  {
+    "src": "/images/gallery/q9.jpg",
+    "category": "в интерьере",
+    "name": "q9"
+  },
+  {
+    "src": "/images/gallery/q10.jpg",
+    "category": "в интерьере",
+    "name": "q10"
+  },
+  {
+    "src": "/images/gallery/q11.jpg",
+    "category": "в интерьере",
+    "name": "q11"
+  },
+  {
+    "src": "/images/gallery/q12.jpg",
+    "category": "в интерьере",
+    "name": "q12"
+  },
+  {
+    "src": "/images/gallery/q13.jpg",
+    "category": "в интерьере",
+    "name": "q13"
+  },
+  {
+    "src": "/images/gallery/q14.jpg",
+    "category": "в интерьере",
+    "name": "q14"
+  },
+  {
+    "src": "/images/gallery/q15.jpg",
+    "category": "в интерьере",
+    "name": "q15"
+  },
+  {
+    "src": "/images/gallery/q16.jpg",
+    "category": "в интерьере",
+    "name": "q16"
+  },
+  {
+    "src": "/images/gallery/q17.jpg",
+    "category": "в интерьере",
+    "name": "q17"
+  },
+  {
+    "src": "/images/gallery/q18.jpg",
+    "category": "в интерьере",
+    "name": "q18"
+  },
+  {
+    "src": "/images/gallery/q19.jpg",
+    "category": "в интерьере",
+    "name": "q19"
+  },
+  {
+    "src": "/images/gallery/q20.jpg",
+    "category": "в интерьере",
+    "name": "q20"
+  },
+  {
+    "src": "/images/gallery/q21.jpg",
+    "category": "в интерьере",
+    "name": "q21"
+  },
+  {
+    "src": "/images/gallery/q22.jpg",
+    "category": "в интерьере",
+    "name": "q22"
+  },
+  {
+    "src": "/images/gallery/q23.jpg",
+    "category": "в интерьере",
+    "name": "q23"
+  },
+  {
+    "src": "/images/gallery/q24.jpg",
+    "category": "в интерьере",
+    "name": "q24"
+  },
+  {
+    "src": "/images/gallery/q25.jpg",
+    "category": "в интерьере",
+    "name": "q25"
+  },
+  {
+    "src": "/images/gallery/q26.jpg",
+    "category": "в интерьере",
+    "name": "q26"
+  },
+  {
+    "src": "/images/gallery/q27.jpg",
+    "category": "в интерьере",
+    "name": "q27"
+  },
+  {
+    "src": "/images/gallery/q28.jpg",
+    "category": "в интерьере",
+    "name": "q28"
+  },
+  {
+    "src": "/images/gallery/q29.jpg",
+    "category": "в интерьере",
+    "name": "q29"
+  },
+  {
+    "src": "/images/gallery/q30.jpg",
+    "category": "в интерьере",
+    "name": "q30"
+  },
+  {
+    "src": "/images/gallery/q31.jpg",
+    "category": "в интерьере",
+    "name": "q31"
+  },
+  {
+    "src": "/images/gallery/q32.jpg",
+    "category": "в интерьере",
+    "name": "q32"
+  },
+  {
+    "src": "/images/gallery/q33.jpg",
+    "category": "в интерьере",
+    "name": "q33"
+  },
+  {
+    "src": "/images/gallery/q34.jpg",
+    "category": "в интерьере",
+    "name": "q34"
+  },
+  {
+    "src": "/images/gallery/q35.jpg",
+    "category": "в интерьере",
+    "name": "q35"
+  },
+  {
+    "src": "/images/gallery/q36.jpg",
+    "category": "в интерьере",
+    "name": "q36"
+  },
+  {
+    "src": "/images/gallery/q37.jpg",
+    "category": "в интерьере",
+    "name": "q37"
+  },
+  {
+    "src": "/images/gallery/q38.jpg",
+    "category": "в интерьере",
+    "name": "q38"
+  },
+  {
+    "src": "/images/gallery/x1.jpg",
+    "category": "премиум",
+    "name": "x1"
+  },
+  {
+    "src": "/images/gallery/x2.jpg",
+    "category": "премиум",
+    "name": "x2"
+  },
+  {
+    "src": "/images/gallery/x3.jpg",
+    "category": "премиум",
+    "name": "x3"
+  },
+  {
+    "src": "/images/gallery/x4.jpg",
+    "category": "премиум",
+    "name": "x4"
+  },
+  {
+    "src": "/images/gallery/x5.jpg",
+    "category": "премиум",
+    "name": "x5"
+  },
+  {
+    "src": "/images/gallery/x6.jpg",
+    "category": "премиум",
+    "name": "x6"
+  },
+  {
+    "src": "/images/gallery/x7.jpg",
+    "category": "премиум",
+    "name": "x7"
+  },
+  {
+    "src": "/images/gallery/x8.jpg",
+    "category": "премиум",
+    "name": "x8"
+  },
+  {
+    "src": "/images/gallery/x9.jpg",
+    "category": "премиум",
+    "name": "x9"
+  },
+  {
+    "src": "/images/gallery/x10.jpg",
+    "category": "премиум",
+    "name": "x10"
+  },
+  {
+    "src": "/images/gallery/x11.jpg",
+    "category": "премиум",
+    "name": "x11"
+  },
+  {
+    "src": "/images/gallery/x12.jpg",
+    "category": "премиум",
+    "name": "x12"
+  },
+  {
+    "src": "/images/gallery/x13.jpg",
+    "category": "премиум",
+    "name": "x13"
+  },
+  {
+    "src": "/images/gallery/x14.jpg",
+    "category": "премиум",
+    "name": "x14"
+  },
+  {
+    "src": "/images/gallery/x15.jpg",
+    "category": "премиум",
+    "name": "x15"
+  },
+  {
+    "src": "/images/gallery/x16.jpg",
+    "category": "премиум",
+    "name": "x16"
+  },
+  {
+    "src": "/images/gallery/s1.jpg",
+    "category": "растения",
+    "name": "s1"
+  },
+  {
+    "src": "/images/gallery/s2.jpg",
+    "category": "растения",
+    "name": "s2"
+  },
+  {
+    "src": "/images/gallery/s3.jpg",
+    "category": "растения",
+    "name": "s3"
+  },
+  {
+    "src": "/images/gallery/s4.jpg",
+    "category": "растения",
+    "name": "s4"
+  },
+  {
+    "src": "/images/gallery/s5.jpg",
+    "category": "растения",
+    "name": "s5"
+  },
+  {
+    "src": "/images/gallery/s6.jpg",
+    "category": "растения",
+    "name": "s6"
+  },
+  {
+    "src": "/images/gallery/s7.jpg",
+    "category": "растения",
+    "name": "s7"
+  },
+  {
+    "src": "/images/gallery/s8.jpg",
+    "category": "растения",
+    "name": "s8"
+  },
+  {
+    "src": "/images/gallery/s9.jpg",
+    "category": "растения",
+    "name": "s9"
+  },
+  {
+    "src": "/images/gallery/s10.jpg",
+    "category": "растения",
+    "name": "s10"
+  },
+  {
+    "src": "/images/gallery/s11.jpg",
+    "category": "растения",
+    "name": "s11"
+  },
+  {
+    "src": "/images/gallery/s12.jpg",
+    "category": "растения",
+    "name": "s12"
+  },
+  {
+    "src": "/images/gallery/s13.jpg",
+    "category": "растения",
+    "name": "s13"
+  },
+  {
+    "src": "/images/gallery/s14.jpg",
+    "category": "растения",
+    "name": "s14"
+  },
+  {
+    "src": "/images/gallery/s15.jpg",
+    "category": "растения",
+    "name": "s15"
+  },
+  {
+    "src": "/images/gallery/s16.jpg",
+    "category": "растения",
+    "name": "s16"
+  },
+  {
+    "src": "/images/gallery/e1.jpg",
+    "category": "интерьерная роспись",
+    "name": "e1"
+  },
+  {
+    "src": "/images/gallery/e2.jpg",
+    "category": "интерьерная роспись",
+    "name": "e2"
+  },
+  {
+    "src": "/images/gallery/e3.jpg",
+    "category": "интерьерная роспись",
+    "name": "e3"
+  },
+  {
+    "src": "/images/gallery/d1.jpg",
+    "category": "я",
+    "name": "d1"
+  },
+  {
+    "src": "/images/gallery/d2.jpg",
+    "category": "я",
+    "name": "d2"
+  },
+  {
+    "src": "/images/gallery/d3.jpg",
+    "category": "я",
+    "name": "d3"
+  },
+  {
+    "src": "/images/gallery/d4.jpg",
+    "category": "я",
+    "name": "d4"
+  },
+  {
+    "src": "/images/gallery/d5.jpg",
+    "category": "я",
+    "name": "d5"
+  },
+  {
+    "src": "/images/gallery/d6.jpg",
+    "category": "я",
+    "name": "d6"
+  },
+  {
+    "src": "/images/gallery/d7.jpg",
+    "category": "я",
+    "name": "d7"
+  },
+  {
+    "src": "/images/gallery/d8.jpg",
+    "category": "я",
+    "name": "d8"
+  },
+  {
+    "src": "/images/gallery/d9.jpg",
+    "category": "я",
+    "name": "d9"
+  },
+  {
+    "src": "/images/gallery/d10.jpg",
+    "category": "я",
+    "name": "d10"
+  },
+  {
+    "src": "/images/gallery/d11.jpg",
+    "category": "я",
+    "name": "d11"
+  }
+]
