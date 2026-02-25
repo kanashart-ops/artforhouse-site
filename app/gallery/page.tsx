@@ -1,29 +1,44 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import React from "react";
-import { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
-import { CATEGORIES, type Category, galleryItems } from "@/lib/galleryData";
+import type { GalleryItem } from "@/lib/contentStore";
 
 export default function GalleryPage() {
-  const [selectedCategory, setSelectedCategory] = useState<Category>("Все");
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("Все");
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
   const [visible, setVisible] = useState(false);
   const [fade, setFade] = useState(true);
   const [touchStartX, setTouchStartX] = useState(0);
 
-  const filteredItems = useMemo(
-    () =>
-      selectedCategory === "Все"
-        ? galleryItems
-        : galleryItems.filter((item) => item.category === selectedCategory),
-    [selectedCategory]
-  );
+  useEffect(() => {
+    fetch("/api/admin/gallery")
+      .then((res) => res.json())
+      .then((data) => setGalleryItems(data.items ?? []))
+      .catch(() => setGalleryItems([]));
+  }, []);
 
-  const [loadedImages, setLoadedImages] = useState<boolean[]>(
-    new Array(filteredItems.length).fill(false)
-  );
+  const categories = useMemo(() => {
+    const unique = [
+      ...new Set(
+        galleryItems
+          .map((item) => item.category)
+          .filter(Boolean)
+      ),
+    ];
+    return ["Все", ...unique];
+  }, [galleryItems]);
+
+  const filteredItems = useMemo(() => {
+    if (selectedCategory === "Все") return galleryItems;
+    return galleryItems.filter(
+      (item) => item.category === selectedCategory
+    );
+  }, [galleryItems, selectedCategory]);
+
+  const [loadedImages, setLoadedImages] = useState<boolean[]>([]);
 
   useEffect(() => {
     setLoadedImages(new Array(filteredItems.length).fill(false));
@@ -31,28 +46,37 @@ export default function GalleryPage() {
 
   useEffect(() => {
     if (currentIndex === null) return;
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft") changeImage("prev");
       if (e.key === "ArrowRight") changeImage("next");
       if (e.key === "Escape") closeModal();
     };
+
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [currentIndex, filteredItems]);
 
   const changeImage = (direction: "next" | "prev") => {
-    if (currentIndex === null) return;
+    if (currentIndex === null || filteredItems.length === 0) return;
+
     setFade(false);
+
     setTimeout(() => {
       if (direction === "next") {
         setCurrentIndex(
-          currentIndex === filteredItems.length - 1 ? 0 : currentIndex + 1
+          currentIndex === filteredItems.length - 1
+            ? 0
+            : currentIndex + 1
         );
       } else {
         setCurrentIndex(
-          currentIndex === 0 ? filteredItems.length - 1 : currentIndex - 1
+          currentIndex === 0
+            ? filteredItems.length - 1
+            : currentIndex - 1
         );
       }
+
       setFade(true);
     }, 200);
   };
@@ -95,25 +119,22 @@ export default function GalleryPage() {
         </span>
       </div>
 
-      {/* Фильтры */}
       <div className="flex flex-wrap justify-center gap-3 mb-10">
-        {CATEGORIES.map((cat) => (
+        {categories.map((cat) => (
           <button
             key={cat}
             onClick={() => setSelectedCategory(cat)}
-            className={`px-4 py-2 rounded-full border transition
-              ${
-                selectedCategory === cat
-                  ? "bg-gray-900 text-white border-gray-900"
-                  : "border-gray-300 text-gray-700 hover:bg-gray-100"
-              }`}
+            className={`px-4 py-2 rounded-full border transition ${
+              selectedCategory === cat
+                ? "bg-gray-900 text-white border-gray-900"
+                : "border-gray-300 text-gray-700 hover:bg-gray-100"
+            }`}
           >
             {cat}
           </button>
         ))}
       </div>
 
-      {/* Сетка без подписей */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredItems.map((item, index) => (
           <button
@@ -147,8 +168,7 @@ export default function GalleryPage() {
         ))}
       </div>
 
-      {/* Модалка */}
-      {currentIndex !== null && (
+      {currentIndex !== null && filteredItems[currentIndex] && (
         <div
           className={`fixed inset-0 bg-black/90 flex items-center justify-center z-50 transition-opacity duration-300 ${
             visible ? "opacity-100" : "opacity-0"
@@ -165,7 +185,6 @@ export default function GalleryPage() {
             role="dialog"
             aria-modal="true"
           >
-            {/* крестик */}
             <button
               className="absolute top-4 right-6 text-4xl text-white hover:text-gray-300"
               onClick={closeModal}
@@ -174,7 +193,6 @@ export default function GalleryPage() {
               ×
             </button>
 
-            {/* картинка */}
             <div className="flex justify-center items-center">
               <Image
                 src={filteredItems[currentIndex].src}
@@ -184,12 +202,14 @@ export default function GalleryPage() {
                 className={`rounded transition-all duration-300 ${
                   fade ? "opacity-100" : "opacity-0"
                 }`}
-                style={{ objectFit: "contain", maxHeight: "80vh" }}
+                style={{
+                  objectFit: "contain",
+                  maxHeight: "80vh",
+                }}
                 unoptimized
               />
             </div>
 
-            {/* стрелки */}
             <button
               className="hidden sm:block absolute left-4 top-1/2 -translate-y-1/2 text-white text-5xl font-bold px-4 hover:text-gray-300"
               onClick={(e) => {
@@ -200,6 +220,7 @@ export default function GalleryPage() {
             >
               ‹
             </button>
+
             <button
               className="hidden sm:block absolute right-4 top-1/2 -translate-y-1/2 text-white text-5xl font-bold px-4 hover:text-gray-300"
               onClick={(e) => {

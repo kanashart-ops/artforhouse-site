@@ -4,71 +4,20 @@ import { useState, useEffect } from "react";
 import type React from "react";
 import Image from "next/image";
 import { Send, Instagram, Phone } from "lucide-react";
-
-const shopItems = [
-  {
-    title: "Light",
-    size: "70x100 см, масло, акрил",
-    price: "1000 BYN",
-    description:
-      "Картина выполнена на натуральном холсте на подрамнике. Текстура, глубина и лёгкость мазков передают символ свободы и воздуха. Создаёт ощущение света и пространства в интерьере.",
-    media: [
-      { type: "image", src: "/images/shop/1.jpg" },
-      { type: "image", src: "/images/shop/2.jpg" },
-      { type: "image", src: "/images/shop/3.jpg" },
-      { type: "image", src: "/images/shop/4.jpg" },
-      { type: "image", src: "/images/shop/5.jpg" },
-      { type: "video", src: "/videos/1v.mp4" },
-      { type: "video", src: "/videos/2v.mp4" },
-      { type: "video", src: "/videos/3v.mp4" },
-      { type: "video", src: "/videos/4v.mp4" },
-    ],
-  },
-  {
-    title: "Под зонтом",
-    size: "70x100 см, масло",
-    price: "1950 BYN",
-    description:
-      "Картина написана маслом на натуральном холсте на подрамнике. Тёплые мазки и мягкая текстура создают уютную атмосферу дождливого дня, наполненного нежностью и светом.\n\n🎨 Можно увидеть вживую в кафе «Завтраки», Минск, ул. Зыбицкая 2.",
-    media: [
-      { type: "image", src: "/images/shop/10.jpg" },
-      { type: "image", src: "/images/shop/11.jpg" },
-      { type: "image", src: "/images/shop/12.jpg" },
-      { type: "image", src: "/images/shop/14.jpg" },
-      { type: "image", src: "/images/shop/15.jpg" },
-      { type: "video", src: "/videos/14v.mp4" },
-    ],
-  },
-  {
-    title: "Отражение желания",
-    size: "50x70 см, масло",
-    price: "270 BYN",
-    description:
-      "Современный образ, наполненный иронией и притягательностью. Девушка с сигаретой на фоне мировых брендов — символ эпохи потребления и поиска себя.\nКонтраст мягких мазков и острого взгляда делает работу выразительной и запоминающейся.",
-    media: [
-      { type: "image", src: "/images/shop/17.jpg" },
-      { type: "video", src: "/videos/17v.mp4" },
-    ],
-  },
-  {
-    title: "Двое",
-    size: "50x70 см, акрил, золочение",
-    price: "60 BYN",
-    description:
-      "Картина выполнена акрилом с элементами золочения на натуральном холсте. «Двое» — символ единства и внутреннего равновесия. Работа отражает баланс света и тени, тепла и прохлады — идеально впишется в современный интерьер.",
-    media: [
-      { type: "image", src: "/images/shop/30.jpg" },
-      { type: "video", src: "/videos/30v.mp4" },
-    ],
-  },
-];
+import type { ShopItem } from "@/lib/contentStore";
 
 export default function ShopPage() {
-  const [selectedItem, setSelectedItem] =
-    useState<(typeof shopItems)[0] | null>(null);
+  const [shopItems, setShopItems] = useState<ShopItem[]>([]);
+  const [selectedItem, setSelectedItem] = useState<ShopItem | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showContacts, setShowContacts] = useState(false);
   const [touchStartX, setTouchStartX] = useState(0);
+
+  useEffect(() => {
+    fetch("/api/shop")
+      .then((res) => res.json())
+      .then((data: { items: ShopItem[] }) => setShopItems(data.items));
+  }, []);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -111,7 +60,6 @@ export default function ShopPage() {
         Картины в наличии
       </h1>
 
-      {/* карточки */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {shopItems.map((item, index) => (
           <div
@@ -123,7 +71,7 @@ export default function ShopPage() {
             }}
           >
             <Image
-              src={item.media[0].src}
+              src={item.media[0]?.src || "/images/hero-bg.jpg"}
               alt={item.title}
               width={600}
               height={400}
@@ -134,13 +82,14 @@ export default function ShopPage() {
                 {item.title}
               </h2>
               <p className="text-gray-700 text-sm mb-2">{item.size}</p>
-              <p className="text-lg font-bold text-amber-700">{item.price}</p>
+              <p className="text-lg font-bold text-amber-700">
+                {item.price}
+              </p>
             </div>
           </div>
         ))}
       </div>
 
-      {/* модалка */}
       {selectedItem && (
         <div
           className="fixed inset-0 bg-black/90 flex items-center justify-center z-50"
@@ -157,13 +106,12 @@ export default function ShopPage() {
               ×
             </button>
 
-            {/* медиа */}
             <div
               className="relative flex-1 bg-black flex items-center justify-center overflow-hidden"
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
             >
-              {selectedItem.media[currentIndex].type === "image" ? (
+              {selectedItem.media[currentIndex]?.type === "image" ? (
                 <Image
                   src={selectedItem.media[currentIndex].src}
                   alt={selectedItem.title}
@@ -174,18 +122,20 @@ export default function ShopPage() {
                 />
               ) : (
                 <video
-                  src={selectedItem.media[currentIndex].src}
+                  src={selectedItem.media[currentIndex]?.src}
                   controls
                   playsInline
                   className="object-contain max-h-[80vh] w-auto h-auto"
                 />
               )}
+
               <button
                 className="hidden sm:block absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 text-white text-3xl p-2 rounded-full hover:bg-black"
                 onClick={prevMedia}
               >
                 ‹
               </button>
+
               <button
                 className="hidden sm:block absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 text-white text-3xl p-2 rounded-full hover:bg-black"
                 onClick={nextMedia}
@@ -194,7 +144,6 @@ export default function ShopPage() {
               </button>
             </div>
 
-            {/* описание */}
             <div className="w-full sm:w-[380px] p-5 sm:p-6 flex flex-col border-t sm:border-l border-gray-200 bg-white max-h-[80vh] overflow-y-auto">
               <h2 className="text-2xl font-bold mb-3 text-gray-900 text-center sm:text-left">
                 {selectedItem.title}
@@ -218,10 +167,11 @@ export default function ShopPage() {
               </button>
 
               {showContacts && (
-                <div className="mt-6 bg-gray-100 border rounded-lg p-4 text-center animate-slideIn">
+                <div className="mt-6 bg-gray-100 border rounded-lg p-4 text-center">
                   <p className="mb-4 font-medium text-gray-800 text-base">
                     Свяжитесь со мной любым удобным способом:
                   </p>
+
                   <div className="flex justify-center gap-6 text-gray-700 text-[30px]">
                     <a
                       href="https://t.me/AnnPab"
@@ -229,29 +179,23 @@ export default function ShopPage() {
                       rel="noopener noreferrer"
                       title="Telegram"
                     >
-                      <Send
-                        size={34}
-                        className="hover:text-sky-500 transition"
-                      />
+                      <Send size={34} className="hover:text-sky-500 transition" />
                     </a>
+
                     <a
                       href="https://www.instagram.com/art_for_house.by/"
                       target="_blank"
                       rel="noopener noreferrer"
                       title="Instagram"
                     >
-                      <Instagram
-                        size={34}
-                        className="hover:text-pink-500 transition"
-                      />
+                      <Instagram size={34} className="hover:text-pink-500 transition" />
                     </a>
+
                     <a href="tel:+375293517220" title="Позвонить">
-                      <Phone
-                        size={34}
-                        className="hover:text-green-600 transition"
-                      />
+                      <Phone size={34} className="hover:text-green-600 transition" />
                     </a>
                   </div>
+
                   <p className="mt-4 text-sm text-gray-600 select-all">
                     ☎ +375 (29) 351-72-20
                   </p>
@@ -261,40 +205,6 @@ export default function ShopPage() {
           </div>
         </div>
       )}
-
-      {/* уведомление о справочном характере цен */}
-      <div className="mt-16 text-center text-sm text-gray-600 max-w-3xl mx-auto leading-relaxed px-4 border-t border-gray-200 pt-6">
-        <p>
-          ⚠️ Сайт{" "}
-          <span className="font-semibold text-gray-800">Art for House</span> не
-          является интернет-магазином. Вся представленная информация, включая
-          стоимость картин, носит справочный характер и не является публичной
-          офертой.
-        </p>
-      </div>
-
-      <style jsx global>{`
-        @keyframes slideIn {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-slideIn {
-          animation: slideIn 0.4s ease-out;
-        }
-
-        @media (max-width: 640px) {
-          video,
-          img {
-            max-height: 70vh !important;
-          }
-        }
-      `}</style>
     </main>
   );
 }

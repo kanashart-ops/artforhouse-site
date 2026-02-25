@@ -1,6 +1,5 @@
 // app/api/mobile-gallery/route.ts
 import { NextResponse } from "next/server";
-import { galleryItems } from "@/lib/galleryData";
 import { getGalleryItems } from "@/lib/contentStore";
 
 type MobileArtItem = {
@@ -11,8 +10,7 @@ type MobileArtItem = {
 };
 
 // Всегда отдаём правильный домен artforhouse.by
-function absoluteUrl(path: string) {
-  const base = "https://artforhouse.by"; 
+function absoluteUrl(path: string) { 
   const base = "https://artforhouse.by";
   return `${base}${path}`;
 }
