@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Instagram, Menu, X } from "lucide-react";
+import GooglePlayIcon from "@/components/GooglePlayIcon";
 import { useFocusTrap } from "@/lib/useFocusTrap";
 
 const navLinks = [
@@ -70,6 +71,15 @@ export default function Header() {
               >
                 <path d="M33.63 14.68c-1.95-.02-3.86-.63-5.44-1.73v13.42c0 5.47-4.43 9.9-9.9 9.9S8.4 31.84 8.4 26.37s4.43-9.9 9.9-9.9c.65 0 1.29.06 1.9.18v4.7c-.61-.18-1.24-.27-1.9-.27a5.2 5.2 0 0 0 0 10.4 5.2 5.2 0 0 0 5.2-5.2V4.5h4.69c.35 4.61 4.03 8.23 8.65 8.53v4.7z" />
               </svg>
+            </Link>
+
+            <Link
+              href="https://play.google.com/store/apps/details?id=com.art4house.tryon&hl=ru"
+              target="_blank"
+              aria-label="Приложение Art4House в Google Play"
+              className="text-gray-700 transition hover:text-emerald-600"
+            >
+              <GooglePlayIcon className="h-[22px] w-[22px]" />
             </Link>
           </div>
         </div>

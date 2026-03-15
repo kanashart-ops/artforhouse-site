@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import ReactCountryFlag from "react-country-flag";
+import GooglePlayIcon from "@/components/GooglePlayIcon";
 import { useFocusTrap } from "@/lib/useFocusTrap";
 
 type Article = {
@@ -58,10 +59,22 @@ const serviceCards = [
 ];
 
 const processSteps = [
-  "Вы присылаете фото помещения, размеры стены или идею будущей работы.",
-  "Я предлагаю направление: сюжет, технику, формат и палитру под задачу.",
-  "Согласовываем сроки, ключевые этапы и стартуем работу.",
-  "Показываю процесс и передаю готовую картину с рекомендациями по размещению.",
+  {
+    title: "Бриф и вводные",
+    text: "Вы присылаете фото помещения, размеры стены, референсы или просто идею. Этого уже достаточно, чтобы понять направление.",
+  },
+  {
+    title: "Предложение решения",
+    text: "Я собираю идею под задачу: технику, формат, палитру и характер работы, чтобы она вписалась в пространство.",
+  },
+  {
+    title: "Согласование и работа",
+    text: "Уточняем сроки, этапы и ключевые детали. В процессе показываю промежуточные состояния, если это важно для проекта.",
+  },
+  {
+    title: "Финал и доставка",
+    text: "После финального согласования работа передаётся лично или отправляется, а я подсказываю, как лучше её разместить.",
+  },
 ];
 
 const faqs = [
@@ -102,9 +115,7 @@ export default function HomePageClient({ articles }: HomePageClientProps) {
   });
 
   useEffect(() => {
-    if (modalIndex === null) {
-      return;
-    }
+    if (modalIndex === null) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "ArrowRight") {
@@ -242,18 +253,34 @@ export default function HomePageClient({ articles }: HomePageClientProps) {
               </div>
             </div>
 
-            <div className="rounded-[2rem] bg-stone-950 p-8 text-white">
-              <h3 className="text-2xl font-semibold">Как проходит работа</h3>
-              <ol className="mt-6 space-y-4">
+            <div className="rounded-[2rem] border border-amber-200 bg-gradient-to-br from-amber-50 via-white to-stone-100 p-8">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-[0.22em] text-amber-700">
+                    Процесс
+                  </p>
+                  <h3 className="mt-2 text-2xl font-semibold text-stone-950">
+                    Как проходит работа
+                  </h3>
+                </div>
+                <div className="rounded-full bg-amber-100 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-amber-800">
+                  По этапам
+                </div>
+              </div>
+
+              <ol className="mt-6 grid gap-4">
                 {processSteps.map((step, index) => (
                   <li
-                    key={step}
-                    className="grid grid-cols-[2.5rem_1fr] items-start gap-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-4"
+                    key={step.title}
+                    className="grid grid-cols-[3rem_1fr] items-start gap-4 rounded-2xl border border-stone-200 bg-white/90 px-4 py-4 shadow-sm"
                   >
-                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-sm font-semibold">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-stone-950 text-sm font-semibold text-white shadow-sm">
                       {index + 1}
                     </span>
-                    <span className="text-sm leading-7 text-stone-100">{step}</span>
+                    <div className="pt-1">
+                      <p className="font-semibold text-stone-950">{step.title}</p>
+                      <p className="mt-2 text-sm leading-7 text-stone-700">{step.text}</p>
+                    </div>
                   </li>
                 ))}
               </ol>
@@ -299,12 +326,85 @@ export default function HomePageClient({ articles }: HomePageClientProps) {
 
       <section className="bg-white py-16">
         <div className="mx-auto max-w-6xl px-6">
+          <div className="grid gap-6 overflow-hidden rounded-[2rem] border border-stone-200 bg-[linear-gradient(135deg,#0f172a_0%,#1f2937_45%,#fafaf9_45%,#fff7ed_100%)] p-8 shadow-sm md:grid-cols-[1fr_0.9fr] md:items-center">
+            <div className="text-white">
+              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-300">
+                Приложение
+              </p>
+              <h2 className="mt-3 max-w-2xl text-3xl font-bold md:text-4xl">
+                Примерьте картину в интерьере через Android-приложение
+              </h2>
+              <p className="mt-4 max-w-2xl text-sm leading-7 text-stone-200 md:text-base">
+                В приложении можно открыть примерочную и посмотреть, как работа
+                будет смотреться прямо на вашей стене. Это удобно, если нужно
+                быстрее понять масштаб, композицию и характер картины в реальном пространстве.
+              </p>
+
+              <div className="mt-8 flex flex-wrap gap-3">
+                <span className="rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm text-stone-100">
+                  Android
+                </span>
+                <span className="rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm text-stone-100">
+                  Виртуальная примерка
+                </span>
+                <span className="rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm text-stone-100">
+                  Быстрый выбор масштаба
+                </span>
+              </div>
+
+              <div className="mt-8 flex flex-wrap gap-4">
+                <Link
+                  href="https://play.google.com/store/apps/details?id=com.art4house.tryon&hl=ru"
+                  target="_blank"
+                  className="inline-flex items-center gap-3 rounded-full bg-white px-6 py-3 text-sm font-semibold text-stone-950 transition hover:bg-stone-200"
+                >
+                  <GooglePlayIcon className="h-5 w-5" />
+                  Открыть в Google Play
+                </Link>
+                <Link
+                  href="/gallery"
+                  className="rounded-full border border-white/20 px-6 py-3 text-sm font-semibold text-white transition hover:border-white"
+                >
+                  Сначала посмотреть работы
+                </Link>
+              </div>
+            </div>
+
+            <div className="rounded-[1.75rem] border border-white/70 bg-white/90 p-6 shadow-xl backdrop-blur">
+              <div className="rounded-[1.5rem] bg-stone-950 p-5 text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-semibold uppercase tracking-[0.2em] text-amber-300">
+                      Art4House TryOn
+                    </p>
+                    <p className="mt-2 text-2xl font-bold">Картина на вашей стене за пару минут</p>
+                  </div>
+                  <div className="rounded-2xl bg-white/10 p-3">
+                    <GooglePlayIcon className="h-7 w-7" />
+                  </div>
+                </div>
+
+                <div className="mt-6 space-y-3 text-sm leading-7 text-stone-200">
+                  <p>1. Открываете приложение и загружаете фото комнаты.</p>
+                  <p>2. Выбираете картину и примеряете её в пространстве.</p>
+                  <p>3. Сравниваете варианты до обращения за заказом или покупкой.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white py-16">
+        <div className="mx-auto max-w-6xl px-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">
                 Подборка работ
               </p>
-              <h2 className="mt-2 text-3xl font-bold md:text-4xl">Примеры, которые уже работают в интерьере</h2>
+              <h2 className="mt-2 text-3xl font-bold md:text-4xl">
+                Примеры, которые уже работают в интерьере
+              </h2>
             </div>
             <Link
               href="/gallery"

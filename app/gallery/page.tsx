@@ -219,7 +219,7 @@ export default function GalleryPage() {
             onTouchEnd={handleTouchEnd}
             role="dialog"
             aria-modal="true"
-            aria-labelledby="gallery-dialog-title"
+            aria-label="Просмотр картины"
           >
             <button
               type="button"
@@ -243,10 +243,6 @@ export default function GalleryPage() {
                 unoptimized
               />
             </div>
-
-            <h2 id="gallery-dialog-title" className="mt-4 text-xl font-semibold text-white">
-              {filteredItems[currentIndex].name}
-            </h2>
 
             <button
               type="button"

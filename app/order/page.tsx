@@ -177,20 +177,20 @@ export default function OrderPage() {
             type="text"
             name="name"
             placeholder="Ваше имя"
-            className="border border-gray-300 p-3 rounded focus:border-amber-500 outline-none"
+            className="rounded border border-gray-300 bg-white p-3 text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-amber-500"
             required
           />
           <input
             type="text"
             name="contact"
             placeholder="Телефон или @Telegram"
-            className="border border-gray-300 p-3 rounded focus:border-amber-500 outline-none"
+            className="rounded border border-gray-300 bg-white p-3 text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-amber-500"
             required
           />
           <textarea
             name="comment"
             placeholder="Комментарий"
-            className="border border-gray-300 p-3 rounded focus:border-amber-500 outline-none"
+            className="rounded border border-gray-300 bg-white p-3 text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-amber-500"
             rows={4}
           ></textarea>
           <button
