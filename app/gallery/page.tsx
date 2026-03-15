@@ -1,9 +1,14 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Image from "next/image";
 import type { GalleryItem } from "@/lib/contentStore";
+import { useFocusTrap } from "@/lib/useFocusTrap";
 
 export default function GalleryPage() {
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
@@ -12,68 +17,61 @@ export default function GalleryPage() {
   const [visible, setVisible] = useState(false);
   const [fade, setFade] = useState(true);
   const [touchStartX, setTouchStartX] = useState(0);
+  const [loadedImages, setLoadedImages] = useState<boolean[]>([]);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
-    fetch("/api/admin/gallery")
+    fetch("/api/gallery")
       .then((res) => res.json())
       .then((data) => setGalleryItems(data.items ?? []))
       .catch(() => setGalleryItems([]));
   }, []);
 
   const categories = useMemo(() => {
-    const unique = [
-      ...new Set(
-        galleryItems
-          .map((item) => item.category)
-          .filter(Boolean)
-      ),
-    ];
+    const unique = [...new Set(galleryItems.map((item) => item.category).filter(Boolean))];
     return ["Все", ...unique];
   }, [galleryItems]);
 
   const filteredItems = useMemo(() => {
-    if (selectedCategory === "Все") return galleryItems;
-    return galleryItems.filter(
-      (item) => item.category === selectedCategory
-    );
-  }, [galleryItems, selectedCategory]);
+    if (selectedCategory === "Все") {
+      return galleryItems;
+    }
 
-  const [loadedImages, setLoadedImages] = useState<boolean[]>([]);
+    return galleryItems.filter((item) => item.category === selectedCategory);
+  }, [galleryItems, selectedCategory]);
 
   useEffect(() => {
     setLoadedImages(new Array(filteredItems.length).fill(false));
   }, [filteredItems.length]);
 
-  useEffect(() => {
-    if (currentIndex === null) return;
+  const closeModal = () => {
+    setVisible(false);
+    setTimeout(() => setCurrentIndex(null), 300);
+  };
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") changeImage("prev");
-      if (e.key === "ArrowRight") changeImage("next");
-      if (e.key === "Escape") closeModal();
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentIndex, filteredItems]);
+  useFocusTrap({
+    active: currentIndex !== null,
+    containerRef: modalRef,
+    onEscape: closeModal,
+    returnFocusRef: triggerRef,
+  });
 
   const changeImage = (direction: "next" | "prev") => {
-    if (currentIndex === null || filteredItems.length === 0) return;
+    if (currentIndex === null || filteredItems.length === 0) {
+      return;
+    }
 
     setFade(false);
 
     setTimeout(() => {
       if (direction === "next") {
         setCurrentIndex(
-          currentIndex === filteredItems.length - 1
-            ? 0
-            : currentIndex + 1
+          currentIndex === filteredItems.length - 1 ? 0 : currentIndex + 1
         );
       } else {
         setCurrentIndex(
-          currentIndex === 0
-            ? filteredItems.length - 1
-            : currentIndex - 1
+          currentIndex === 0 ? filteredItems.length - 1 : currentIndex - 1
         );
       }
 
@@ -81,52 +79,82 @@ export default function GalleryPage() {
     }, 200);
   };
 
-  const openModal = (index: number) => {
-    setCurrentIndex(index);
-    setTimeout(() => setVisible(true), 10);
-  };
+  useEffect(() => {
+    if (currentIndex === null) {
+      return;
+    }
 
-  const closeModal = () => {
-    setVisible(false);
-    setTimeout(() => setCurrentIndex(null), 300);
-  };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "ArrowLeft") {
+        setFade(false);
+        setTimeout(() => {
+          setCurrentIndex((prev) => {
+            if (prev === null || filteredItems.length === 0) {
+              return prev;
+            }
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStartX(e.touches[0].clientX);
-  };
+            return prev === 0 ? filteredItems.length - 1 : prev - 1;
+          });
+          setFade(true);
+        }, 200);
+      }
 
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (currentIndex === null) return;
-    const delta = e.changedTouches[0].clientX - touchStartX;
-    if (delta > 50) changeImage("prev");
-    if (delta < -50) changeImage("next");
+      if (event.key === "ArrowRight") {
+        setFade(false);
+        setTimeout(() => {
+          setCurrentIndex((prev) => {
+            if (prev === null || filteredItems.length === 0) {
+              return prev;
+            }
+
+            return prev === filteredItems.length - 1 ? 0 : prev + 1;
+          });
+          setFade(true);
+        }, 200);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [currentIndex, filteredItems]);
+
+  const handleTouchEnd = (event: React.TouchEvent) => {
+    if (currentIndex === null) {
+      return;
+    }
+
+    const delta = event.changedTouches[0].clientX - touchStartX;
+    if (delta > 50) {
+      changeImage("prev");
+    }
+    if (delta < -50) {
+      changeImage("next");
+    }
   };
 
   return (
-    <main className="p-10 max-w-7xl mx-auto">
-      <h1 className="text-3xl font-bold mb-3 text-center text-gray-900">
-        Галерея
-      </h1>
+    <main className="mx-auto max-w-7xl p-10">
+      <h1 className="mb-3 text-center text-3xl font-bold text-gray-900">Галерея</h1>
 
       <div className="mb-8 text-center text-gray-700">
-        <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 border border-gray-200">
+        <span className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-100 px-4 py-2">
           <span className="font-medium">Категория:</span>
-          <span className="font-semibold text-gray-900">
-            {selectedCategory}
-          </span>
+          <span className="font-semibold text-gray-900">{selectedCategory}</span>
           <span className="opacity-60">•</span>
           <span>Найдено: {filteredItems.length}</span>
         </span>
       </div>
 
-      <div className="flex flex-wrap justify-center gap-3 mb-10">
+      <div className="mb-10 flex flex-wrap justify-center gap-3">
         {categories.map((cat) => (
           <button
             key={cat}
+            type="button"
             onClick={() => setSelectedCategory(cat)}
-            className={`px-4 py-2 rounded-full border transition ${
+            aria-pressed={selectedCategory === cat}
+            className={`rounded-full border px-4 py-2 transition ${
               selectedCategory === cat
-                ? "bg-gray-900 text-white border-gray-900"
+                ? "border-gray-900 bg-gray-900 text-white"
                 : "border-gray-300 text-gray-700 hover:bg-gray-100"
             }`}
           >
@@ -135,16 +163,22 @@ export default function GalleryPage() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
         {filteredItems.map((item, index) => (
           <button
             key={`${item.src}-${index}`}
-            className="cursor-pointer group overflow-hidden rounded-lg shadow hover:shadow-lg transition"
-            onClick={() => openModal(index)}
+            type="button"
+            className="group overflow-hidden rounded-lg shadow transition hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+            onClick={(event) => {
+              triggerRef.current = event.currentTarget;
+              setCurrentIndex(index);
+              setTimeout(() => setVisible(true), 10);
+            }}
             aria-label={`Открыть ${item.name}`}
+            aria-haspopup="dialog"
           >
             <div
-              className={`relative w-full h-64 bg-gray-100 transition-opacity duration-700 ${
+              className={`relative h-64 w-full bg-gray-100 transition-opacity duration-700 ${
                 loadedImages[index] ? "opacity-100" : "opacity-0"
               }`}
             >
@@ -153,12 +187,12 @@ export default function GalleryPage() {
                 alt={`Картина ${item.name}`}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1280px) 33vw, 25vw"
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
                 onLoad={() => {
                   setLoadedImages((prev) => {
-                    const arr = [...prev];
-                    arr[index] = true;
-                    return arr;
+                    const next = [...prev];
+                    next[index] = true;
+                    return next;
                   });
                 }}
                 unoptimized
@@ -170,30 +204,33 @@ export default function GalleryPage() {
 
       {currentIndex !== null && filteredItems[currentIndex] && (
         <div
-          className={`fixed inset-0 bg-black/90 flex items-center justify-center z-50 transition-opacity duration-300 ${
+          className={`fixed inset-0 z-50 flex items-center justify-center bg-black/90 transition-opacity duration-300 ${
             visible ? "opacity-100" : "opacity-0"
           }`}
           onClick={closeModal}
         >
           <div
-            className={`relative flex flex-col items-center max-w-6xl w-full p-4 transition-transform duration-300 ${
+            ref={modalRef}
+            className={`relative flex w-full max-w-6xl flex-col items-center p-4 transition-transform duration-300 ${
               visible ? "scale-100" : "scale-95"
             }`}
-            onClick={(e) => e.stopPropagation()}
-            onTouchStart={handleTouchStart}
+            onClick={(event) => event.stopPropagation()}
+            onTouchStart={(event) => setTouchStartX(event.touches[0].clientX)}
             onTouchEnd={handleTouchEnd}
             role="dialog"
             aria-modal="true"
+            aria-labelledby="gallery-dialog-title"
           >
             <button
-              className="absolute top-4 right-6 text-4xl text-white hover:text-gray-300"
+              type="button"
+              className="absolute right-6 top-4 text-4xl text-white transition hover:text-gray-300"
               onClick={closeModal}
               aria-label="Закрыть"
             >
               ×
             </button>
 
-            <div className="flex justify-center items-center">
+            <div className="flex items-center justify-center">
               <Image
                 src={filteredItems[currentIndex].src}
                 alt={`Картина ${filteredItems[currentIndex].name}`}
@@ -202,18 +239,20 @@ export default function GalleryPage() {
                 className={`rounded transition-all duration-300 ${
                   fade ? "opacity-100" : "opacity-0"
                 }`}
-                style={{
-                  objectFit: "contain",
-                  maxHeight: "80vh",
-                }}
+                style={{ objectFit: "contain", maxHeight: "80vh" }}
                 unoptimized
               />
             </div>
 
+            <h2 id="gallery-dialog-title" className="mt-4 text-xl font-semibold text-white">
+              {filteredItems[currentIndex].name}
+            </h2>
+
             <button
-              className="hidden sm:block absolute left-4 top-1/2 -translate-y-1/2 text-white text-5xl font-bold px-4 hover:text-gray-300"
-              onClick={(e) => {
-                e.stopPropagation();
+              type="button"
+              className="absolute left-4 top-1/2 hidden -translate-y-1/2 px-4 text-5xl font-bold text-white transition hover:text-gray-300 sm:block"
+              onClick={(event) => {
+                event.stopPropagation();
                 changeImage("prev");
               }}
               aria-label="Предыдущее изображение"
@@ -222,9 +261,10 @@ export default function GalleryPage() {
             </button>
 
             <button
-              className="hidden sm:block absolute right-4 top-1/2 -translate-y-1/2 text-white text-5xl font-bold px-4 hover:text-gray-300"
-              onClick={(e) => {
-                e.stopPropagation();
+              type="button"
+              className="absolute right-4 top-1/2 hidden -translate-y-1/2 px-4 text-5xl font-bold text-white transition hover:text-gray-300 sm:block"
+              onClick={(event) => {
+                event.stopPropagation();
                 changeImage("next");
               }}
               aria-label="Следующее изображение"

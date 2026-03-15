@@ -1,41 +1,65 @@
 "use client";
-import { useState } from "react";
+
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Menu, X, Instagram } from "lucide-react"; // оставляем lucide для Instagram
+import { usePathname } from "next/navigation";
+import { Instagram, Menu, X } from "lucide-react";
+import { useFocusTrap } from "@/lib/useFocusTrap";
+
+const navLinks = [
+  { href: "/", label: "Главная" },
+  { href: "/gallery", label: "Галерея" },
+  { href: "/shop", label: "В наличии" },
+  { href: "/order", label: "Заказ" },
+  { href: "/contacts", label: "Контакты" },
+  { href: "/oil-paintings", label: "Масло" },
+  { href: "/acrylic-paintings", label: "Акрил" },
+  { href: "/interior-paintings", label: "Интерьер" },
+];
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const menuDialogRef = useRef<HTMLDivElement>(null);
+
+  useFocusTrap({
+    active: isOpen,
+    containerRef: menuDialogRef,
+    onEscape: () => setIsOpen(false),
+    returnFocusRef: menuButtonRef,
+  });
+
+  useEffect(() => {
+    setIsOpen(false);
+  }, [pathname]);
 
   return (
-    <header className="w-full bg-white shadow-md sticky top-0 z-50">
-      <div className="max-w-6xl mx-auto flex items-center justify-between p-4">
-        {/* Лого + иконки справа */}
+    <header className="sticky top-0 z-50 w-full bg-white shadow-md">
+      <div className="mx-auto flex max-w-6xl items-center justify-between p-4">
         <div className="flex items-center gap-3">
           <Link
             href="/"
-            className="text-2xl font-bold text-gray-900 hover:text-amber-600 transition"
+            className="text-2xl font-bold text-gray-900 transition hover:text-amber-600"
           >
             Art for House
           </Link>
 
-          {/* блок иконок справа от текста */}
-          <div className="flex items-center gap-3 ml-2">
-            {/* Instagram */}
+          <div className="ml-2 flex items-center gap-3">
             <Link
               href="https://www.instagram.com/art_for_house.by"
               target="_blank"
               aria-label="Instagram Art for House"
-              className="text-gray-700 hover:text-pink-600 transition transform hover:scale-110"
+              className="text-gray-700 transition hover:text-pink-600"
             >
               <Instagram size={22} />
             </Link>
 
-            {/* TikTok (оригинальный SVG) */}
             <Link
               href="https://www.tiktok.com/@artforhouse"
               target="_blank"
               aria-label="TikTok Art for House"
-              className="text-gray-700 hover:text-black transition transform hover:scale-110"
+              className="text-gray-700 transition hover:text-black"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -50,40 +74,65 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Десктоп-меню (без изменений) */}
-        <nav className="hidden md:flex gap-6 text-gray-700 font-medium">
-          <Link href="/">Главная</Link>
-          <Link href="/gallery">Галерея</Link>
-          <Link href="/shop">В наличии</Link>
-          <Link href="/order">Заказ</Link>
-          <Link href="/contacts">Контакты</Link>
-          <Link href="/oil-paintings">Масло</Link>
-          <Link href="/acrylic-paintings">Акрил</Link>
-          <Link href="/interior-paintings">Интерьер</Link>
+        <nav className="hidden gap-6 text-gray-700 md:flex">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              aria-current={pathname === link.href ? "page" : undefined}
+              className={`font-medium transition hover:text-amber-600 ${
+                pathname === link.href ? "text-amber-700" : ""
+              }`}
+            >
+              {link.label}
+            </Link>
+          ))}
         </nav>
 
-        {/* Кнопка-бургер (только мобилки) */}
         <button
-          className="md:hidden text-gray-700"
-          onClick={() => setIsOpen(!isOpen)}
-          aria-label="Открыть меню"
+          ref={menuButtonRef}
+          type="button"
+          className="text-gray-700 md:hidden"
+          onClick={() => setIsOpen((current) => !current)}
+          aria-label={isOpen ? "Закрыть меню" : "Открыть меню"}
+          aria-expanded={isOpen}
+          aria-controls="mobile-navigation-dialog"
+          aria-haspopup="dialog"
         >
           {isOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
       </div>
 
-      {/* Мобильное меню */}
       {isOpen && (
-        <nav className="md:hidden bg-white shadow-md flex flex-col gap-4 px-6 py-6 text-gray-700 font-medium">
-          <Link href="/" onClick={() => setIsOpen(false)}>Главная</Link>
-          <Link href="/gallery" onClick={() => setIsOpen(false)}>Галерея</Link>
-          <Link href="/shop" onClick={() => setIsOpen(false)}>В наличии</Link>
-          <Link href="/order" onClick={() => setIsOpen(false)}>Заказ</Link>
-          <Link href="/contacts" onClick={() => setIsOpen(false)}>Контакты</Link>
-          <Link href="/oil-paintings" onClick={() => setIsOpen(false)}>Масло</Link>
-          <Link href="/acrylic-paintings" onClick={() => setIsOpen(false)}>Акрил</Link>
-          <Link href="/interior-paintings" onClick={() => setIsOpen(false)}>Интерьер</Link>
-        </nav>
+        <div
+          className="fixed inset-0 z-40 bg-black/30 px-4 pt-20 md:hidden"
+          onClick={() => setIsOpen(false)}
+        >
+          <div
+            id="mobile-navigation-dialog"
+            ref={menuDialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Мобильное меню"
+            className="mx-auto max-w-6xl rounded-3xl bg-white p-6 shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <nav className="flex flex-col gap-3 text-gray-700">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  aria-current={pathname === link.href ? "page" : undefined}
+                  className={`rounded-2xl px-4 py-3 font-medium transition hover:bg-amber-50 hover:text-amber-700 ${
+                    pathname === link.href ? "bg-amber-50 text-amber-700" : ""
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+        </div>
       )}
     </header>
   );

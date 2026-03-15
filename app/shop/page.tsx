@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import type React from "react";
 import Image from "next/image";
-import { Send, Instagram, Phone } from "lucide-react";
+import Link from "next/link";
+import { Instagram, Phone, Send } from "lucide-react";
 import type { ShopItem } from "@/lib/contentStore";
+import { useFocusTrap } from "@/lib/useFocusTrap";
 
 export default function ShopPage() {
   const [shopItems, setShopItems] = useState<ShopItem[]>([]);
@@ -12,174 +14,244 @@ export default function ShopPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showContacts, setShowContacts] = useState(false);
   const [touchStartX, setTouchStartX] = useState(0);
-
-  useEffect(() => {
-    fetch("/api/shop")
-      .then((res) => res.json())
-      .then((data: { items: ShopItem[] }) => setShopItems(data.items));
-  }, []);
-
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (!selectedItem) return;
-      if (e.key === "ArrowRight") nextMedia();
-      if (e.key === "ArrowLeft") prevMedia();
-      if (e.key === "Escape") closeModal();
-    };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  });
-
-  const nextMedia = () =>
-    setCurrentIndex((p) => (p + 1) % (selectedItem?.media.length ?? 1));
-
-  const prevMedia = () =>
-    setCurrentIndex((p) =>
-      (p - 1 + (selectedItem?.media.length ?? 1)) %
-      (selectedItem?.media.length ?? 1)
-    );
+  const modalRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
 
   const closeModal = () => {
     setSelectedItem(null);
     setShowContacts(false);
   };
 
-  const handleTouchStart = (e: React.TouchEvent) =>
-    setTouchStartX(e.touches[0].clientX);
+  useEffect(() => {
+    fetch("/api/shop")
+      .then((res) => res.json())
+      .then((data: { items: ShopItem[] }) => setShopItems(data.items ?? []));
+  }, []);
 
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (!selectedItem) return;
-    const delta = e.changedTouches[0].clientX - touchStartX;
+  useFocusTrap({
+    active: selectedItem !== null,
+    containerRef: modalRef,
+    onEscape: closeModal,
+    returnFocusRef: triggerRef,
+  });
+
+  const nextMedia = () => {
+    setCurrentIndex((prev) => (prev + 1) % (selectedItem?.media.length ?? 1));
+  };
+
+  const prevMedia = () => {
+    setCurrentIndex((prev) =>
+      (prev - 1 + (selectedItem?.media.length ?? 1)) %
+      (selectedItem?.media.length ?? 1)
+    );
+  };
+
+  useEffect(() => {
+    const handleKey = (event: KeyboardEvent) => {
+      if (!selectedItem) {
+        return;
+      }
+      if (event.key === "ArrowRight") {
+        setCurrentIndex((prev) => (prev + 1) % (selectedItem.media.length || 1));
+      }
+      if (event.key === "ArrowLeft") {
+        setCurrentIndex((prev) =>
+          (prev - 1 + (selectedItem.media.length || 1)) %
+          (selectedItem.media.length || 1)
+        );
+      }
+      if (event.key === "Escape") closeModal();
+    };
+
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [selectedItem]);
+
+  const handleTouchEnd = (event: React.TouchEvent) => {
+    if (!selectedItem) {
+      return;
+    }
+
+    const delta = event.changedTouches[0].clientX - touchStartX;
     if (delta > 50) prevMedia();
     if (delta < -50) nextMedia();
   };
 
   return (
-    <main className="p-6 md:p-10 max-w-6xl mx-auto">
-      <h1 className="text-4xl font-bold text-center mb-10 text-gray-900">
+    <main className="mx-auto max-w-6xl p-6 md:p-10">
+      <h1 className="mb-10 text-center text-4xl font-bold text-gray-900">
         Картины в наличии
       </h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {shopItems.map((item, index) => (
-          <div
-            key={index}
-            className="cursor-pointer border border-gray-200 rounded-lg shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all bg-white"
-            onClick={() => {
-              setSelectedItem(item);
-              setCurrentIndex(0);
-            }}
-          >
-            <Image
-              src={item.media[0]?.src || "/images/hero-bg.jpg"}
-              alt={item.title}
-              width={600}
-              height={400}
-              className="w-full h-80 object-contain bg-gray-50 rounded-t-lg"
-            />
-            <div className="p-5">
-              <h2 className="text-xl font-bold text-gray-900 mb-1">
-                {item.title}
-              </h2>
-              <p className="text-gray-700 text-sm mb-2">{item.size}</p>
-              <p className="text-lg font-bold text-amber-700">
-                {item.price}
-              </p>
-            </div>
+      {shopItems.length === 0 ? (
+        <div className="mx-auto max-w-3xl rounded-[2rem] border border-gray-200 bg-white p-8 text-center shadow-sm">
+          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">
+            Раздел обновляется
+          </p>
+          <h2 className="mt-3 text-3xl font-bold text-gray-900">
+            Готовых работ сейчас нет в витрине
+          </h2>
+          <p className="mt-4 text-base leading-7 text-gray-600">
+            Можно оставить заявку на индивидуальную картину под интерьер, размер стены или готовый подарок.
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
+            <Link
+              href="/order"
+              className="rounded-full bg-gray-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-gray-800"
+            >
+              Заказать картину
+            </Link>
+            <Link
+              href="/gallery"
+              className="rounded-full border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-900 transition hover:border-gray-900"
+            >
+              Посмотреть галерею
+            </Link>
           </div>
-        ))}
-      </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {shopItems.map((item, index) => (
+            <button
+              key={`${item.title}-${index}`}
+              type="button"
+              className="overflow-hidden rounded-lg border border-gray-200 bg-white text-left shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+              onClick={(event) => {
+                triggerRef.current = event.currentTarget;
+                setSelectedItem(item);
+                setCurrentIndex(0);
+              }}
+              aria-label={`Открыть карточку товара ${item.title}`}
+              aria-haspopup="dialog"
+            >
+              <Image
+                src={item.media[0]?.src || "/images/hero-bg.jpg"}
+                alt={item.title}
+                width={600}
+                height={400}
+                className="h-80 w-full rounded-t-lg bg-gray-50 object-contain"
+              />
+              <div className="p-5">
+                <h2 className="mb-1 text-xl font-bold text-gray-900">{item.title}</h2>
+                <p className="mb-2 text-sm text-gray-700">{item.size}</p>
+                <p className="text-lg font-bold text-amber-700">{item.price}</p>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
 
       {selectedItem && (
         <div
-          className="fixed inset-0 bg-black/90 flex items-center justify-center z-50"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
           onClick={closeModal}
         >
           <div
-            className="relative w-full max-w-5xl bg-white rounded-lg shadow-lg flex flex-col sm:flex-row overflow-hidden sm:h-[85vh]"
-            onClick={(e) => e.stopPropagation()}
+            ref={modalRef}
+            className="relative flex h-auto w-full max-w-5xl flex-col overflow-hidden rounded-lg bg-white shadow-lg sm:h-[85vh] sm:flex-row"
+            onClick={(event) => event.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="shop-dialog-title"
           >
             <button
-              className="absolute top-2 right-4 text-3xl font-bold text-gray-700 hover:text-black z-10"
+              type="button"
+              className="absolute right-4 top-2 z-10 text-3xl font-bold text-gray-700 transition hover:text-black"
               onClick={closeModal}
+              aria-label="Закрыть карточку товара"
             >
               ×
             </button>
 
             <div
-              className="relative flex-1 bg-black flex items-center justify-center overflow-hidden"
-              onTouchStart={handleTouchStart}
+              className="relative flex-1 overflow-hidden bg-black"
+              onTouchStart={(event) => setTouchStartX(event.touches[0].clientX)}
               onTouchEnd={handleTouchEnd}
             >
-              {selectedItem.media[currentIndex]?.type === "image" ? (
-                <Image
-                  src={selectedItem.media[currentIndex].src}
-                  alt={selectedItem.title}
-                  width={1200}
-                  height={800}
-                  className="object-contain max-h-[80vh] w-auto h-auto"
-                  unoptimized
-                />
-              ) : (
-                <video
-                  src={selectedItem.media[currentIndex]?.src}
-                  controls
-                  playsInline
-                  className="object-contain max-h-[80vh] w-auto h-auto"
-                />
-              )}
+              <div className="flex h-full items-center justify-center">
+                {selectedItem.media[currentIndex]?.type === "image" ? (
+                  <Image
+                    src={selectedItem.media[currentIndex].src}
+                    alt={selectedItem.title}
+                    width={1200}
+                    height={800}
+                    className="h-auto max-h-[80vh] w-auto object-contain"
+                    unoptimized
+                  />
+                ) : (
+                  <video
+                    src={selectedItem.media[currentIndex]?.src}
+                    controls
+                    playsInline
+                    className="h-auto max-h-[80vh] w-auto object-contain"
+                  />
+                )}
+              </div>
 
               <button
-                className="hidden sm:block absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 text-white text-3xl p-2 rounded-full hover:bg-black"
+                type="button"
+                className="absolute left-3 top-1/2 hidden -translate-y-1/2 rounded-full bg-black/50 p-2 text-3xl text-white transition hover:bg-black sm:block"
                 onClick={prevMedia}
+                aria-label="Предыдущее изображение"
               >
                 ‹
               </button>
 
               <button
-                className="hidden sm:block absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 text-white text-3xl p-2 rounded-full hover:bg-black"
+                type="button"
+                className="absolute right-3 top-1/2 hidden -translate-y-1/2 rounded-full bg-black/50 p-2 text-3xl text-white transition hover:bg-black sm:block"
                 onClick={nextMedia}
+                aria-label="Следующее изображение"
               >
                 ›
               </button>
             </div>
 
-            <div className="w-full sm:w-[380px] p-5 sm:p-6 flex flex-col border-t sm:border-l border-gray-200 bg-white max-h-[80vh] overflow-y-auto">
-              <h2 className="text-2xl font-bold mb-3 text-gray-900 text-center sm:text-left">
+            <div className="flex max-h-[80vh] w-full flex-col overflow-y-auto border-t border-gray-200 bg-white p-5 sm:w-[380px] sm:border-l sm:border-t-0 sm:p-6">
+              <h2
+                id="shop-dialog-title"
+                className="mb-3 text-center text-2xl font-bold text-gray-900 sm:text-left"
+              >
                 {selectedItem.title}
               </h2>
-              <p className="text-gray-700 font-medium mb-2 text-center sm:text-left">
+              <p className="mb-2 text-center font-medium text-gray-700 sm:text-left">
                 {selectedItem.size}
               </p>
-              <p className="text-xl font-bold text-amber-700 mb-6 text-center sm:text-left">
+              <p className="mb-6 text-center text-xl font-bold text-amber-700 sm:text-left">
                 {selectedItem.price}
               </p>
 
-              <p className="text-gray-800 leading-relaxed whitespace-pre-line text-[16px] mb-6">
+              <p className="mb-6 whitespace-pre-line text-[16px] leading-relaxed text-gray-800">
                 {selectedItem.description}
               </p>
 
               <button
-                className="mt-auto w-full px-6 py-3 bg-amber-600 text-white rounded-lg font-semibold text-lg hover:bg-amber-700 transition"
+                type="button"
+                className="mt-auto w-full rounded-lg bg-amber-600 px-6 py-3 text-lg font-semibold text-white transition hover:bg-amber-700"
                 onClick={() => setShowContacts(true)}
+                aria-expanded={showContacts}
+                aria-controls="shop-contact-actions"
               >
                 Купить
               </button>
 
               {showContacts && (
-                <div className="mt-6 bg-gray-100 border rounded-lg p-4 text-center">
-                  <p className="mb-4 font-medium text-gray-800 text-base">
+                <div
+                  id="shop-contact-actions"
+                  className="mt-6 rounded-lg border bg-gray-100 p-4 text-center"
+                >
+                  <p className="mb-4 text-base font-medium text-gray-800">
                     Свяжитесь со мной любым удобным способом:
                   </p>
 
-                  <div className="flex justify-center gap-6 text-gray-700 text-[30px]">
+                  <div className="flex justify-center gap-6 text-[30px] text-gray-700">
                     <a
                       href="https://t.me/AnnPab"
                       target="_blank"
                       rel="noopener noreferrer"
                       title="Telegram"
                     >
-                      <Send size={34} className="hover:text-sky-500 transition" />
+                      <Send size={34} className="transition hover:text-sky-500" />
                     </a>
 
                     <a
@@ -188,16 +260,16 @@ export default function ShopPage() {
                       rel="noopener noreferrer"
                       title="Instagram"
                     >
-                      <Instagram size={34} className="hover:text-pink-500 transition" />
+                      <Instagram size={34} className="transition hover:text-pink-500" />
                     </a>
 
                     <a href="tel:+375293517220" title="Позвонить">
-                      <Phone size={34} className="hover:text-green-600 transition" />
+                      <Phone size={34} className="transition hover:text-green-600" />
                     </a>
                   </div>
 
-                  <p className="mt-4 text-sm text-gray-600 select-all">
-                    ☎ +375 (29) 351-72-20
+                  <p className="mt-4 select-all text-sm text-gray-600">
+                    +375 (29) 351-72-20
                   </p>
                 </div>
               )}
