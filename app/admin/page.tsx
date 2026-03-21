@@ -106,12 +106,12 @@ export default function AdminPage() {
       ((await articlesRes.json()) as { items?: Article[] }).items ?? []
     );
 
-    setStatus("РђРґРјРёРЅРєР° РіРѕС‚РѕРІР° Рє СЂР°Р±РѕС‚Рµ.");
+    setStatus("Админка готова к работе.");
   }
 
   useEffect(() => {
     fetchAdminData().catch(() => {
-      setStatus("РќРµ СѓРґР°Р»РѕСЃСЊ Р·Р°РіСЂСѓР·РёС‚СЊ РґР°РЅРЅС‹Рµ Р°РґРјРёРЅРєРё.");
+      setStatus("Не удалось загрузить данные админки.");
     });
   }, []);
 
@@ -445,10 +445,10 @@ export default function AdminPage() {
           <p className="text-sm uppercase tracking-[0.2em] text-amber-700">
             Art for House
           </p>
-          <h1 className="text-3xl font-bold">РђРґРјРёРЅ-РїР°РЅРµР»СЊ</h1>
+          <h1 className="text-3xl font-bold">Админ-панель</h1>
           <p className="mt-2 max-w-3xl text-sm text-gray-600">
-            Р—РґРµСЃСЊ РјРѕР¶РЅРѕ Р±РµР·РѕРїР°СЃРЅРѕ РІРѕР№С‚Рё, Р·Р°РіСЂСѓР·РёС‚СЊ С„РѕС‚Рѕ, РІС‹Р±СЂР°С‚СЊ СЂР°Р·РґРµР»,
-            РЅР°РїРёСЃР°С‚СЊ РѕРїРёСЃР°РЅРёРµ Рё СЃСЂР°Р·Сѓ РѕРїСѓР±Р»РёРєРѕРІР°С‚СЊ СЂР°Р±РѕС‚Сѓ РЅР° СЃР°Р№С‚Рµ.
+            Здесь можно безопасно войти, загрузить фото, выбрать раздел,
+            написать описание и сразу опубликовать работу на сайте.
           </p>
         </div>
 
@@ -458,7 +458,7 @@ export default function AdminPage() {
             onClick={handleLogout}
             className="rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-800 transition hover:border-gray-900"
           >
-            Р’С‹Р№С‚Рё
+            Выйти
           </button>
         )}
       </div>
