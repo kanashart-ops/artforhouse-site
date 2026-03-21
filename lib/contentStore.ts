@@ -3,7 +3,6 @@ import path from "node:path";
 import {
   ArtworkPlacement,
   MediaKind,
-  type Prisma,
 } from "@prisma/client";
 import {
   GALLERY_ALL_CATEGORY,
@@ -138,41 +137,44 @@ async function saveGalleryItemsToDatabase(items: GalleryItem[]) {
   }
 
   const usedSlugs = new Set<string>();
-  const operations: Prisma.PrismaPromise<unknown>[] = [
-    prisma.artwork.deleteMany({
-      where: { placement: ArtworkPlacement.GALLERY },
-    }),
-  ];
 
-  for (const item of [...items].reverse()) {
-    const normalized = normalizeGalleryItem(item);
+  await prisma.$transaction(
+    async (tx) => {
+      await tx.artwork.deleteMany({
+        where: { placement: ArtworkPlacement.GALLERY },
+      });
 
-    operations.push(
-      prisma.artwork.create({
-        data: {
-          slug: createUniqueSlug(
-            normalized.name || normalized.src || "gallery-item",
-            usedSlugs
-          ),
-          title: normalized.name || "Untitled artwork",
-          category: normalized.category || null,
-          placement: ArtworkPlacement.GALLERY,
-          media: {
-            create: [
-              {
-                type: MediaKind.IMAGE,
-                src: normalized.src,
-                alt: normalized.name || null,
-                sortOrder: 0,
-              },
-            ],
+      for (const item of [...items].reverse()) {
+        const normalized = normalizeGalleryItem(item);
+
+        await tx.artwork.create({
+          data: {
+            slug: createUniqueSlug(
+              normalized.name || normalized.src || "gallery-item",
+              usedSlugs
+            ),
+            title: normalized.name || "Untitled artwork",
+            category: normalized.category || null,
+            placement: ArtworkPlacement.GALLERY,
+            media: {
+              create: [
+                {
+                  type: MediaKind.IMAGE,
+                  src: normalized.src,
+                  alt: normalized.name || null,
+                  sortOrder: 0,
+                },
+              ],
+            },
           },
-        },
-      })
-    );
-  }
-
-  await prisma.$transaction(operations);
+        });
+      }
+    },
+    {
+      maxWait: 10000,
+      timeout: 30000,
+    }
+  );
 }
 
 async function getShopItemsFromDatabase(): Promise<ShopItem[] | null> {
@@ -212,41 +214,44 @@ async function saveShopItemsToDatabase(items: ShopItem[]) {
   }
 
   const usedSlugs = new Set<string>();
-  const operations: Prisma.PrismaPromise<unknown>[] = [
-    prisma.artwork.deleteMany({
-      where: { placement: ArtworkPlacement.SHOP },
-    }),
-  ];
 
-  for (const item of [...items].reverse()) {
-    const normalized = normalizeShopItem(item);
+  await prisma.$transaction(
+    async (tx) => {
+      await tx.artwork.deleteMany({
+        where: { placement: ArtworkPlacement.SHOP },
+      });
 
-    operations.push(
-      prisma.artwork.create({
-        data: {
-          slug: createUniqueSlug(
-            normalized.title || normalized.media[0]?.src || "shop-item",
-            usedSlugs
-          ),
-          title: normalized.title || "Untitled artwork",
-          size: normalized.size || null,
-          price: normalized.price || null,
-          description: normalized.description || null,
-          placement: ArtworkPlacement.SHOP,
-          media: {
-            create: normalized.media.map((media, index) => ({
-              type: media.type === "video" ? MediaKind.VIDEO : MediaKind.IMAGE,
-              src: media.src,
-              alt: normalized.title || null,
-              sortOrder: index,
-            })),
+      for (const item of [...items].reverse()) {
+        const normalized = normalizeShopItem(item);
+
+        await tx.artwork.create({
+          data: {
+            slug: createUniqueSlug(
+              normalized.title || normalized.media[0]?.src || "shop-item",
+              usedSlugs
+            ),
+            title: normalized.title || "Untitled artwork",
+            size: normalized.size || null,
+            price: normalized.price || null,
+            description: normalized.description || null,
+            placement: ArtworkPlacement.SHOP,
+            media: {
+              create: normalized.media.map((media, index) => ({
+                type: media.type === "video" ? MediaKind.VIDEO : MediaKind.IMAGE,
+                src: media.src,
+                alt: normalized.title || null,
+                sortOrder: index,
+              })),
+            },
           },
-        },
-      })
-    );
-  }
-
-  await prisma.$transaction(operations);
+        });
+      }
+    },
+    {
+      maxWait: 10000,
+      timeout: 30000,
+    }
+  );
 }
 
 export async function getGalleryItems(): Promise<GalleryItem[]> {

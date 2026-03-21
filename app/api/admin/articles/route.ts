@@ -24,7 +24,11 @@ export async function PUT(req: Request) {
   } catch (error) {
     console.error("Failed to save articles.", error);
     return NextResponse.json(
-      { error: "Failed to save articles" },
+      {
+        error: "Failed to save articles",
+        details:
+          error instanceof Error ? error.message : "Unknown article save error",
+      },
       { status: 500 }
     );
   }

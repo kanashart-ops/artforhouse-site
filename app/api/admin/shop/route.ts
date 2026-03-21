@@ -24,7 +24,11 @@ export async function PUT(req: Request) {
   } catch (error) {
     console.error("Failed to save shop items.", error);
     return NextResponse.json(
-      { error: "Failed to save shop items" },
+      {
+        error: "Failed to save shop items",
+        details:
+          error instanceof Error ? error.message : "Unknown shop save error",
+      },
       { status: 500 }
     );
   }

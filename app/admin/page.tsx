@@ -133,7 +133,15 @@ export default function AdminPage() {
     });
 
     if (!res.ok) {
-      setStatus("Не удалось сохранить галерею.");
+      const data = (await res.json().catch(() => null)) as
+        | { error?: string; details?: string }
+        | null;
+
+      setStatus(
+        data?.details
+          ? `Не удалось сохранить галерею: ${data.details}`
+          : "Не удалось сохранить галерею."
+      );
       if (res.status === 401) {
         setConfig((prev) => (prev ? { ...prev, isAuthorized: false } : prev));
       }
@@ -156,7 +164,15 @@ export default function AdminPage() {
     });
 
     if (!res.ok) {
-      setStatus("Не удалось сохранить раздел «В наличии».");
+      const data = (await res.json().catch(() => null)) as
+        | { error?: string; details?: string }
+        | null;
+
+      setStatus(
+        data?.details
+          ? `Не удалось сохранить раздел «В наличии»: ${data.details}`
+          : "Не удалось сохранить раздел «В наличии»."
+      );
       if (res.status === 401) {
         setConfig((prev) => (prev ? { ...prev, isAuthorized: false } : prev));
       }
@@ -179,7 +195,15 @@ export default function AdminPage() {
     });
 
     if (!res.ok) {
-      setStatus("Не удалось сохранить статьи.");
+      const data = (await res.json().catch(() => null)) as
+        | { error?: string; details?: string }
+        | null;
+
+      setStatus(
+        data?.details
+          ? `Не удалось сохранить статьи: ${data.details}`
+          : "Не удалось сохранить статьи."
+      );
       if (res.status === 401) {
         setConfig((prev) => (prev ? { ...prev, isAuthorized: false } : prev));
       }

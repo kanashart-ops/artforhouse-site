@@ -28,7 +28,11 @@ export async function PUT(req: Request) {
   } catch (error) {
     console.error("Failed to save gallery items.", error);
     return NextResponse.json(
-      { error: "Failed to save gallery items" },
+      {
+        error: "Failed to save gallery items",
+        details:
+          error instanceof Error ? error.message : "Unknown gallery save error",
+      },
       { status: 500 }
     );
   }
