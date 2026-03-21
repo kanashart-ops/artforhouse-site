@@ -71,7 +71,7 @@ export default function AdminPage() {
   const [shopForm, setShopForm] = useState<ShopItem>(emptyShopItem);
   const [articleForm, setArticleForm] = useState<Article>(emptyArticle);
 
-  const [status, setStatus] = useState("Р—Р°РіСЂСѓР·РєР° РґР°РЅРЅС‹С…...");
+  const [status, setStatus] = useState("Загрузка данных...");
   const [galleryUploadState, setGalleryUploadState] = useState<UploadState>({
     status: "idle",
     message: "",
@@ -124,7 +124,7 @@ export default function AdminPage() {
 
   async function saveArticles(
     nextItems: Article[],
-    message = "РЎС‚Р°С‚СЊРё СЃРѕС…СЂР°РЅРµРЅС‹."
+    message = "Статьи сохранены."
   ) {
     const res = await fetch("/api/admin/articles", {
       method: "PUT",
@@ -139,8 +139,8 @@ export default function AdminPage() {
 
       setStatus(
         data?.details
-          ? `РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕС…СЂР°РЅРёС‚СЊ СЃС‚Р°С‚СЊРё: ${data.details}`
-          : "РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕС…СЂР°РЅРёС‚СЊ СЃС‚Р°С‚СЊРё."
+          ? `Не удалось сохранить статьи: ${data.details}`
+          : "Не удалось сохранить статьи."
       );
       if (res.status === 401) {
         setConfig((prev) => (prev ? { ...prev, isAuthorized: false } : prev));
@@ -161,19 +161,19 @@ export default function AdminPage() {
     });
 
     if (!res.ok) {
-      setStatus("РќРµРІРµСЂРЅС‹Р№ Р»РѕРіРёРЅ РёР»Рё РїР°СЂРѕР»СЊ.");
+      setStatus("Неверный логин или пароль.");
       return;
     }
 
     await fetchAdminData();
     setConfig((prev) => (prev ? { ...prev, isAuthorized: true } : prev));
-    setStatus("Р’С…РѕРґ РІС‹РїРѕР»РЅРµРЅ. РўРµРїРµСЂСЊ РјРѕР¶РЅРѕ РґРѕР±Р°РІР»СЏС‚СЊ РєР°СЂС‚РёРЅС‹.");
+    setStatus("Вход выполнен. Теперь можно добавлять картины.");
   }
 
   async function handleLogout() {
     await fetch("/api/admin/logout", { method: "POST" });
     setConfig((prev) => (prev ? { ...prev, isAuthorized: false } : prev));
-    setStatus("Р’С‹ РІС‹С€Р»Рё РёР· Р°РґРјРёРЅРєРё.");
+    setStatus("Вы вышли из админки.");
   }
 
   async function uploadFile(
@@ -183,9 +183,9 @@ export default function AdminPage() {
   ) {
     setUploadState({
       status: "uploading",
-      message: `Р—Р°РіСЂСѓР¶Р°РµС‚СЃСЏ С„Р°Р№Р»: ${file.name}`,
+      message: `Загружается файл: ${file.name}`,
     });
-    setStatus(`Р—Р°РіСЂСѓР¶Р°РµС‚СЃСЏ С„Р°Р№Р»: ${file.name}`);
+    setStatus(`Загружается файл: ${file.name}`);
 
     const formData = new FormData();
     formData.append("file", file);
@@ -203,20 +203,20 @@ export default function AdminPage() {
 
       if (!res.ok) {
         const message =
-          data?.details || data?.error || "РќРµ СѓРґР°Р»РѕСЃСЊ Р·Р°РіСЂСѓР·РёС‚СЊ С„Р°Р№Р».";
+          data?.details || data?.error || "Не удалось загрузить файл.";
 
         setUploadState({
           status: "error",
           message,
         });
-        setStatus(`РћС€РёР±РєР° Р·Р°РіСЂСѓР·РєРё: ${message}`);
+        setStatus(`Ошибка загрузки: ${message}`);
         return null;
       }
 
       const successMessage =
         data?.storage === "blob"
-          ? "Р¤Р°Р№Р» Р·Р°РіСЂСѓР¶РµРЅ РІ Vercel Blob. РўРµРїРµСЂСЊ РјРѕР¶РЅРѕ РЅР°Р¶РёРјР°С‚СЊ В«Р”РѕР±Р°РІРёС‚СЊВ»."
-          : "Р¤Р°Р№Р» Р·Р°РіСЂСѓР¶РµРЅ Р»РѕРєР°Р»СЊРЅРѕ. РўРµРїРµСЂСЊ РјРѕР¶РЅРѕ РЅР°Р¶РёРјР°С‚СЊ В«Р”РѕР±Р°РІРёС‚СЊВ».";
+          ? "Файл загружен в Vercel Blob. Теперь можно нажимать «Добавить»."
+          : "Файл загружен локально. Теперь можно нажимать «Добавить».";
 
       setUploadState({
         status: "success",
@@ -227,13 +227,13 @@ export default function AdminPage() {
       return data?.src ?? null;
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "РќРµРёР·РІРµСЃС‚РЅР°СЏ РѕС€РёР±РєР° Р·Р°РіСЂСѓР·РєРё.";
+        error instanceof Error ? error.message : "Неизвестная ошибка загрузки.";
 
       setUploadState({
         status: "error",
         message,
       });
-      setStatus(`РћС€РёР±РєР° Р·Р°РіСЂСѓР·РєРё: ${message}`);
+      setStatus(`Ошибка загрузки: ${message}`);
       return null;
     }
   }
@@ -398,12 +398,12 @@ export default function AdminPage() {
     const slug = (articleForm.slug || slugify(normalizedTitle)).trim();
 
     if (!normalizedTitle || !slug || !articleForm.contentHtml.trim()) {
-      setStatus("Р”Р»СЏ СЃС‚Р°С‚СЊРё Р·Р°РїРѕР»РЅРёС‚Рµ Р·Р°РіРѕР»РѕРІРѕРє, slug Рё С‚РµРєСЃС‚ HTML.");
+      setStatus("Для статьи заполните заголовок, slug и текст HTML.");
       return;
     }
 
     if (articles.some((article) => article.slug === slug)) {
-      setStatus("РЎС‚Р°С‚СЊСЏ СЃ С‚Р°РєРёРј slug СѓР¶Рµ СЃСѓС‰РµСЃС‚РІСѓРµС‚.");
+      setStatus("Статья с таким slug уже существует.");
       return;
     }
 
@@ -418,7 +418,7 @@ export default function AdminPage() {
       ...articles,
     ];
 
-    const ok = await saveArticles(nextItems, "РЎС‚Р°С‚СЊСЏ РѕРїСѓР±Р»РёРєРѕРІР°РЅР°.");
+    const ok = await saveArticles(nextItems, "Статья опубликована.");
 
     if (ok) {
       setArticleForm({
@@ -431,7 +431,7 @@ export default function AdminPage() {
   if (!config) {
     return (
       <main className="mx-auto max-w-6xl p-6 md:p-10">
-        Р—Р°РіСЂСѓР·РєР° Р°РґРјРёРЅРєРё...
+        Загрузка админки...
       </main>
     );
   }
@@ -465,16 +465,16 @@ export default function AdminPage() {
 
       <div className="mb-6 grid gap-4 md:grid-cols-3">
         <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-          <p className="text-sm font-semibold text-gray-500">РђРІС‚РѕСЂРёР·Р°С†РёСЏ</p>
+          <p className="text-sm font-semibold text-gray-500">Авторизация</p>
           <p className="mt-1 text-lg font-bold">
-            {config.requiresLogin ? "Р—Р°С‰РёС‰РµРЅР°" : "РћС‚РєСЂС‹С‚Р° РґР»СЏ dev"}
+            {config.requiresLogin ? "Защищена" : "Открыта для dev"}
           </p>
         </div>
 
         <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
           <p className="text-sm font-semibold text-gray-500">Vercel Blob</p>
           <p className="mt-1 text-lg font-bold">
-            {config.blobConfigured ? "РўРѕРєРµРЅ РЅР°Р№РґРµРЅ" : "РўРѕРєРµРЅ РµС‰С‘ РЅРµ РґРѕР±Р°РІР»РµРЅ"}
+            {config.blobConfigured ? "Токен найден" : "Токен ещё не добавлен"}
           </p>
         </div>
 
@@ -484,24 +484,24 @@ export default function AdminPage() {
           </p>
           <p className="mt-1 text-lg font-bold">
             {config.databaseConfigured
-              ? "DATABASE_URL РЅР°Р№РґРµРЅ"
-              : "РќСѓР¶РЅРѕ РїРѕРґРєР»СЋС‡РёС‚СЊ Р‘Р”"}
+              ? "DATABASE_URL найден"
+              : "Нужно подключить БД"}
           </p>
         </div>
       </div>
 
       {loginRequired ? (
         <section className="max-w-xl rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="text-2xl font-bold">Р’С…РѕРґ РІ Р°РґРјРёРЅРєСѓ</h2>
+          <h2 className="text-2xl font-bold">Вход в админку</h2>
           <p className="mt-2 text-sm text-gray-600">
-            Р—Р°РґР°Р№С‚Рµ РІ `.env.local` СЃРІРѕРё `ADMIN_USERNAME` Рё `ADMIN_PASSWORD`,
-            Р·Р°С‚РµРј РІРѕР№РґРёС‚Рµ Р·РґРµСЃСЊ.
+            Задайте в `.env.local` свои `ADMIN_USERNAME` и `ADMIN_PASSWORD`,
+            затем войдите здесь.
           </p>
 
           <div className="mt-6 space-y-4">
             <label className="block">
               <span className="mb-2 block text-sm font-semibold">
-                РРјСЏ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР°
+                Имя администратора
               </span>
               <input
                 value={loginForm.username}
@@ -517,7 +517,7 @@ export default function AdminPage() {
             </label>
 
             <label className="block">
-              <span className="mb-2 block text-sm font-semibold">РџР°СЂРѕР»СЊ</span>
+              <span className="mb-2 block text-sm font-semibold">Пароль</span>
               <input
                 type="password"
                 value={loginForm.password}
@@ -528,7 +528,7 @@ export default function AdminPage() {
                   }))
                 }
                 className="w-full rounded-xl border border-gray-300 px-4 py-3"
-                placeholder="Р’РІРµРґРёС‚Рµ РїР°СЂРѕР»СЊ"
+                placeholder="Введите пароль"
               />
             </label>
 
@@ -537,7 +537,7 @@ export default function AdminPage() {
               onClick={handleLogin}
               className="rounded-full bg-gray-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-gray-800"
             >
-              Р’РѕР№С‚Рё
+              Войти
             </button>
           </div>
         </section>
@@ -556,10 +556,10 @@ export default function AdminPage() {
                 }`}
               >
                 {item === "gallery"
-                  ? "Р“Р°Р»РµСЂРµСЏ"
+                  ? "Галерея"
                   : item === "shop"
-                  ? "Р’ РЅР°Р»РёС‡РёРё"
-                  : "РЎС‚Р°С‚СЊРё"}
+                  ? "В наличии"
+                  : "Статьи"}
               </button>
             ))}
           </div>
@@ -568,13 +568,13 @@ export default function AdminPage() {
             <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
               <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
                 <h2 className="text-2xl font-bold">
-                  Р”РѕР±Р°РІРёС‚СЊ СЂР°Р±РѕС‚Сѓ РІ РіР°Р»РµСЂРµСЋ
+                  Добавить работу в галерею
                 </h2>
 
                 <div className="mt-5 grid gap-4 md:grid-cols-2">
                   <label className="block md:col-span-2">
                     <span className="mb-2 block text-sm font-semibold">
-                      РќР°Р·РІР°РЅРёРµ
+                      Название
                     </span>
                     <input
                       value={galleryForm.name}
@@ -585,13 +585,13 @@ export default function AdminPage() {
                         }))
                       }
                       className="w-full rounded-xl border border-gray-300 px-4 py-3"
-                      placeholder="РќР°РїСЂРёРјРµСЂ: РўС‘РїР»С‹Р№ РёРЅС‚РµСЂСЊРµСЂ"
+                      placeholder="Например: Тёплый интерьер"
                     />
                   </label>
 
                   <label className="block">
                     <span className="mb-2 block text-sm font-semibold">
-                      Р Р°Р·РґРµР»
+                      Раздел
                     </span>
                     <select
                       value={galleryForm.category}
@@ -613,7 +613,7 @@ export default function AdminPage() {
 
                   <label className="block">
                     <span className="mb-2 block text-sm font-semibold">
-                      Р—Р°РіСЂСѓР·РєР° С„РѕС‚Рѕ
+                      Загрузка фото
                     </span>
                     <input
                       type="file"
@@ -637,7 +637,7 @@ export default function AdminPage() {
 
                   <label className="block md:col-span-2">
                     <span className="mb-2 block text-sm font-semibold">
-                      РР»Рё РІСЃС‚Р°РІСЊС‚Рµ URL РІСЂСѓС‡РЅСѓСЋ
+                      Или вставьте URL вручную
                     </span>
                     <input
                       value={galleryForm.src}
@@ -648,7 +648,7 @@ export default function AdminPage() {
                         }))
                       }
                       className="w-full rounded-xl border border-gray-300 px-4 py-3"
-                      placeholder="/images/gallery/example.jpg РёР»Рё https://..."
+                      placeholder="/images/gallery/example.jpg или https://..."
                     />
                   </label>
                 </div>
@@ -664,7 +664,7 @@ export default function AdminPage() {
                     }`}
                   >
                     {galleryUploadState.status === "uploading"
-                      ? "РРґС‘С‚ Р·Р°РіСЂСѓР·РєР°. Р”РѕР¶РґРёС‚РµСЃСЊ Р·Р°РІРµСЂС€РµРЅРёСЏ РїРµСЂРµРґ РґРѕР±Р°РІР»РµРЅРёРµРј."
+                      ? "Идёт загрузка. Дождитесь завершения перед добавлением."
                       : galleryUploadState.message}
                   </p>
                 )}
@@ -676,13 +676,13 @@ export default function AdminPage() {
                   className="mt-6 rounded-full bg-emerald-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:bg-emerald-300"
                 >
                   {galleryUploadState.status === "uploading"
-                    ? "Р—Р°РіСЂСѓР·РєР° С„РѕС‚Рѕ..."
-                    : "Р”РѕР±Р°РІРёС‚СЊ Рё СЃСЂР°Р·Сѓ РѕРїСѓР±Р»РёРєРѕРІР°С‚СЊ"}
+                    ? "Загрузка фото..."
+                    : "Добавить и сразу опубликовать"}
                 </button>
               </div>
 
               <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-                <h3 className="text-xl font-bold">РџРѕСЃР»РµРґРЅРёРµ СЂР°Р±РѕС‚С‹</h3>
+                <h3 className="text-xl font-bold">Последние работы</h3>
 
                 <div className="mt-4 space-y-3">
                   {galleryItems.slice(0, 8).map((item) => (
@@ -713,13 +713,13 @@ export default function AdminPage() {
             <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
               <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
                 <h2 className="text-2xl font-bold">
-                  Р”РѕР±Р°РІРёС‚СЊ РєР°СЂС‚РёРЅСѓ РІ В«Р’ РЅР°Р»РёС‡РёРёВ»
+                  Добавить картину в «В наличии»
                 </h2>
 
                 <div className="mt-5 grid gap-4 md:grid-cols-2">
                   <label className="block">
                     <span className="mb-2 block text-sm font-semibold">
-                      РќР°Р·РІР°РЅРёРµ
+                      Название
                     </span>
                     <input
                       value={shopForm.title}
@@ -735,7 +735,7 @@ export default function AdminPage() {
 
                   <label className="block">
                     <span className="mb-2 block text-sm font-semibold">
-                      Р Р°Р·РјРµСЂ
+                      Размер
                     </span>
                     <input
                       value={shopForm.size}
@@ -746,13 +746,13 @@ export default function AdminPage() {
                         }))
                       }
                       className="w-full rounded-xl border border-gray-300 px-4 py-3"
-                      placeholder="РќР°РїСЂРёРјРµСЂ: 80Г—100 СЃРј"
+                      placeholder="Например: 80×100 см"
                     />
                   </label>
 
                   <label className="block">
                     <span className="mb-2 block text-sm font-semibold">
-                      Р¦РµРЅР°
+                      Цена
                     </span>
                     <input
                       value={shopForm.price}
@@ -763,13 +763,13 @@ export default function AdminPage() {
                         }))
                       }
                       className="w-full rounded-xl border border-gray-300 px-4 py-3"
-                      placeholder="РќР°РїСЂРёРјРµСЂ: 950 BYN"
+                      placeholder="Например: 950 BYN"
                     />
                   </label>
 
                   <label className="block">
                     <span className="mb-2 block text-sm font-semibold">
-                      Р¤РѕС‚Рѕ
+                      Фото
                     </span>
                     <input
                       type="file"
@@ -796,7 +796,7 @@ export default function AdminPage() {
 
                   <label className="block md:col-span-2">
                     <span className="mb-2 block text-sm font-semibold">
-                      РћРїРёСЃР°РЅРёРµ
+                      Описание
                     </span>
                     <textarea
                       value={shopForm.description}
@@ -807,14 +807,14 @@ export default function AdminPage() {
                         }))
                       }
                       className="min-h-32 w-full rounded-xl border border-gray-300 px-4 py-3"
-                      placeholder="РњРѕР¶РЅРѕ РѕСЃС‚Р°РІРёС‚СЊ РїСѓСЃС‚С‹Рј, РµСЃР»Рё РѕРїРёСЃР°РЅРёРµ РЅРµ РЅСѓР¶РЅРѕ."
+                      placeholder="Можно оставить пустым, если описание не нужно."
                     />
                   </label>
                 </div>
 
                 {shopForm.media.length > 0 && (
                   <div className="mt-4 rounded-2xl border border-gray-100 bg-gray-50 p-4">
-                    <p className="text-sm font-semibold">Р—Р°РіСЂСѓР¶РµРЅРЅС‹Рµ С„Р°Р№Р»С‹</p>
+                    <p className="text-sm font-semibold">Загруженные файлы</p>
                     <ul className="mt-2 space-y-2 text-sm text-gray-600">
                       {shopForm.media.map((media, index) => (
                         <li key={`${media.src}-${index}`}>{media.src}</li>
@@ -834,7 +834,7 @@ export default function AdminPage() {
                     }`}
                   >
                     {shopUploadState.status === "uploading"
-                      ? "РРґС‘С‚ Р·Р°РіСЂСѓР·РєР°. Р”РѕР¶РґРёС‚РµСЃСЊ Р·Р°РІРµСЂС€РµРЅРёСЏ РїРµСЂРµРґ РґРѕР±Р°РІР»РµРЅРёРµРј."
+                      ? "Идёт загрузка. Дождитесь завершения перед добавлением."
                       : shopUploadState.message}
                   </p>
                 )}
@@ -852,7 +852,7 @@ export default function AdminPage() {
               </div>
 
               <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-                <h3 className="text-xl font-bold">РЎРµР№С‡Р°СЃ РІ РїСЂРѕРґР°Р¶Рµ</h3>
+                <h3 className="text-xl font-bold">Сейчас в продаже</h3>
 
                 <div className="mt-4 space-y-3">
                   {shopItems.slice(0, 8).map((item) => (
@@ -862,10 +862,10 @@ export default function AdminPage() {
                     >
                       <p className="font-semibold">{item.title}</p>
                       <p className="text-sm text-gray-600">
-                        {item.size || "Р Р°Р·РјРµСЂ РЅРµ СѓРєР°Р·Р°РЅ"}
+                        {item.size || "Размер не указан"}
                       </p>
                       <p className="text-sm text-amber-700">
-                        {item.price || "Р¦РµРЅР° РЅРµ СѓРєР°Р·Р°РЅР°"}
+                        {item.price || "Цена не указана"}
                       </p>
                       <button
                         type="button"
@@ -884,7 +884,7 @@ export default function AdminPage() {
           {tab === "articles" && (
             <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
               <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-                <h2 className="text-2xl font-bold">Р”РѕР±Р°РІРёС‚СЊ СЃС‚Р°С‚СЊСЋ</h2>
+                <h2 className="text-2xl font-bold">Добавить статью</h2>
 
                 <div className="mt-5 grid gap-4">
                   <input
@@ -896,7 +896,7 @@ export default function AdminPage() {
                       }))
                     }
                     className="w-full rounded-xl border border-gray-300 px-4 py-3"
-                    placeholder="Р—Р°РіРѕР»РѕРІРѕРє"
+                    placeholder="Заголовок"
                   />
 
                   <input
@@ -920,7 +920,7 @@ export default function AdminPage() {
                       }))
                     }
                     className="w-full rounded-xl border border-gray-300 px-4 py-3"
-                    placeholder="РљРѕСЂРѕС‚РєРѕРµ РѕРїРёСЃР°РЅРёРµ"
+                    placeholder="Короткое описание"
                   />
 
                   <textarea
@@ -932,7 +932,7 @@ export default function AdminPage() {
                       }))
                     }
                     className="min-h-60 w-full rounded-xl border border-gray-300 px-4 py-3"
-                    placeholder="HTML СЃС‚Р°С‚СЊРё"
+                    placeholder="HTML статьи"
                   />
                 </div>
 
@@ -941,12 +941,12 @@ export default function AdminPage() {
                   onClick={addArticle}
                   className="mt-6 rounded-full bg-emerald-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800"
                 >
-                  РћРїСѓР±Р»РёРєРѕРІР°С‚СЊ СЃС‚Р°С‚СЊСЋ
+                  Опубликовать статью
                 </button>
               </div>
 
               <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-                <h3 className="text-xl font-bold">РџРѕСЃР»РµРґРЅРёРµ СЃС‚Р°С‚СЊРё</h3>
+                <h3 className="text-xl font-bold">Последние статьи</h3>
 
                 <div className="mt-4 space-y-3">
                   {articles.slice(0, 8).map((article) => (
