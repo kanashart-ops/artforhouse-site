@@ -18,6 +18,13 @@ type AdminConfig = {
   databaseConfigured: boolean;
 };
 
+type UploadStatus = "idle" | "uploading" | "success" | "error";
+
+type UploadState = {
+  status: UploadStatus;
+  message: string;
+};
+
 const emptyGalleryItem: GalleryItem = {
   name: "",
   category: GALLERY_CATEGORIES[0],
@@ -64,8 +71,15 @@ export default function AdminPage() {
   const [shopForm, setShopForm] = useState<ShopItem>(emptyShopItem);
   const [articleForm, setArticleForm] = useState<Article>(emptyArticle);
 
-  const [uploading, setUploading] = useState(false);
   const [status, setStatus] = useState("Загрузка данных...");
+  const [galleryUploadState, setGalleryUploadState] = useState<UploadState>({
+    status: "idle",
+    message: "",
+  });
+  const [shopUploadState, setShopUploadState] = useState<UploadState>({
+    status: "idle",
+    message: "",
+  });
 
   async function fetchAdminData() {
     const [configRes, galleryRes, shopRes, articlesRes] = await Promise.all([
@@ -202,35 +216,64 @@ export default function AdminPage() {
 
   async function uploadFile(
     file: File,
-    folder: "gallery" | "shop" | "videos"
+    folder: "gallery" | "shop" | "videos",
+    setUploadState: (state: UploadState) => void
   ) {
-    setUploading(true);
+    setUploadState({
+      status: "uploading",
+      message: `Загружается файл: ${file.name}`,
+    });
+    setStatus(`Загружается файл: ${file.name}`);
 
     const formData = new FormData();
     formData.append("file", file);
     formData.append("folder", folder);
 
-    const res = await fetch("/api/admin/upload", {
-      method: "POST",
-      body: formData,
-    });
+    try {
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
 
-    setUploading(false);
+      const data = (await res.json().catch(() => null)) as
+        | { src?: string; storage?: string; error?: string; details?: string }
+        | null;
 
-    if (!res.ok) {
-      setStatus("Не удалось загрузить файл.");
+      if (!res.ok) {
+        const message =
+          data?.details || data?.error || "Не удалось загрузить файл.";
+
+        setUploadState({
+          status: "error",
+          message,
+        });
+        setStatus(`Ошибка загрузки: ${message}`);
+        return null;
+      }
+
+      const successMessage =
+        data?.storage === "blob"
+          ? "Файл загружен в Vercel Blob. Теперь можно нажимать «Добавить»."
+          : "Файл загружен локально. Теперь можно нажимать «Добавить».";
+
+      setUploadState({
+        status: "success",
+        message: successMessage,
+      });
+      setStatus(successMessage);
+
+      return data?.src ?? null;
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Неизвестная ошибка загрузки.";
+
+      setUploadState({
+        status: "error",
+        message,
+      });
+      setStatus(`Ошибка загрузки: ${message}`);
       return null;
     }
-
-    const data = (await res.json()) as { src: string; storage?: string };
-
-    setStatus(
-      data.storage === "local-fallback"
-        ? "Файл загружен локально. Когда подключите @vercel/blob, этот шаг можно переключить на Blob."
-        : "Файл загружен."
-    );
-
-    return data.src;
   }
 
   async function addGalleryItem() {
@@ -259,6 +302,10 @@ export default function AdminPage() {
         ...emptyGalleryItem,
         category: galleryForm.category,
       });
+      setGalleryUploadState({
+        status: "idle",
+        message: "",
+      });
     }
   }
 
@@ -280,6 +327,10 @@ export default function AdminPage() {
 
     if (ok) {
       setShopForm(emptyShopItem);
+      setShopUploadState({
+        status: "idle",
+        message: "",
+      });
     }
   }
 
@@ -513,7 +564,11 @@ export default function AdminPage() {
                         const file = event.target.files?.[0];
                         if (!file) return;
 
-                        const src = await uploadFile(file, "gallery");
+                        const src = await uploadFile(
+                          file,
+                          "gallery",
+                          setGalleryUploadState
+                        );
                         if (src) {
                           setGalleryForm((prev) => ({ ...prev, src }));
                         }
@@ -539,12 +594,31 @@ export default function AdminPage() {
                   </label>
                 </div>
 
+                {galleryUploadState.status !== "idle" && (
+                  <p
+                    className={`mt-4 rounded-2xl px-4 py-3 text-sm ${
+                      galleryUploadState.status === "error"
+                        ? "bg-red-50 text-red-700"
+                        : galleryUploadState.status === "success"
+                        ? "bg-emerald-50 text-emerald-700"
+                        : "bg-amber-50 text-amber-800"
+                    }`}
+                  >
+                    {galleryUploadState.status === "uploading"
+                      ? "Идёт загрузка. Дождитесь завершения перед добавлением."
+                      : galleryUploadState.message}
+                  </p>
+                )}
+
                 <button
                   type="button"
                   onClick={addGalleryItem}
-                  className="mt-6 rounded-full bg-emerald-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800"
+                  disabled={galleryUploadState.status === "uploading"}
+                  className="mt-6 rounded-full bg-emerald-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:bg-emerald-300"
                 >
-                  Добавить и сразу опубликовать
+                  {galleryUploadState.status === "uploading"
+                    ? "Загрузка фото..."
+                    : "Добавить и сразу опубликовать"}
                 </button>
               </div>
 
@@ -639,7 +713,11 @@ export default function AdminPage() {
                         const file = event.target.files?.[0];
                         if (!file) return;
 
-                        const src = await uploadFile(file, "shop");
+                        const src = await uploadFile(
+                          file,
+                          "shop",
+                          setShopUploadState
+                        );
                         if (src) {
                           setShopForm((prev) => ({
                             ...prev,
@@ -679,10 +757,27 @@ export default function AdminPage() {
                   </div>
                 )}
 
+                {shopUploadState.status !== "idle" && (
+                  <p
+                    className={`mt-4 rounded-2xl px-4 py-3 text-sm ${
+                      shopUploadState.status === "error"
+                        ? "bg-red-50 text-red-700"
+                        : shopUploadState.status === "success"
+                        ? "bg-emerald-50 text-emerald-700"
+                        : "bg-amber-50 text-amber-800"
+                    }`}
+                  >
+                    {shopUploadState.status === "uploading"
+                      ? "Идёт загрузка. Дождитесь завершения перед добавлением."
+                      : shopUploadState.message}
+                  </p>
+                )}
+
                 <button
                   type="button"
                   onClick={addShopItem}
-                  className="mt-6 rounded-full bg-emerald-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800"
+                  disabled={shopUploadState.status === "uploading"}
+                  className="mt-6 rounded-full bg-emerald-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:bg-emerald-300"
                 >
                   Добавить и сразу опубликовать
                 </button>
@@ -796,7 +891,7 @@ export default function AdminPage() {
       )}
 
       <p className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-        {uploading ? "Загрузка файла..." : status}
+        {status}
       </p>
     </main>
   );

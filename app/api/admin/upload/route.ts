@@ -17,52 +17,72 @@ const blobFolders: Record<string, string> = {
 };
 
 export async function POST(req: Request) {
-  if (!(await isAdminAuthorized(req))) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  try {
+    if (!(await isAdminAuthorized(req))) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-  const formData = await req.formData();
-  const file = formData.get("file");
-  const folder = String(formData.get("folder") ?? "gallery");
+    const formData = await req.formData();
+    const file = formData.get("file");
+    const folder = String(formData.get("folder") ?? "gallery");
 
-  if (!(file instanceof File)) {
-    return NextResponse.json({ error: "File is required" }, { status: 400 });
-  }
+    if (!(file instanceof File)) {
+      return NextResponse.json({ error: "File is required" }, { status: 400 });
+    }
 
-  const targetDir = uploadFolders[folder];
-  const blobDir = blobFolders[folder];
+    if (file.size === 0) {
+      return NextResponse.json(
+        { error: "Uploaded file is empty" },
+        { status: 400 }
+      );
+    }
 
-  if (!targetDir || !blobDir) {
-    return NextResponse.json({ error: "Unknown folder" }, { status: 400 });
-  }
+    const targetDir = uploadFolders[folder];
+    const blobDir = blobFolders[folder];
 
-  const ext = path.extname(file.name);
-  const basename = path
-    .basename(file.name, ext)
-    .replace(/[^a-zA-Z0-9._-]/g, "-");
-  const filename = `${Date.now()}-${basename}${ext}`;
+    if (!targetDir || !blobDir) {
+      return NextResponse.json({ error: "Unknown folder" }, { status: 400 });
+    }
 
-  if (process.env.BLOB_READ_WRITE_TOKEN?.trim()) {
-    const blob = await put(`${blobDir}/${filename}`, file, {
-      access: "public",
-      addRandomSuffix: false,
-    });
+    const ext = path.extname(file.name);
+    const basename = path
+      .basename(file.name, ext)
+      .replace(/[^a-zA-Z0-9._-]/g, "-");
+    const filename = `${Date.now()}-${basename}${ext}`;
+
+    if (process.env.BLOB_READ_WRITE_TOKEN?.trim()) {
+      const blob = await put(`${blobDir}/${filename}`, file, {
+        access: "public",
+        addRandomSuffix: false,
+      });
+
+      return NextResponse.json({
+        src: blob.url,
+        storage: "blob",
+      });
+    }
+
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const absoluteDir = path.join(process.cwd(), targetDir);
+
+    await fs.mkdir(absoluteDir, { recursive: true });
+    await fs.writeFile(path.join(absoluteDir, filename), buffer);
 
     return NextResponse.json({
-      src: blob.url,
-      storage: "blob",
+      src: `/${targetDir.replace(/^public\//, "")}/${filename}`,
+      storage: "local",
     });
+  } catch (error) {
+    console.error("Upload failed.", error);
+
+    return NextResponse.json(
+      {
+        error: "Upload failed",
+        details:
+          error instanceof Error ? error.message : "Unknown upload error",
+      },
+      { status: 500 }
+    );
   }
-
-  const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
-  const absoluteDir = path.join(process.cwd(), targetDir);
-
-  await fs.mkdir(absoluteDir, { recursive: true });
-  await fs.writeFile(path.join(absoluteDir, filename), buffer);
-
-  return NextResponse.json({
-    src: `/${targetDir.replace(/^public\//, "")}/${filename}`,
-    storage: "local",
-  });
 }
