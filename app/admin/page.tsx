@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import type { GalleryItem, ShopItem } from "@/lib/contentStore";
@@ -71,7 +71,7 @@ export default function AdminPage() {
   const [shopForm, setShopForm] = useState<ShopItem>(emptyShopItem);
   const [articleForm, setArticleForm] = useState<Article>(emptyArticle);
 
-  const [status, setStatus] = useState("Загрузка данных...");
+  const [status, setStatus] = useState("Р—Р°РіСЂСѓР·РєР° РґР°РЅРЅС‹С…...");
   const [galleryUploadState, setGalleryUploadState] = useState<UploadState>({
     status: "idle",
     message: "",
@@ -106,12 +106,12 @@ export default function AdminPage() {
       ((await articlesRes.json()) as { items?: Article[] }).items ?? []
     );
 
-    setStatus("Админка готова к работе.");
+    setStatus("РђРґРјРёРЅРєР° РіРѕС‚РѕРІР° Рє СЂР°Р±РѕС‚Рµ.");
   }
 
   useEffect(() => {
     fetchAdminData().catch(() => {
-      setStatus("Не удалось загрузить данные админки.");
+      setStatus("РќРµ СѓРґР°Р»РѕСЃСЊ Р·Р°РіСЂСѓР·РёС‚СЊ РґР°РЅРЅС‹Рµ Р°РґРјРёРЅРєРё.");
     });
   }, []);
 
@@ -122,71 +122,9 @@ export default function AdminPage() {
     ]);
   }, [galleryItems]);
 
-  async function saveGallery(
-    nextItems: GalleryItem[],
-    message = "Галерея сохранена."
-  ) {
-    const res = await fetch("/api/admin/gallery", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ items: nextItems }),
-    });
-
-    if (!res.ok) {
-      const data = (await res.json().catch(() => null)) as
-        | { error?: string; details?: string }
-        | null;
-
-      setStatus(
-        data?.details
-          ? `Не удалось сохранить галерею: ${data.details}`
-          : "Не удалось сохранить галерею."
-      );
-      if (res.status === 401) {
-        setConfig((prev) => (prev ? { ...prev, isAuthorized: false } : prev));
-      }
-      return false;
-    }
-
-    setGalleryItems(nextItems);
-    setStatus(message);
-    return true;
-  }
-
-  async function saveShop(
-    nextItems: ShopItem[],
-    message = "Раздел «В наличии» сохранён."
-  ) {
-    const res = await fetch("/api/admin/shop", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ items: nextItems }),
-    });
-
-    if (!res.ok) {
-      const data = (await res.json().catch(() => null)) as
-        | { error?: string; details?: string }
-        | null;
-
-      setStatus(
-        data?.details
-          ? `Не удалось сохранить раздел «В наличии»: ${data.details}`
-          : "Не удалось сохранить раздел «В наличии»."
-      );
-      if (res.status === 401) {
-        setConfig((prev) => (prev ? { ...prev, isAuthorized: false } : prev));
-      }
-      return false;
-    }
-
-    setShopItems(nextItems);
-    setStatus(message);
-    return true;
-  }
-
   async function saveArticles(
     nextItems: Article[],
-    message = "Статьи сохранены."
+    message = "РЎС‚Р°С‚СЊРё СЃРѕС…СЂР°РЅРµРЅС‹."
   ) {
     const res = await fetch("/api/admin/articles", {
       method: "PUT",
@@ -201,8 +139,8 @@ export default function AdminPage() {
 
       setStatus(
         data?.details
-          ? `Не удалось сохранить статьи: ${data.details}`
-          : "Не удалось сохранить статьи."
+          ? `РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕС…СЂР°РЅРёС‚СЊ СЃС‚Р°С‚СЊРё: ${data.details}`
+          : "РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕС…СЂР°РЅРёС‚СЊ СЃС‚Р°С‚СЊРё."
       );
       if (res.status === 401) {
         setConfig((prev) => (prev ? { ...prev, isAuthorized: false } : prev));
@@ -223,19 +161,19 @@ export default function AdminPage() {
     });
 
     if (!res.ok) {
-      setStatus("Неверный логин или пароль.");
+      setStatus("РќРµРІРµСЂРЅС‹Р№ Р»РѕРіРёРЅ РёР»Рё РїР°СЂРѕР»СЊ.");
       return;
     }
 
     await fetchAdminData();
     setConfig((prev) => (prev ? { ...prev, isAuthorized: true } : prev));
-    setStatus("Вход выполнен. Теперь можно добавлять картины.");
+    setStatus("Р’С…РѕРґ РІС‹РїРѕР»РЅРµРЅ. РўРµРїРµСЂСЊ РјРѕР¶РЅРѕ РґРѕР±Р°РІР»СЏС‚СЊ РєР°СЂС‚РёРЅС‹.");
   }
 
   async function handleLogout() {
     await fetch("/api/admin/logout", { method: "POST" });
     setConfig((prev) => (prev ? { ...prev, isAuthorized: false } : prev));
-    setStatus("Вы вышли из админки.");
+    setStatus("Р’С‹ РІС‹С€Р»Рё РёР· Р°РґРјРёРЅРєРё.");
   }
 
   async function uploadFile(
@@ -245,9 +183,9 @@ export default function AdminPage() {
   ) {
     setUploadState({
       status: "uploading",
-      message: `Загружается файл: ${file.name}`,
+      message: `Р—Р°РіСЂСѓР¶Р°РµС‚СЃСЏ С„Р°Р№Р»: ${file.name}`,
     });
-    setStatus(`Загружается файл: ${file.name}`);
+    setStatus(`Р—Р°РіСЂСѓР¶Р°РµС‚СЃСЏ С„Р°Р№Р»: ${file.name}`);
 
     const formData = new FormData();
     formData.append("file", file);
@@ -265,20 +203,20 @@ export default function AdminPage() {
 
       if (!res.ok) {
         const message =
-          data?.details || data?.error || "Не удалось загрузить файл.";
+          data?.details || data?.error || "РќРµ СѓРґР°Р»РѕСЃСЊ Р·Р°РіСЂСѓР·РёС‚СЊ С„Р°Р№Р».";
 
         setUploadState({
           status: "error",
           message,
         });
-        setStatus(`Ошибка загрузки: ${message}`);
+        setStatus(`РћС€РёР±РєР° Р·Р°РіСЂСѓР·РєРё: ${message}`);
         return null;
       }
 
       const successMessage =
         data?.storage === "blob"
-          ? "Файл загружен в Vercel Blob. Теперь можно нажимать «Добавить»."
-          : "Файл загружен локально. Теперь можно нажимать «Добавить».";
+          ? "Р¤Р°Р№Р» Р·Р°РіСЂСѓР¶РµРЅ РІ Vercel Blob. РўРµРїРµСЂСЊ РјРѕР¶РЅРѕ РЅР°Р¶РёРјР°С‚СЊ В«Р”РѕР±Р°РІРёС‚СЊВ»."
+          : "Р¤Р°Р№Р» Р·Р°РіСЂСѓР¶РµРЅ Р»РѕРєР°Р»СЊРЅРѕ. РўРµРїРµСЂСЊ РјРѕР¶РЅРѕ РЅР°Р¶РёРјР°С‚СЊ В«Р”РѕР±Р°РІРёС‚СЊВ».";
 
       setUploadState({
         status: "success",
@@ -289,13 +227,13 @@ export default function AdminPage() {
       return data?.src ?? null;
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Неизвестная ошибка загрузки.";
+        error instanceof Error ? error.message : "РќРµРёР·РІРµСЃС‚РЅР°СЏ РѕС€РёР±РєР° Р·Р°РіСЂСѓР·РєРё.";
 
       setUploadState({
         status: "error",
         message,
       });
-      setStatus(`Ошибка загрузки: ${message}`);
+      setStatus(`РћС€РёР±РєР° Р·Р°РіСЂСѓР·РєРё: ${message}`);
       return null;
     }
   }
@@ -306,31 +244,44 @@ export default function AdminPage() {
       return;
     }
 
-    const nextItems = [
-      {
-        ...galleryForm,
-        name: galleryForm.name.trim(),
-        category: galleryForm.category.trim(),
-        src: galleryForm.src.trim(),
-      },
-      ...galleryItems,
-    ];
+    const payload = {
+      ...galleryForm,
+      name: galleryForm.name.trim(),
+      category: galleryForm.category.trim(),
+      src: galleryForm.src.trim(),
+    };
 
-    const ok = await saveGallery(
-      nextItems,
-      "Картина добавлена в галерею и сразу опубликована."
-    );
+    const res = await fetch("/api/admin/gallery", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ item: payload }),
+    });
 
-    if (ok) {
-      setGalleryForm({
-        ...emptyGalleryItem,
-        category: galleryForm.category,
-      });
-      setGalleryUploadState({
-        status: "idle",
-        message: "",
-      });
+    if (!res.ok) {
+      const data = (await res.json().catch(() => null)) as
+        | { error?: string; details?: string }
+        | null;
+
+      setStatus(
+        data?.details
+          ? `Не удалось добавить работу: ${data.details}`
+          : "Не удалось добавить работу в галерею."
+      );
+      return;
     }
+
+    const data = (await res.json()) as { item: GalleryItem };
+
+    setGalleryItems((prev) => [data.item, ...prev]);
+    setStatus("Картина добавлена в галерею и сразу опубликована.");
+    setGalleryForm({
+      ...emptyGalleryItem,
+      category: galleryForm.category,
+    });
+    setGalleryUploadState({
+      status: "idle",
+      message: "",
+    });
   }
 
   async function addShopItem() {
@@ -339,23 +290,107 @@ export default function AdminPage() {
       return;
     }
 
-    const nextItems = [
-      { ...shopForm, title: shopForm.title.trim() },
-      ...shopItems,
-    ];
+    const payload = {
+      ...shopForm,
+      title: shopForm.title.trim(),
+    };
 
-    const ok = await saveShop(
-      nextItems,
-      "Картина добавлена в «В наличии» и сразу появилась на сайте."
-    );
+    const res = await fetch("/api/admin/shop", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ item: payload }),
+    });
 
-    if (ok) {
-      setShopForm(emptyShopItem);
-      setShopUploadState({
-        status: "idle",
-        message: "",
-      });
+    if (!res.ok) {
+      const data = (await res.json().catch(() => null)) as
+        | { error?: string; details?: string }
+        | null;
+
+      setStatus(
+        data?.details
+          ? `Не удалось добавить работу в «В наличии»: ${data.details}`
+          : "Не удалось добавить работу в «В наличии»."
+      );
+      return;
     }
+
+    const data = (await res.json()) as { item: ShopItem };
+
+    setShopItems((prev) => [data.item, ...prev]);
+    setStatus("Картина добавлена в «В наличии» и сразу появилась на сайте.");
+    setShopForm(emptyShopItem);
+    setShopUploadState({
+      status: "idle",
+      message: "",
+    });
+  }
+
+  async function handleDeleteGalleryItem(item: GalleryItem) {
+    const res = await fetch("/api/admin/gallery", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: item.id,
+        name: item.name,
+        src: item.src,
+      }),
+    });
+
+    if (!res.ok) {
+      const data = (await res.json().catch(() => null)) as
+        | { error?: string; details?: string }
+        | null;
+
+      setStatus(
+        data?.details
+          ? `Не удалось удалить работу: ${data.details}`
+          : "Не удалось удалить работу из галереи."
+      );
+      return;
+    }
+
+    setGalleryItems((prev) =>
+      prev.filter(
+        (current) =>
+          (current.id || `${current.name}::${current.src}`) !==
+          (item.id || `${item.name}::${item.src}`)
+      )
+    );
+    setStatus("Работа удалена из галереи.");
+  }
+
+  async function handleDeleteShopItem(item: ShopItem) {
+    const res = await fetch("/api/admin/shop", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: item.id,
+        title: item.title,
+        src: item.media[0]?.src,
+      }),
+    });
+
+    if (!res.ok) {
+      const data = (await res.json().catch(() => null)) as
+        | { error?: string; details?: string }
+        | null;
+
+      setStatus(
+        data?.details
+          ? `Не удалось удалить работу из «В наличии»: ${data.details}`
+          : "Не удалось удалить работу из «В наличии»."
+      );
+      return;
+    }
+
+    setShopItems((prev) =>
+      prev.filter(
+        (current) =>
+          (current.id || `${current.title}::${current.media[0]?.src || ""}`) !==
+          (item.id || `${item.title}::${item.media[0]?.src || ""}`)
+      )
+    );
+    setStatus("Работа удалена из раздела «В наличии».");
   }
 
   async function addArticle() {
@@ -363,12 +398,12 @@ export default function AdminPage() {
     const slug = (articleForm.slug || slugify(normalizedTitle)).trim();
 
     if (!normalizedTitle || !slug || !articleForm.contentHtml.trim()) {
-      setStatus("Для статьи заполните заголовок, slug и текст HTML.");
+      setStatus("Р”Р»СЏ СЃС‚Р°С‚СЊРё Р·Р°РїРѕР»РЅРёС‚Рµ Р·Р°РіРѕР»РѕРІРѕРє, slug Рё С‚РµРєСЃС‚ HTML.");
       return;
     }
 
     if (articles.some((article) => article.slug === slug)) {
-      setStatus("Статья с таким slug уже существует.");
+      setStatus("РЎС‚Р°С‚СЊСЏ СЃ С‚Р°РєРёРј slug СѓР¶Рµ СЃСѓС‰РµСЃС‚РІСѓРµС‚.");
       return;
     }
 
@@ -383,7 +418,7 @@ export default function AdminPage() {
       ...articles,
     ];
 
-    const ok = await saveArticles(nextItems, "Статья опубликована.");
+    const ok = await saveArticles(nextItems, "РЎС‚Р°С‚СЊСЏ РѕРїСѓР±Р»РёРєРѕРІР°РЅР°.");
 
     if (ok) {
       setArticleForm({
@@ -396,7 +431,7 @@ export default function AdminPage() {
   if (!config) {
     return (
       <main className="mx-auto max-w-6xl p-6 md:p-10">
-        Загрузка админки...
+        Р—Р°РіСЂСѓР·РєР° Р°РґРјРёРЅРєРё...
       </main>
     );
   }
@@ -410,10 +445,10 @@ export default function AdminPage() {
           <p className="text-sm uppercase tracking-[0.2em] text-amber-700">
             Art for House
           </p>
-          <h1 className="text-3xl font-bold">Админ-панель</h1>
+          <h1 className="text-3xl font-bold">РђРґРјРёРЅ-РїР°РЅРµР»СЊ</h1>
           <p className="mt-2 max-w-3xl text-sm text-gray-600">
-            Здесь можно безопасно войти, загрузить фото, выбрать раздел,
-            написать описание и сразу опубликовать работу на сайте.
+            Р—РґРµСЃСЊ РјРѕР¶РЅРѕ Р±РµР·РѕРїР°СЃРЅРѕ РІРѕР№С‚Рё, Р·Р°РіСЂСѓР·РёС‚СЊ С„РѕС‚Рѕ, РІС‹Р±СЂР°С‚СЊ СЂР°Р·РґРµР»,
+            РЅР°РїРёСЃР°С‚СЊ РѕРїРёСЃР°РЅРёРµ Рё СЃСЂР°Р·Сѓ РѕРїСѓР±Р»РёРєРѕРІР°С‚СЊ СЂР°Р±РѕС‚Сѓ РЅР° СЃР°Р№С‚Рµ.
           </p>
         </div>
 
@@ -423,23 +458,23 @@ export default function AdminPage() {
             onClick={handleLogout}
             className="rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-800 transition hover:border-gray-900"
           >
-            Выйти
+            Р’С‹Р№С‚Рё
           </button>
         )}
       </div>
 
       <div className="mb-6 grid gap-4 md:grid-cols-3">
         <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-          <p className="text-sm font-semibold text-gray-500">Авторизация</p>
+          <p className="text-sm font-semibold text-gray-500">РђРІС‚РѕСЂРёР·Р°С†РёСЏ</p>
           <p className="mt-1 text-lg font-bold">
-            {config.requiresLogin ? "Защищена" : "Открыта для dev"}
+            {config.requiresLogin ? "Р—Р°С‰РёС‰РµРЅР°" : "РћС‚РєСЂС‹С‚Р° РґР»СЏ dev"}
           </p>
         </div>
 
         <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
           <p className="text-sm font-semibold text-gray-500">Vercel Blob</p>
           <p className="mt-1 text-lg font-bold">
-            {config.blobConfigured ? "Токен найден" : "Токен ещё не добавлен"}
+            {config.blobConfigured ? "РўРѕРєРµРЅ РЅР°Р№РґРµРЅ" : "РўРѕРєРµРЅ РµС‰С‘ РЅРµ РґРѕР±Р°РІР»РµРЅ"}
           </p>
         </div>
 
@@ -449,24 +484,24 @@ export default function AdminPage() {
           </p>
           <p className="mt-1 text-lg font-bold">
             {config.databaseConfigured
-              ? "DATABASE_URL найден"
-              : "Нужно подключить БД"}
+              ? "DATABASE_URL РЅР°Р№РґРµРЅ"
+              : "РќСѓР¶РЅРѕ РїРѕРґРєР»СЋС‡РёС‚СЊ Р‘Р”"}
           </p>
         </div>
       </div>
 
       {loginRequired ? (
         <section className="max-w-xl rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="text-2xl font-bold">Вход в админку</h2>
+          <h2 className="text-2xl font-bold">Р’С…РѕРґ РІ Р°РґРјРёРЅРєСѓ</h2>
           <p className="mt-2 text-sm text-gray-600">
-            Задайте в `.env.local` свои `ADMIN_USERNAME` и `ADMIN_PASSWORD`,
-            затем войдите здесь.
+            Р—Р°РґР°Р№С‚Рµ РІ `.env.local` СЃРІРѕРё `ADMIN_USERNAME` Рё `ADMIN_PASSWORD`,
+            Р·Р°С‚РµРј РІРѕР№РґРёС‚Рµ Р·РґРµСЃСЊ.
           </p>
 
           <div className="mt-6 space-y-4">
             <label className="block">
               <span className="mb-2 block text-sm font-semibold">
-                Имя администратора
+                РРјСЏ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР°
               </span>
               <input
                 value={loginForm.username}
@@ -482,7 +517,7 @@ export default function AdminPage() {
             </label>
 
             <label className="block">
-              <span className="mb-2 block text-sm font-semibold">Пароль</span>
+              <span className="mb-2 block text-sm font-semibold">РџР°СЂРѕР»СЊ</span>
               <input
                 type="password"
                 value={loginForm.password}
@@ -493,7 +528,7 @@ export default function AdminPage() {
                   }))
                 }
                 className="w-full rounded-xl border border-gray-300 px-4 py-3"
-                placeholder="Введите пароль"
+                placeholder="Р’РІРµРґРёС‚Рµ РїР°СЂРѕР»СЊ"
               />
             </label>
 
@@ -502,7 +537,7 @@ export default function AdminPage() {
               onClick={handleLogin}
               className="rounded-full bg-gray-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-gray-800"
             >
-              Войти
+              Р’РѕР№С‚Рё
             </button>
           </div>
         </section>
@@ -521,10 +556,10 @@ export default function AdminPage() {
                 }`}
               >
                 {item === "gallery"
-                  ? "Галерея"
+                  ? "Р“Р°Р»РµСЂРµСЏ"
                   : item === "shop"
-                  ? "В наличии"
-                  : "Статьи"}
+                  ? "Р’ РЅР°Р»РёС‡РёРё"
+                  : "РЎС‚Р°С‚СЊРё"}
               </button>
             ))}
           </div>
@@ -533,13 +568,13 @@ export default function AdminPage() {
             <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
               <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
                 <h2 className="text-2xl font-bold">
-                  Добавить работу в галерею
+                  Р”РѕР±Р°РІРёС‚СЊ СЂР°Р±РѕС‚Сѓ РІ РіР°Р»РµСЂРµСЋ
                 </h2>
 
                 <div className="mt-5 grid gap-4 md:grid-cols-2">
                   <label className="block md:col-span-2">
                     <span className="mb-2 block text-sm font-semibold">
-                      Название
+                      РќР°Р·РІР°РЅРёРµ
                     </span>
                     <input
                       value={galleryForm.name}
@@ -550,13 +585,13 @@ export default function AdminPage() {
                         }))
                       }
                       className="w-full rounded-xl border border-gray-300 px-4 py-3"
-                      placeholder="Например: Тёплый интерьер"
+                      placeholder="РќР°РїСЂРёРјРµСЂ: РўС‘РїР»С‹Р№ РёРЅС‚РµСЂСЊРµСЂ"
                     />
                   </label>
 
                   <label className="block">
                     <span className="mb-2 block text-sm font-semibold">
-                      Раздел
+                      Р Р°Р·РґРµР»
                     </span>
                     <select
                       value={galleryForm.category}
@@ -578,7 +613,7 @@ export default function AdminPage() {
 
                   <label className="block">
                     <span className="mb-2 block text-sm font-semibold">
-                      Загрузка фото
+                      Р—Р°РіСЂСѓР·РєР° С„РѕС‚Рѕ
                     </span>
                     <input
                       type="file"
@@ -602,7 +637,7 @@ export default function AdminPage() {
 
                   <label className="block md:col-span-2">
                     <span className="mb-2 block text-sm font-semibold">
-                      Или вставьте URL вручную
+                      РР»Рё РІСЃС‚Р°РІСЊС‚Рµ URL РІСЂСѓС‡РЅСѓСЋ
                     </span>
                     <input
                       value={galleryForm.src}
@@ -613,7 +648,7 @@ export default function AdminPage() {
                         }))
                       }
                       className="w-full rounded-xl border border-gray-300 px-4 py-3"
-                      placeholder="/images/gallery/example.jpg или https://..."
+                      placeholder="/images/gallery/example.jpg РёР»Рё https://..."
                     />
                   </label>
                 </div>
@@ -629,7 +664,7 @@ export default function AdminPage() {
                     }`}
                   >
                     {galleryUploadState.status === "uploading"
-                      ? "Идёт загрузка. Дождитесь завершения перед добавлением."
+                      ? "РРґС‘С‚ Р·Р°РіСЂСѓР·РєР°. Р”РѕР¶РґРёС‚РµСЃСЊ Р·Р°РІРµСЂС€РµРЅРёСЏ РїРµСЂРµРґ РґРѕР±Р°РІР»РµРЅРёРµРј."
                       : galleryUploadState.message}
                   </p>
                 )}
@@ -641,13 +676,13 @@ export default function AdminPage() {
                   className="mt-6 rounded-full bg-emerald-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:bg-emerald-300"
                 >
                   {galleryUploadState.status === "uploading"
-                    ? "Загрузка фото..."
-                    : "Добавить и сразу опубликовать"}
+                    ? "Р—Р°РіСЂСѓР·РєР° С„РѕС‚Рѕ..."
+                    : "Р”РѕР±Р°РІРёС‚СЊ Рё СЃСЂР°Р·Сѓ РѕРїСѓР±Р»РёРєРѕРІР°С‚СЊ"}
                 </button>
               </div>
 
               <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-                <h3 className="text-xl font-bold">Последние работы</h3>
+                <h3 className="text-xl font-bold">РџРѕСЃР»РµРґРЅРёРµ СЂР°Р±РѕС‚С‹</h3>
 
                 <div className="mt-4 space-y-3">
                   {galleryItems.slice(0, 8).map((item) => (
@@ -660,6 +695,13 @@ export default function AdminPage() {
                       <p className="truncate text-xs text-gray-500">
                         {item.src}
                       </p>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteGalleryItem(item)}
+                        className="mt-3 rounded-full border border-red-200 px-3 py-1 text-xs font-semibold text-red-700 transition hover:bg-red-50"
+                      >
+                        Удалить
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -671,13 +713,13 @@ export default function AdminPage() {
             <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
               <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
                 <h2 className="text-2xl font-bold">
-                  Добавить картину в «В наличии»
+                  Р”РѕР±Р°РІРёС‚СЊ РєР°СЂС‚РёРЅСѓ РІ В«Р’ РЅР°Р»РёС‡РёРёВ»
                 </h2>
 
                 <div className="mt-5 grid gap-4 md:grid-cols-2">
                   <label className="block">
                     <span className="mb-2 block text-sm font-semibold">
-                      Название
+                      РќР°Р·РІР°РЅРёРµ
                     </span>
                     <input
                       value={shopForm.title}
@@ -693,7 +735,7 @@ export default function AdminPage() {
 
                   <label className="block">
                     <span className="mb-2 block text-sm font-semibold">
-                      Размер
+                      Р Р°Р·РјРµСЂ
                     </span>
                     <input
                       value={shopForm.size}
@@ -704,13 +746,13 @@ export default function AdminPage() {
                         }))
                       }
                       className="w-full rounded-xl border border-gray-300 px-4 py-3"
-                      placeholder="Например: 80×100 см"
+                      placeholder="РќР°РїСЂРёРјРµСЂ: 80Г—100 СЃРј"
                     />
                   </label>
 
                   <label className="block">
                     <span className="mb-2 block text-sm font-semibold">
-                      Цена
+                      Р¦РµРЅР°
                     </span>
                     <input
                       value={shopForm.price}
@@ -721,13 +763,13 @@ export default function AdminPage() {
                         }))
                       }
                       className="w-full rounded-xl border border-gray-300 px-4 py-3"
-                      placeholder="Например: 950 BYN"
+                      placeholder="РќР°РїСЂРёРјРµСЂ: 950 BYN"
                     />
                   </label>
 
                   <label className="block">
                     <span className="mb-2 block text-sm font-semibold">
-                      Фото
+                      Р¤РѕС‚Рѕ
                     </span>
                     <input
                       type="file"
@@ -754,7 +796,7 @@ export default function AdminPage() {
 
                   <label className="block md:col-span-2">
                     <span className="mb-2 block text-sm font-semibold">
-                      Описание
+                      РћРїРёСЃР°РЅРёРµ
                     </span>
                     <textarea
                       value={shopForm.description}
@@ -765,14 +807,14 @@ export default function AdminPage() {
                         }))
                       }
                       className="min-h-32 w-full rounded-xl border border-gray-300 px-4 py-3"
-                      placeholder="Можно оставить пустым, если описание не нужно."
+                      placeholder="РњРѕР¶РЅРѕ РѕСЃС‚Р°РІРёС‚СЊ РїСѓСЃС‚С‹Рј, РµСЃР»Рё РѕРїРёСЃР°РЅРёРµ РЅРµ РЅСѓР¶РЅРѕ."
                     />
                   </label>
                 </div>
 
                 {shopForm.media.length > 0 && (
                   <div className="mt-4 rounded-2xl border border-gray-100 bg-gray-50 p-4">
-                    <p className="text-sm font-semibold">Загруженные файлы</p>
+                    <p className="text-sm font-semibold">Р—Р°РіСЂСѓР¶РµРЅРЅС‹Рµ С„Р°Р№Р»С‹</p>
                     <ul className="mt-2 space-y-2 text-sm text-gray-600">
                       {shopForm.media.map((media, index) => (
                         <li key={`${media.src}-${index}`}>{media.src}</li>
@@ -792,7 +834,7 @@ export default function AdminPage() {
                     }`}
                   >
                     {shopUploadState.status === "uploading"
-                      ? "Идёт загрузка. Дождитесь завершения перед добавлением."
+                      ? "РРґС‘С‚ Р·Р°РіСЂСѓР·РєР°. Р”РѕР¶РґРёС‚РµСЃСЊ Р·Р°РІРµСЂС€РµРЅРёСЏ РїРµСЂРµРґ РґРѕР±Р°РІР»РµРЅРёРµРј."
                       : shopUploadState.message}
                   </p>
                 )}
@@ -803,12 +845,14 @@ export default function AdminPage() {
                   disabled={shopUploadState.status === "uploading"}
                   className="mt-6 rounded-full bg-emerald-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:bg-emerald-300"
                 >
-                  Добавить и сразу опубликовать
+                  {shopUploadState.status === "uploading"
+                    ? "Загрузка фото..."
+                    : "Добавить и сразу опубликовать"}
                 </button>
               </div>
 
               <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-                <h3 className="text-xl font-bold">Сейчас в продаже</h3>
+                <h3 className="text-xl font-bold">РЎРµР№С‡Р°СЃ РІ РїСЂРѕРґР°Р¶Рµ</h3>
 
                 <div className="mt-4 space-y-3">
                   {shopItems.slice(0, 8).map((item) => (
@@ -818,11 +862,18 @@ export default function AdminPage() {
                     >
                       <p className="font-semibold">{item.title}</p>
                       <p className="text-sm text-gray-600">
-                        {item.size || "Размер не указан"}
+                        {item.size || "Р Р°Р·РјРµСЂ РЅРµ СѓРєР°Р·Р°РЅ"}
                       </p>
                       <p className="text-sm text-amber-700">
-                        {item.price || "Цена не указана"}
+                        {item.price || "Р¦РµРЅР° РЅРµ СѓРєР°Р·Р°РЅР°"}
                       </p>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteShopItem(item)}
+                        className="mt-3 rounded-full border border-red-200 px-3 py-1 text-xs font-semibold text-red-700 transition hover:bg-red-50"
+                      >
+                        Удалить
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -833,7 +884,7 @@ export default function AdminPage() {
           {tab === "articles" && (
             <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
               <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-                <h2 className="text-2xl font-bold">Добавить статью</h2>
+                <h2 className="text-2xl font-bold">Р”РѕР±Р°РІРёС‚СЊ СЃС‚Р°С‚СЊСЋ</h2>
 
                 <div className="mt-5 grid gap-4">
                   <input
@@ -845,7 +896,7 @@ export default function AdminPage() {
                       }))
                     }
                     className="w-full rounded-xl border border-gray-300 px-4 py-3"
-                    placeholder="Заголовок"
+                    placeholder="Р—Р°РіРѕР»РѕРІРѕРє"
                   />
 
                   <input
@@ -869,7 +920,7 @@ export default function AdminPage() {
                       }))
                     }
                     className="w-full rounded-xl border border-gray-300 px-4 py-3"
-                    placeholder="Короткое описание"
+                    placeholder="РљРѕСЂРѕС‚РєРѕРµ РѕРїРёСЃР°РЅРёРµ"
                   />
 
                   <textarea
@@ -881,7 +932,7 @@ export default function AdminPage() {
                       }))
                     }
                     className="min-h-60 w-full rounded-xl border border-gray-300 px-4 py-3"
-                    placeholder="HTML статьи"
+                    placeholder="HTML СЃС‚Р°С‚СЊРё"
                   />
                 </div>
 
@@ -890,12 +941,12 @@ export default function AdminPage() {
                   onClick={addArticle}
                   className="mt-6 rounded-full bg-emerald-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800"
                 >
-                  Опубликовать статью
+                  РћРїСѓР±Р»РёРєРѕРІР°С‚СЊ СЃС‚Р°С‚СЊСЋ
                 </button>
               </div>
 
               <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-                <h3 className="text-xl font-bold">Последние статьи</h3>
+                <h3 className="text-xl font-bold">РџРѕСЃР»РµРґРЅРёРµ СЃС‚Р°С‚СЊРё</h3>
 
                 <div className="mt-4 space-y-3">
                   {articles.slice(0, 8).map((article) => (
