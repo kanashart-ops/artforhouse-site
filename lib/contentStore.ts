@@ -5,6 +5,11 @@ import {
   MediaKind,
   type Prisma,
 } from "@prisma/client";
+import {
+  GALLERY_ALL_CATEGORY,
+  GALLERY_CATEGORIES,
+  orderGalleryCategories,
+} from "@/lib/galleryCategories";
 import { getPrismaClient, isDatabaseConfigured } from "@/lib/prisma";
 
 export type GalleryItem = {
@@ -296,6 +301,6 @@ export async function saveShopItems(items: ShopItem[]): Promise<void> {
 
 export async function getGalleryCategories() {
   const items = await getGalleryItems();
-  const unique = [...new Set(items.map((item) => item.category.trim()).filter(Boolean))];
-  return ["Все", ...unique];
+  const unique = items.map((item) => item.category.trim()).filter(Boolean);
+  return [GALLERY_ALL_CATEGORY, ...orderGalleryCategories([...GALLERY_CATEGORIES, ...unique])];
 }

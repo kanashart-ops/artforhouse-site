@@ -3,6 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import type { GalleryItem, ShopItem } from "@/lib/contentStore";
 import type { Article } from "@/lib/articles";
+import {
+  GALLERY_CATEGORIES,
+  orderGalleryCategories,
+} from "@/lib/galleryCategories";
 
 type Tab = "gallery" | "shop" | "articles";
 
@@ -16,7 +20,7 @@ type AdminConfig = {
 
 const emptyGalleryItem: GalleryItem = {
   name: "",
-  category: "абстракция",
+  category: GALLERY_CATEGORIES[0],
   src: "",
 };
 
@@ -98,14 +102,10 @@ export default function AdminPage() {
   }, []);
 
   const galleryCategories = useMemo(() => {
-    const defaults = ["абстракция", "интерьер", "масло", "акрил", "пейзаж"];
-
-    return [
-      ...new Set([
-        ...defaults,
-        ...galleryItems.map((item) => item.category).filter(Boolean),
-      ]),
-    ];
+    return orderGalleryCategories([
+      ...GALLERY_CATEGORIES,
+      ...galleryItems.map((item) => item.category).filter(Boolean),
+    ]);
   }, [galleryItems]);
 
   async function saveGallery(

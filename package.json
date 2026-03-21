@@ -9,7 +9,9 @@
     "lint": "eslint",
     "postinstall": "prisma generate",
     "db:generate": "prisma generate",
-    "db:push": "prisma db push"
+    "db:push": "prisma db push",
+    "blob:migrate-local": "node scripts/migrate-local-assets-to-blob.mjs",
+    "db:seed-local-content": "node scripts/sync-local-json-to-db.mjs"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.5.0",

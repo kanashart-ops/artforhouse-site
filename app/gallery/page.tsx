@@ -8,11 +8,16 @@ import React, {
 } from "react";
 import Image from "next/image";
 import type { GalleryItem } from "@/lib/contentStore";
+import {
+  GALLERY_ALL_CATEGORY,
+  GALLERY_CATEGORIES,
+  orderGalleryCategories,
+} from "@/lib/galleryCategories";
 import { useFocusTrap } from "@/lib/useFocusTrap";
 
 export default function GalleryPage() {
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>("Все");
+  const [selectedCategory, setSelectedCategory] = useState<string>(GALLERY_ALL_CATEGORY);
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
   const [visible, setVisible] = useState(false);
   const [fade, setFade] = useState(true);
@@ -29,12 +34,15 @@ export default function GalleryPage() {
   }, []);
 
   const categories = useMemo(() => {
-    const unique = [...new Set(galleryItems.map((item) => item.category).filter(Boolean))];
-    return ["Все", ...unique];
+    const unique = galleryItems.map((item) => item.category).filter(Boolean);
+    return [
+      GALLERY_ALL_CATEGORY,
+      ...orderGalleryCategories([...GALLERY_CATEGORIES, ...unique]),
+    ];
   }, [galleryItems]);
 
   const filteredItems = useMemo(() => {
-    if (selectedCategory === "Все") {
+    if (selectedCategory === GALLERY_ALL_CATEGORY) {
       return galleryItems;
     }
 
