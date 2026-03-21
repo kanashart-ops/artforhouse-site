@@ -1,7 +1,7 @@
-// lib/articles.ts
-
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import type { Prisma } from "@prisma/client";
+import { getPrismaClient, isDatabaseConfigured } from "@/lib/prisma";
 
 export type Article = {
   slug: string;
@@ -17,10 +17,57 @@ const ARTICLES_URL =
 
 const localArticlesPath = path.join(process.cwd(), "data", "articles.json");
 
-/**
- * Читает локальные статьи из data/articles.json
- */
+function slugify(value: string) {
+  return (
+    value
+      .toLowerCase()
+      .trim()
+      .replace(/[^\p{L}\p{N}\s-]/gu, "")
+      .replace(/\s+/gu, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-+|-+$/g, "") || "article"
+  );
+}
+
+function createUniqueSlug(base: string, usedSlugs: Set<string>) {
+  let slug = slugify(base);
+  let suffix = 2;
+
+  while (usedSlugs.has(slug)) {
+    slug = `${slugify(base)}-${suffix}`;
+    suffix += 1;
+  }
+
+  usedSlugs.add(slug);
+  return slug;
+}
+
 export async function getLocalArticles(): Promise<Article[]> {
+  if (isDatabaseConfigured()) {
+    const prisma = getPrismaClient();
+
+    if (!prisma) {
+      throw new Error("DATABASE_URL is not configured.");
+    }
+
+    try {
+      const items = await prisma.article.findMany({
+        orderBy: { createdAt: "desc" },
+      });
+
+      return items.map((article) => ({
+        slug: article.slug,
+        title: article.title,
+        excerpt: article.excerpt,
+        coverImage: article.coverImage ?? "",
+        createdAt: article.createdAt.toISOString(),
+        contentHtml: article.contentHtml,
+      }));
+    } catch (error) {
+      console.error("Failed to read articles from database.", error);
+    }
+  }
+
   try {
     const raw = await fs.readFile(localArticlesPath, "utf8");
     const parsed = JSON.parse(raw);
@@ -30,10 +77,41 @@ export async function getLocalArticles(): Promise<Article[]> {
   }
 }
 
-/**
- * Сохраняет статьи в data/articles.json
- */
 export async function saveLocalArticles(articles: Article[]) {
+  if (isDatabaseConfigured()) {
+    const prisma = getPrismaClient();
+
+    if (!prisma) {
+      throw new Error("DATABASE_URL is not configured.");
+    }
+
+    const usedSlugs = new Set<string>();
+    const operations: Prisma.PrismaPromise<unknown>[] = [prisma.article.deleteMany()];
+
+    for (const article of [...articles].reverse()) {
+      const title = article.title.trim();
+      const slug = createUniqueSlug(article.slug || title || "article", usedSlugs);
+
+      operations.push(
+        prisma.article.create({
+          data: {
+            slug,
+            title: title || "Untitled article",
+            excerpt: article.excerpt.trim() || title || "Article excerpt",
+            coverImage: article.coverImage?.trim() || null,
+            createdAt: article.createdAt
+              ? new Date(article.createdAt)
+              : new Date(),
+            contentHtml: article.contentHtml,
+          },
+        })
+      );
+    }
+
+    await prisma.$transaction(operations);
+    return;
+  }
+
   await fs.writeFile(
     localArticlesPath,
     `${JSON.stringify(articles, null, 2)}\n`,
@@ -41,26 +119,16 @@ export async function saveLocalArticles(articles: Article[]) {
   );
 }
 
-/**
- * Загружает все статьи:
- * 1. Пытается получить remote JSON с GitHub
- * 2. Если не получилось — возвращает локальные
- * 3. Если получилось — мержит remote + local (local имеет приоритет)
- */
 export async function fetchAllArticles(): Promise<Article[]> {
   const localArticles = await getLocalArticles();
 
   try {
     const res = await fetch(ARTICLES_URL, {
-      cache: "no-store",
+      next: { revalidate: 3600 },
     });
 
     if (!res.ok) {
-      console.error(
-        "Failed to fetch articles:",
-        res.status,
-        res.statusText
-      );
+      console.error("Failed to fetch articles:", res.status, res.statusText);
       return localArticles;
     }
 
@@ -72,8 +140,6 @@ export async function fetchAllArticles(): Promise<Article[]> {
     }
 
     const remoteArticles = data as Article[];
-
-    // Мерж по slug (local перезаписывает remote)
     const mergedMap = new Map<string, Article>();
 
     for (const article of remoteArticles) {
@@ -85,37 +151,25 @@ export async function fetchAllArticles(): Promise<Article[]> {
     }
 
     return [...mergedMap.values()];
-  } catch (err) {
-    console.error("fetchAllArticles: fetch failed", err);
+  } catch (error) {
+    console.error("fetchAllArticles: fetch failed", error);
     return localArticles;
   }
 }
 
-/**
- * Возвращает ограниченное количество статей,
- * отсортированных по createdAt (новые сверху)
- */
-export async function fetchArticlesLimited(
-  limit: number
-): Promise<Article[]> {
+export async function fetchArticlesLimited(limit: number): Promise<Article[]> {
   const all = await fetchAllArticles();
 
   return all
     .slice()
     .sort(
       (a, b) =>
-        new Date(b.createdAt).getTime() -
-        new Date(a.createdAt).getTime()
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     )
     .slice(0, limit);
 }
 
-/**
- * Получает статью по slug
- */
-export async function fetchArticleBySlug(
-  slug: string
-): Promise<Article | null> {
+export async function fetchArticleBySlug(slug: string): Promise<Article | null> {
   const all = await fetchAllArticles();
-  return all.find((a) => a.slug === slug) ?? null;
+  return all.find((article) => article.slug === slug) ?? null;
 }

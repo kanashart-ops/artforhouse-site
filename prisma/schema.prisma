@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ArtworkPlacement {
+  GALLERY
+  SHOP
+}
+
+enum MediaKind {
+  IMAGE
+  VIDEO
+}
+
+model Artwork {
+  id          String           @id @default(cuid())
+  slug        String           @unique
+  title       String
+  category    String?
+  size        String?
+  price       String?
+  description String?
+  placement   ArtworkPlacement
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  media       ArtworkMedia[]
+}
+
+model ArtworkMedia {
+  id         String    @id @default(cuid())
+  artworkId  String
+  type       MediaKind
+  src        String
+  alt        String?
+  sortOrder  Int       @default(0)
+  createdAt  DateTime  @default(now())
+  artwork    Artwork   @relation(fields: [artworkId], references: [id], onDelete: Cascade)
+
+  @@index([artworkId, sortOrder])
+}
+
+model Article {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  excerpt     String
+  coverImage  String?
+  contentHtml String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

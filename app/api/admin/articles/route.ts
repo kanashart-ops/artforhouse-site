@@ -8,7 +8,7 @@ export async function GET() {
 }
 
 export async function PUT(req: Request) {
-  if (!isAdminAuthorized(req)) {
+  if (!(await isAdminAuthorized(req))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -19,6 +19,15 @@ export async function PUT(req: Request) {
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
   }
 
-  await saveLocalArticles(items);
+  try {
+    await saveLocalArticles(items);
+  } catch (error) {
+    console.error("Failed to save articles.", error);
+    return NextResponse.json(
+      { error: "Failed to save articles" },
+      { status: 500 }
+    );
+  }
+
   return NextResponse.json({ ok: true });
 }

@@ -1,6 +1,6 @@
 // app/api/mobile-gallery/route.ts
 import { NextResponse } from "next/server";
-import { getGalleryItems } from "@/lib/contentStore";
+import { getGalleryItems, type GalleryItem } from "@/lib/contentStore";
 
 type MobileArtItem = {
   id: string;
@@ -18,7 +18,7 @@ function absoluteUrl(path: string) {
 export async function GET() {
   const galleryItems = await getGalleryItems();
 
-  const items: MobileArtItem[] = galleryItems.map((item) => ({
+  const items: MobileArtItem[] = galleryItems.map((item: GalleryItem) => ({
     id: item.name,
     title: item.name,
     imageUrl: absoluteUrl(item.src),

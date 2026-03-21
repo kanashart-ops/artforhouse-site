@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { put } from "@vercel/blob";
 import { isAdminAuthorized } from "@/lib/adminAuth";
 
 const uploadFolders: Record<string, string> = {
@@ -9,8 +10,14 @@ const uploadFolders: Record<string, string> = {
   videos: "public/videos",
 };
 
+const blobFolders: Record<string, string> = {
+  gallery: "gallery",
+  shop: "shop",
+  videos: "videos",
+};
+
 export async function POST(req: Request) {
-  if (!isAdminAuthorized(req)) {
+  if (!(await isAdminAuthorized(req))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -23,19 +30,39 @@ export async function POST(req: Request) {
   }
 
   const targetDir = uploadFolders[folder];
-  if (!targetDir) {
+  const blobDir = blobFolders[folder];
+
+  if (!targetDir || !blobDir) {
     return NextResponse.json({ error: "Unknown folder" }, { status: 400 });
+  }
+
+  const ext = path.extname(file.name);
+  const basename = path
+    .basename(file.name, ext)
+    .replace(/[^a-zA-Z0-9._-]/g, "-");
+  const filename = `${Date.now()}-${basename}${ext}`;
+
+  if (process.env.BLOB_READ_WRITE_TOKEN?.trim()) {
+    const blob = await put(`${blobDir}/${filename}`, file, {
+      access: "public",
+      addRandomSuffix: false,
+    });
+
+    return NextResponse.json({
+      src: blob.url,
+      storage: "blob",
+    });
   }
 
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
-  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
-  const filename = `${Date.now()}-${safeName}`;
-
   const absoluteDir = path.join(process.cwd(), targetDir);
+
   await fs.mkdir(absoluteDir, { recursive: true });
   await fs.writeFile(path.join(absoluteDir, filename), buffer);
 
-  const publicPath = `/${targetDir.replace(/^public\//, "")}/${filename}`;
-  return NextResponse.json({ src: publicPath });
+  return NextResponse.json({
+    src: `/${targetDir.replace(/^public\//, "")}/${filename}`,
+    storage: "local",
+  });
 }
