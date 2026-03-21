@@ -9,10 +9,23 @@ type MobileArtItem = {
   category: string;
 };
 
-// Всегда отдаём правильный домен artforhouse.by
-function absoluteUrl(path: string) { 
+function normalizeImageUrl(url?: string | null) {
+  const value = (url ?? "").trim();
+
+  if (!value) {
+    return "";
+  }
+
+  if (/^https?:\/\//i.test(value)) {
+    return value;
+  }
+
+  if (value.startsWith("/")) {
+    return `https://artforhouse.by${value}`;
+  }
+
   const base = "https://artforhouse.by";
-  return `${base}${path}`;
+  return `${base}/${value}`;
 }
 
 export async function GET() {
@@ -21,7 +34,7 @@ export async function GET() {
   const items: MobileArtItem[] = galleryItems.map((item: GalleryItem) => ({
     id: item.name,
     title: item.name,
-    imageUrl: absoluteUrl(item.src),
+    imageUrl: normalizeImageUrl(item.src),
     category: String(item.category),
   }));
 
