@@ -1,16 +1,24 @@
 import type { NextConfig } from "next";
+import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
 
-const nextConfig: NextConfig = {
-  outputFileTracingExcludes: {
-    "/api/admin/upload": [
-      "./public/**/*",
-      "./.git/**/*",
-      "./.next/cache/**/*",
-      "./node_modules/typescript/**/*",
-      "./node_modules/eslint/**/*",
-      "./node_modules/@typescript-eslint/**/*",
-    ],
-  },
-};
+export default function createNextConfig(phase: string): NextConfig {
+  const isDevServer = phase === PHASE_DEVELOPMENT_SERVER;
 
-export default nextConfig;
+  return {
+    // Next 15 writes dev and build artifacts into the same directory by default.
+    // Keeping them separate avoids corrupting the dev client manifest when build
+    // runs while `next dev` is active.
+    distDir: isDevServer ? ".next-dev" : ".next",
+    outputFileTracingExcludes: {
+      "/api/admin/upload": [
+        "./public/**/*",
+        "./.git/**/*",
+        "./.next/cache/**/*",
+        "./.next-dev/cache/**/*",
+        "./node_modules/typescript/**/*",
+        "./node_modules/eslint/**/*",
+        "./node_modules/@typescript-eslint/**/*",
+      ],
+    },
+  };
+}

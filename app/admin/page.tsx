@@ -48,6 +48,10 @@ const emptyArticle: Article = {
   contentHtml: "",
 };
 
+const GALLERY_ADMIN_PAGE_SIZE = 7;
+const SHOP_IMAGE_LIMIT = 10;
+const SHOP_VIDEO_LIMIT = 4;
+
 function slugify(value: string) {
   return value
     .toLowerCase()
@@ -80,6 +84,8 @@ export default function AdminPage() {
     status: "idle",
     message: "",
   });
+  const [galleryAdminCategory, setGalleryAdminCategory] = useState("Все");
+  const [galleryAdminPage, setGalleryAdminPage] = useState(1);
 
   async function fetchAdminData() {
     const [configRes, galleryRes, shopRes, articlesRes] = await Promise.all([
@@ -121,6 +127,27 @@ export default function AdminPage() {
       ...galleryItems.map((item) => item.category).filter(Boolean),
     ]);
   }, [galleryItems]);
+
+  const galleryAdminItems = useMemo(() => {
+    const filtered =
+      galleryAdminCategory === "Все"
+        ? galleryItems
+        : galleryItems.filter((item) => item.category === galleryAdminCategory);
+
+    const totalPages = Math.max(
+      1,
+      Math.ceil(filtered.length / GALLERY_ADMIN_PAGE_SIZE)
+    );
+    const safePage = Math.min(galleryAdminPage, totalPages);
+    const start = (safePage - 1) * GALLERY_ADMIN_PAGE_SIZE;
+
+    return {
+      filtered,
+      totalPages,
+      page: safePage,
+      items: filtered.slice(start, start + GALLERY_ADMIN_PAGE_SIZE),
+    };
+  }, [galleryAdminCategory, galleryAdminPage, galleryItems]);
 
   async function saveArticles(
     nextItems: Article[],
@@ -236,6 +263,69 @@ export default function AdminPage() {
       setStatus(`Ошибка загрузки: ${message}`);
       return null;
     }
+  }
+
+  async function uploadShopFiles(
+    files: FileList | null,
+    kind: "image" | "video"
+  ) {
+    if (!files?.length) {
+      return;
+    }
+
+    const selectedFiles = Array.from(files);
+    const currentImages = shopForm.media.filter((media) => media.type === "image").length;
+    const currentVideos = shopForm.media.filter((media) => media.type === "video").length;
+    const limit = kind === "image" ? SHOP_IMAGE_LIMIT : SHOP_VIDEO_LIMIT;
+    const currentCount = kind === "image" ? currentImages : currentVideos;
+
+    if (currentCount >= limit) {
+      setStatus(
+        kind === "image"
+          ? `Можно добавить максимум ${SHOP_IMAGE_LIMIT} фотографий.`
+          : `Можно добавить максимум ${SHOP_VIDEO_LIMIT} видео.`
+      );
+      return;
+    }
+
+    const availableSlots = limit - currentCount;
+    const queue = selectedFiles.slice(0, availableSlots);
+
+    if (queue.length < selectedFiles.length) {
+      setStatus(
+        kind === "image"
+          ? `Добавятся только первые ${availableSlots} фото: достигнут лимит ${SHOP_IMAGE_LIMIT}.`
+          : `Добавятся только первые ${availableSlots} видео: достигнут лимит ${SHOP_VIDEO_LIMIT}.`
+      );
+    }
+
+    const uploadedMedia: { type: "image" | "video"; src: string }[] = [];
+
+    for (const file of queue) {
+      const src = await uploadFile(
+        file,
+        kind === "image" ? "shop" : "videos",
+        setShopUploadState
+      );
+
+      if (!src) {
+        return;
+      }
+
+      uploadedMedia.push({ type: kind, src });
+    }
+
+    setShopForm((prev) => ({
+      ...prev,
+      media: [...prev.media, ...uploadedMedia],
+    }));
+  }
+
+  function removeShopMedia(targetIndex: number) {
+    setShopForm((prev) => ({
+      ...prev,
+      media: prev.media.filter((_, index) => index !== targetIndex),
+    }));
   }
 
   async function addGalleryItem() {
@@ -684,10 +774,32 @@ export default function AdminPage() {
               <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
                 <h3 className="text-xl font-bold">Последние работы</h3>
 
+                <div className="mt-4 flex flex-wrap items-center gap-3">
+                  <select
+                    value={galleryAdminCategory}
+                    onChange={(event) => {
+                      setGalleryAdminCategory(event.target.value);
+                      setGalleryAdminPage(1);
+                    }}
+                    className="rounded-full border border-gray-300 px-4 py-2 text-sm text-gray-700"
+                  >
+                    <option value="Все">Все категории</option>
+                    {galleryCategories.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+
+                  <p className="text-sm text-gray-500">
+                    Найдено: {galleryAdminItems.filtered.length}
+                  </p>
+                </div>
+
                 <div className="mt-4 space-y-3">
-                  {galleryItems.slice(0, 8).map((item) => (
+                  {galleryAdminItems.items.map((item) => (
                     <div
-                      key={`${item.src}-${item.name}`}
+                      key={item.id || `${item.src}-${item.name}`}
                       className="rounded-2xl border border-gray-100 bg-gray-50 p-3"
                     >
                       <p className="font-semibold">{item.name}</p>
@@ -704,6 +816,39 @@ export default function AdminPage() {
                       </button>
                     </div>
                   ))}
+                </div>
+
+                <div className="mt-4 flex items-center justify-between gap-3">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setGalleryAdminPage((prev) => Math.max(1, prev - 1))
+                    }
+                    disabled={galleryAdminItems.page <= 1}
+                    className="rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Назад
+                  </button>
+
+                  <p className="text-sm text-gray-500">
+                    Страница {galleryAdminItems.page} из{" "}
+                    {galleryAdminItems.totalPages}
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setGalleryAdminPage((prev) =>
+                        Math.min(galleryAdminItems.totalPages, prev + 1)
+                      )
+                    }
+                    disabled={
+                      galleryAdminItems.page >= galleryAdminItems.totalPages
+                    }
+                    className="rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Вперёд
+                  </button>
                 </div>
               </div>
             </section>
@@ -769,29 +914,40 @@ export default function AdminPage() {
 
                   <label className="block">
                     <span className="mb-2 block text-sm font-semibold">
-                      Фото
+                      Фотографии
                     </span>
                     <input
                       type="file"
                       accept="image/*"
+                      multiple
                       className="block w-full text-sm"
                       onChange={async (event) => {
-                        const file = event.target.files?.[0];
-                        if (!file) return;
-
-                        const src = await uploadFile(
-                          file,
-                          "shop",
-                          setShopUploadState
-                        );
-                        if (src) {
-                          setShopForm((prev) => ({
-                            ...prev,
-                            media: [...prev.media, { type: "image", src }],
-                          }));
-                        }
+                        await uploadShopFiles(event.target.files, "image");
+                        event.currentTarget.value = "";
                       }}
                     />
+                    <span className="mt-2 block text-xs text-gray-500">
+                      До {SHOP_IMAGE_LIMIT} фото для одной работы.
+                    </span>
+                  </label>
+
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-semibold">
+                      Видео
+                    </span>
+                    <input
+                      type="file"
+                      accept="video/*"
+                      multiple
+                      className="block w-full text-sm"
+                      onChange={async (event) => {
+                        await uploadShopFiles(event.target.files, "video");
+                        event.currentTarget.value = "";
+                      }}
+                    />
+                    <span className="mt-2 block text-xs text-gray-500">
+                      До {SHOP_VIDEO_LIMIT} видео для одной работы.
+                    </span>
                   </label>
 
                   <label className="block md:col-span-2">
@@ -817,7 +973,22 @@ export default function AdminPage() {
                     <p className="text-sm font-semibold">Загруженные файлы</p>
                     <ul className="mt-2 space-y-2 text-sm text-gray-600">
                       {shopForm.media.map((media, index) => (
-                        <li key={`${media.src}-${index}`}>{media.src}</li>
+                        <li
+                          key={`${media.src}-${index}`}
+                          className="flex items-center justify-between gap-3"
+                        >
+                          <span className="truncate">
+                            {media.type === "video" ? "Видео" : "Фото"}:{" "}
+                            {media.src}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => removeShopMedia(index)}
+                            className="rounded-full border border-red-200 px-3 py-1 text-xs font-semibold text-red-700 transition hover:bg-red-50"
+                          >
+                            Удалить
+                          </button>
+                        </li>
                       ))}
                     </ul>
                   </div>
@@ -849,6 +1020,11 @@ export default function AdminPage() {
                     ? "Загрузка фото..."
                     : "Добавить и сразу опубликовать"}
                 </button>
+
+                <p className="mt-4 text-xs leading-6 text-gray-500">
+                  Цены на сайте ориентировочные, не являются публичной офертой.
+                  Сайт не является интернет-магазином.
+                </p>
               </div>
 
               <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">

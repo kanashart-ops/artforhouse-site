@@ -1,0 +1,15 @@
+
+> artforhouse-site@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.5.9
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.95.253:3000
+   - Environments: .env.local, .env
+
+ ✓ Starting...
+ ✓ Ready in 2.9s
+ ○ Compiling /admin ...
+ ✓ Compiled /admin in 7.3s (664 modules)
+ GET /admin 200 in 8059ms
+^C

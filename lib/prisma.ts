@@ -1,5 +1,6 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
+import { normalizeDatabaseUrl } from "@/lib/databaseUrl";
 
 declare global {
   var prismaGlobal: PrismaClient | undefined;
@@ -12,7 +13,9 @@ function createPrismaClient() {
     throw new Error("DATABASE_URL is not configured.");
   }
 
-  const adapter = new PrismaPg({ connectionString });
+  const adapter = new PrismaPg({
+    connectionString: normalizeDatabaseUrl(connectionString),
+  });
   return new PrismaClient({ adapter });
 }
 

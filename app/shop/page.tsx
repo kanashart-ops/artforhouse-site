@@ -51,16 +51,21 @@ export default function ShopPage() {
       if (!selectedItem) {
         return;
       }
+
       if (event.key === "ArrowRight") {
         setCurrentIndex((prev) => (prev + 1) % (selectedItem.media.length || 1));
       }
+
       if (event.key === "ArrowLeft") {
         setCurrentIndex((prev) =>
           (prev - 1 + (selectedItem.media.length || 1)) %
           (selectedItem.media.length || 1)
         );
       }
-      if (event.key === "Escape") closeModal();
+
+      if (event.key === "Escape") {
+        closeModal();
+      }
     };
 
     window.addEventListener("keydown", handleKey);
@@ -73,9 +78,15 @@ export default function ShopPage() {
     }
 
     const delta = event.changedTouches[0].clientX - touchStartX;
-    if (delta > 50) prevMedia();
-    if (delta < -50) nextMedia();
+    if (delta > 50) {
+      prevMedia();
+    }
+    if (delta < -50) {
+      nextMedia();
+    }
   };
+
+  const hasItems = shopItems.length > 0;
 
   return (
     <main className="mx-auto max-w-6xl p-6 md:p-10">
@@ -83,23 +94,24 @@ export default function ShopPage() {
         Картины в наличии
       </h1>
 
-      {shopItems.length === 0 ? (
+      {!hasItems ? (
         <div className="mx-auto max-w-3xl rounded-[2rem] border border-gray-200 bg-white p-8 text-center shadow-sm">
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">
             Раздел обновляется
           </p>
           <h2 className="mt-3 text-3xl font-bold text-gray-900">
-            Готовых работ сейчас нет в витрине
+            Готовых работ сейчас нет на витрине
           </h2>
           <p className="mt-4 text-base leading-7 text-gray-600">
-            Можно оставить заявку на индивидуальную картину под интерьер, размер стены или готовый подарок.
+            Можно оставить заявку на индивидуальную картину под интерьер,
+            размер стены или готовый подарок.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link
               href="/order"
               className="rounded-full bg-gray-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-gray-800"
             >
-              Заказать картину
+              Оставить заявку
             </Link>
             <Link
               href="/gallery"
@@ -113,7 +125,7 @@ export default function ShopPage() {
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {shopItems.map((item, index) => (
             <button
-              key={`${item.title}-${index}`}
+              key={item.id || `${item.title}-${index}`}
               type="button"
               className="overflow-hidden rounded-lg border border-gray-200 bg-white text-left shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
               onClick={(event) => {
@@ -121,7 +133,7 @@ export default function ShopPage() {
                 setSelectedItem(item);
                 setCurrentIndex(0);
               }}
-              aria-label={`Открыть карточку товара ${item.title}`}
+              aria-label={`Открыть карточку работы ${item.title}`}
               aria-haspopup="dialog"
             >
               <Image
@@ -141,6 +153,11 @@ export default function ShopPage() {
         </div>
       )}
 
+      <div className="mt-12 rounded-3xl border border-gray-200 bg-white/80 p-5 text-center text-sm leading-6 text-gray-600 shadow-sm">
+        Сайт не является интернет-магазином. Все цены на сайте указаны
+        ориентировочно и уточняются индивидуально при обращении.
+      </div>
+
       {selectedItem && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
@@ -158,7 +175,7 @@ export default function ShopPage() {
               type="button"
               className="absolute right-4 top-2 z-10 text-3xl font-bold text-gray-700 transition hover:text-black"
               onClick={closeModal}
-              aria-label="Закрыть карточку товара"
+              aria-label="Закрыть карточку работы"
             >
               ×
             </button>

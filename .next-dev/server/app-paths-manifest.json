@@ -1,0 +1,9 @@
+{
+  "/api/admin/config/route": "app/api/admin/config/route.js",
+  "/api/admin/gallery/route": "app/api/admin/gallery/route.js",
+  "/api/admin/shop/route": "app/api/admin/shop/route.js",
+  "/api/admin/articles/route": "app/api/admin/articles/route.js",
+  "/page": "app/page.js",
+  "/oil-paintings/page": "app/oil-paintings/page.js",
+  "/admin/page": "app/admin/page.js"
+}
