@@ -1,3 +1,9 @@
+/**
+ * Safe one-time import of JSON content into an EMPTY PostgreSQL database.
+ * npm run db:seed-local-content             -> dry run only
+ * npm run db:seed-local-content -- --apply  -> import, only if DB is empty
+ * Never deletes existing records. All inserts use one transaction.
+ */
 import { config } from "dotenv";
 import { promises as fs } from "node:fs";
 import path from "node:path";
@@ -8,9 +14,8 @@ config({ path: ".env" });
 config({ path: ".env.local", override: true });
 
 const connectionString = process.env.DATABASE_URL?.trim();
-
 if (!connectionString) {
-  console.error("DATABASE_URL is missing in .env.local or .env");
+  console.error("DATABASE_URL отсутствует в .env.local или .env.");
   process.exit(1);
 }
 
@@ -19,10 +24,16 @@ const prisma = new PrismaClient({
 });
 
 const cwd = process.cwd();
+const apply = process.argv.includes("--apply");
+const unknownArguments = process.argv.slice(2).filter((arg) => arg !== "--apply");
+if (unknownArguments.length) {
+  console.error(`Неизвестные аргументы: ${unknownArguments.join(", ")}`);
+  process.exit(1);
+}
 
 function slugify(value) {
   return (
-    value
+    String(value)
       .toLowerCase()
       .trim()
       .replace(/[^\p{L}\p{N}\s-]/gu, "")
@@ -32,122 +43,146 @@ function slugify(value) {
   );
 }
 
-function createUniqueSlug(base, usedSlugs) {
-  let slug = slugify(base);
-  let suffix = 2;
-
-  while (usedSlugs.has(slug)) {
-    slug = `${slugify(base)}-${suffix}`;
-    suffix += 1;
-  }
-
-  usedSlugs.add(slug);
+function uniqueSlug(base, used) {
+  const root = slugify(base);
+  let slug = root;
+  let next = 2;
+  while (used.has(slug)) slug = `${root}-${next++}`;
+  used.add(slug);
   return slug;
 }
 
-async function readJson(filePath, fallback) {
-  try {
-    return JSON.parse(await fs.readFile(filePath, "utf8"));
-  } catch {
-    return fallback;
-  }
-}
-
-async function syncGallery() {
-  const items = await readJson(path.join(cwd, "data", "gallery.json"), []);
-  const usedSlugs = new Set();
-
-  await prisma.artwork.deleteMany({ where: { placement: "GALLERY" } });
-
-  for (const item of [...items].reverse()) {
-    await prisma.artwork.create({
-      data: {
-        slug: createUniqueSlug(item.name || item.src || "gallery-item", usedSlugs),
-        title: item.name?.trim() || "Untitled artwork",
-        category: item.category?.trim() || null,
-        placement: "GALLERY",
-        media: {
-          create: [
-            {
-              type: "IMAGE",
-              src: item.src?.trim() || "",
-              alt: item.name?.trim() || null,
-              sortOrder: 0,
-            },
-          ],
-        },
-      },
-    });
-  }
-
-  console.log(`Gallery synced: ${items.length}`);
-}
-
-async function syncShop() {
-  const items = await readJson(path.join(cwd, "data", "shop.json"), []);
-  const usedSlugs = new Set();
-
-  await prisma.artwork.deleteMany({ where: { placement: "SHOP" } });
-
-  for (const item of [...items].reverse()) {
-    await prisma.artwork.create({
-      data: {
-        slug: createUniqueSlug(item.title || item.media?.[0]?.src || "shop-item", usedSlugs),
-        title: item.title?.trim() || "Untitled artwork",
-        size: item.size?.trim() || null,
-        price: item.price?.trim() || null,
-        description: item.description?.trim() || null,
-        placement: "SHOP",
-        media: {
-          create: Array.isArray(item.media)
-            ? item.media
-                .filter((media) => media?.src)
-                .map((media, index) => ({
-                  type: media.type === "video" ? "VIDEO" : "IMAGE",
-                  src: media.src.trim(),
-                  alt: item.title?.trim() || null,
-                  sortOrder: index,
-                }))
-            : [],
-        },
-      },
-    });
-  }
-
-  console.log(`Shop synced: ${items.length}`);
-}
-
-async function syncArticles() {
-  const items = await readJson(path.join(cwd, "data", "articles.json"), []);
-  const usedSlugs = new Set();
-
-  await prisma.article.deleteMany();
-
-  for (const item of [...items].reverse()) {
-    await prisma.article.create({
-      data: {
-        slug: createUniqueSlug(item.slug || item.title || "article", usedSlugs),
-        title: item.title?.trim() || "Untitled article",
-        excerpt: item.excerpt?.trim() || item.title?.trim() || "Article excerpt",
-        coverImage: item.coverImage?.trim() || null,
-        contentHtml: item.contentHtml || "",
-        createdAt: item.createdAt ? new Date(item.createdAt) : new Date(),
-      },
-    });
-  }
-
-  console.log(`Articles synced: ${items.length}`);
+async function readJsonArray(name) {
+  const fullPath = path.join(cwd, "data", name);
+  const parsed = JSON.parse(await fs.readFile(fullPath, "utf8"));
+  if (!Array.isArray(parsed)) throw new Error(`${name} должен содержать массив.`);
+  return parsed;
 }
 
 async function main() {
-  await syncGallery();
-  await syncShop();
-  await syncArticles();
-  await prisma.$disconnect();
+  const [gallery, shop, articles] = await Promise.all([
+    readJsonArray("gallery.json"),
+    readJsonArray("shop.json"),
+    readJsonArray("articles.json"),
+  ]);
+
+  for (const [index, item] of gallery.entries()) {
+    if (!item || typeof item.name !== "string" || typeof item.src !== "string" || !item.src.trim()) {
+      throw new Error(`Некорректная запись галереи #${index + 1}`);
+    }
+  }
+  for (const [index, item] of shop.entries()) {
+    if (!item || typeof item.title !== "string" || !Array.isArray(item.media)) {
+      throw new Error(`Некорректная запись магазина #${index + 1}`);
+    }
+    for (const media of item.media) {
+      if (typeof media?.src !== "string" || !media.src.trim()) {
+        throw new Error(`Некорректное медиа в записи магазина #${index + 1}`);
+      }
+    }
+  }
+  for (const [index, item] of articles.entries()) {
+    if (!item || typeof item.title !== "string" || typeof item.contentHtml !== "string") {
+      throw new Error(`Некорректная статья #${index + 1}`);
+    }
+    if (item.createdAt && Number.isNaN(new Date(item.createdAt).getTime())) {
+      throw new Error(`Некорректная дата статьи #${index + 1}`);
+    }
+  }
+
+  const existing = {
+    gallery: await prisma.artwork.count({ where: { placement: "GALLERY" } }),
+    shop: await prisma.artwork.count({ where: { placement: "SHOP" } }),
+    articles: await prisma.article.count(),
+  };
+
+  console.log("Локальные JSON:", { gallery: gallery.length, shop: shop.length, articles: articles.length });
+  console.log("Данные в PostgreSQL:", existing);
+
+  if (Object.values(existing).some((count) => count > 0)) {
+    throw new Error(
+      "Импорт остановлен: PostgreSQL уже содержит данные. Скрипт ничего не удаляет и не перезаписывает."
+    );
+  }
+
+  if (!apply) {
+    console.log("ПРОВЕРКА ЗАВЕРШЕНА. Запись не выполнялась. Для импорта используйте: npm run db:seed-local-content -- --apply");
+    return;
+  }
+
+  const artSlugs = new Set();
+  const articleSlugs = new Set();
+
+  await prisma.$transaction(async (tx) => {
+    // Recheck inside the transaction; never use deleteMany here.
+    const [a, b] = await Promise.all([
+      tx.artwork.count(),
+      tx.article.count(),
+    ]);
+    if (a || b) throw new Error("База уже содержит записи. Импорт отменён.");
+
+    for (const item of [...gallery].reverse()) {
+      const name = item.name.trim();
+      await tx.artwork.create({
+        data: {
+          slug: uniqueSlug(name || item.src, artSlugs),
+          title: name || "Untitled artwork",
+          category: typeof item.category === "string" ? item.category.trim() || null : null,
+          placement: "GALLERY",
+          media: {
+            create: [{
+              type: "IMAGE",
+              src: item.src.trim(),
+              alt: name || null,
+              sortOrder: 0,
+            }],
+          },
+        },
+      });
+    }
+
+    for (const item of [...shop].reverse()) {
+      const title = item.title.trim();
+      const media = item.media.map((entry, index) => ({
+        type: entry.type === "video" ? "VIDEO" : "IMAGE",
+        src: entry.src.trim(),
+        alt: title || null,
+        sortOrder: index,
+      }));
+      await tx.artwork.create({
+        data: {
+          slug: uniqueSlug(title || media[0]?.src || "shop-item", artSlugs),
+          title: title || "Untitled artwork",
+          size: typeof item.size === "string" ? item.size.trim() || null : null,
+          price: typeof item.price === "string" ? item.price.trim() || null : null,
+          description: typeof item.description === "string" ? item.description.trim() || null : null,
+          placement: "SHOP",
+          media: { create: media },
+        },
+      });
+    }
+
+    for (const item of [...articles].reverse()) {
+      const title = item.title.trim();
+      await tx.article.create({
+        data: {
+          slug: uniqueSlug(item.slug || title || "article", articleSlugs),
+          title: title || "Untitled article",
+          excerpt: typeof item.excerpt === "string" ? item.excerpt.trim() || title : title,
+          coverImage: typeof item.coverImage === "string" ? item.coverImage.trim() || null : null,
+          contentHtml: item.contentHtml,
+          createdAt: item.createdAt ? new Date(item.createdAt) : new Date(),
+        },
+      });
+    }
+  }, { maxWait: 10000, timeout: 120000 });
+
+  console.log("Импорт завершён. Записи из JSON добавлены в PostgreSQL без удаления существующих данных.");
 }
 
-main().catch(async (error) => {
-  console.error(error);
-  await prisma.$disconnect();
-  process.exit(1);
-});
+main()
+  .catch((error) => {
+    console.error("Импорт отменён:", error instanceof Error ? error.message : error);
+    process.exitCode = 1;
+  })
+  .finally(() => prisma.$disconnect());

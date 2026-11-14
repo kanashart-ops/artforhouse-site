@@ -50,31 +50,31 @@ export async function getLocalArticles(): Promise<Article[]> {
       throw new Error("DATABASE_URL is not configured.");
     }
 
-    try {
-      const items = await prisma.article.findMany({
-        orderBy: { createdAt: "desc" },
-      });
+    const items = await prisma.article.findMany({
+      orderBy: { createdAt: "desc" },
+    });
 
-      return items.map((article) => ({
-        slug: article.slug,
-        title: article.title,
-        excerpt: article.excerpt,
-        coverImage: article.coverImage ?? "",
-        createdAt: article.createdAt.toISOString(),
-        contentHtml: article.contentHtml,
-      }));
-    } catch (error) {
-      console.error("Failed to read articles from database.", error);
-    }
+    return items.map((article) => ({
+      slug: article.slug,
+      title: article.title,
+      excerpt: article.excerpt,
+      coverImage: article.coverImage ?? "",
+      createdAt: article.createdAt.toISOString(),
+      contentHtml: article.contentHtml,
+    }));
   }
 
+  let raw: string;
   try {
-    const raw = await fs.readFile(localArticlesPath, "utf8");
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? (parsed as Article[]) : [];
-  } catch {
-    return [];
+    raw = await fs.readFile(localArticlesPath, "utf8");
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return [];
+    throw error;
   }
+
+  const parsed: unknown = JSON.parse(raw);
+  if (!Array.isArray(parsed)) throw new Error("data/articles.json должен содержать массив статей.");
+  return parsed as Article[];
 }
 
 export async function saveLocalArticles(articles: Article[]) {
@@ -86,22 +86,32 @@ export async function saveLocalArticles(articles: Article[]) {
     }
 
     const usedSlugs = new Set<string>();
-    const operations: Prisma.PrismaPromise<unknown>[] = [prisma.article.deleteMany()];
+    const operations: Prisma.PrismaPromise<unknown>[] = [];
 
     for (const article of [...articles].reverse()) {
       const title = article.title.trim();
       const slug = createUniqueSlug(article.slug || title || "article", usedSlugs);
+      const titleValue = title || "Untitled article";
+      const excerpt = article.excerpt.trim() || title || "Article excerpt";
+      const coverImage = article.coverImage?.trim() || null;
 
       operations.push(
-        prisma.article.create({
-          data: {
+        prisma.article.upsert({
+          where: { slug },
+          create: {
             slug,
-            title: title || "Untitled article",
-            excerpt: article.excerpt.trim() || title || "Article excerpt",
-            coverImage: article.coverImage?.trim() || null,
+            title: titleValue,
+            excerpt,
+            coverImage,
             createdAt: article.createdAt
               ? new Date(article.createdAt)
               : new Date(),
+            contentHtml: article.contentHtml,
+          },
+          update: {
+            title: titleValue,
+            excerpt,
+            coverImage,
             contentHtml: article.contentHtml,
           },
         })
@@ -110,6 +120,12 @@ export async function saveLocalArticles(articles: Article[]) {
 
     await prisma.$transaction(operations);
     return;
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "DATABASE_URL не настроен: сохранение статей в JSON на production запрещено."
+    );
   }
 
   await fs.writeFile(

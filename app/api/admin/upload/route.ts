@@ -22,6 +22,16 @@ export async function POST(req: Request) {
       );
     }
 
+    if (process.env.NODE_ENV === "production" && !process.env.DATABASE_URL?.trim()) {
+      return NextResponse.json(
+        {
+          error: "PostgreSQL не подключён.",
+          details: "Сначала настройте DATABASE_URL: нельзя загружать файлы без возможности сохранить карточку работы.",
+        },
+        { status: 503 }
+      );
+    }
+
     const token = process.env.BLOB_READ_WRITE_TOKEN?.trim();
 
     if (!token) {

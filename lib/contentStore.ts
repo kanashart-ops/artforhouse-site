@@ -37,15 +37,22 @@ const galleryFile = path.join(dataDir, "gallery.json");
 const shopFile = path.join(dataDir, "shop.json");
 
 async function readJsonFile<T>(filePath: string, fallback: T): Promise<T> {
+  let raw: string;
   try {
-    const raw = await fs.readFile(filePath, "utf8");
-    return JSON.parse(raw) as T;
-  } catch {
-    return fallback;
+    raw = await fs.readFile(filePath, "utf8");
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return fallback;
+    throw error;
   }
+  return JSON.parse(raw) as T;
 }
 
 async function writeJsonFile<T>(filePath: string, payload: T) {
+  if (process.env.NODE_ENV === "production" && !isDatabaseConfigured()) {
+    throw new Error(
+      "DATABASE_URL не настроен: сохранение JSON в production запрещено. Подключите PostgreSQL."
+    );
+  }
   await fs.writeFile(filePath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
 }
 
@@ -273,15 +280,9 @@ async function saveShopItemsToDatabase(items: ShopItem[]) {
 
 export async function getGalleryItems(): Promise<GalleryItem[]> {
   if (isDatabaseConfigured()) {
-    try {
-      const items = await getGalleryItemsFromDatabase();
-
-      if (items) {
-        return items;
-      }
-    } catch (error) {
-      console.error("Failed to read gallery from database.", error);
-    }
+    const items = await getGalleryItemsFromDatabase();
+    if (!items) throw new Error("Не удалось получить каталог галереи из PostgreSQL.");
+    return items;
   }
 
   return readJsonFile<GalleryItem[]>(galleryFile, []);
@@ -407,15 +408,9 @@ export async function deleteGalleryItem(identifier: {
 
 export async function getShopItems(): Promise<ShopItem[]> {
   if (isDatabaseConfigured()) {
-    try {
-      const items = await getShopItemsFromDatabase();
-
-      if (items) {
-        return items;
-      }
-    } catch (error) {
-      console.error("Failed to read shop from database.", error);
-    }
+    const items = await getShopItemsFromDatabase();
+    if (!items) throw new Error("Не удалось получить каталог магазина из PostgreSQL.");
+    return items;
   }
 
   return readJsonFile<ShopItem[]>(shopFile, []);
