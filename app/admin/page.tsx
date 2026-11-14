@@ -115,11 +115,13 @@ export default function AdminPage() {
     setStatus("Админка готова к работе.");
   }
 
-  useEffect(() => {
-    fetchAdminData().catch(() => {
+ useEffect(() => {
+  void Promise.resolve()
+    .then(() => fetchAdminData())
+    .catch(() => {
       setStatus("Не удалось загрузить данные админки.");
     });
-  }, []);
+}, []);
 
   const galleryCategories = useMemo(() => {
     return orderGalleryCategories([

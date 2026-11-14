@@ -22,7 +22,8 @@ export default function GalleryPage() {
   const [visible, setVisible] = useState(false);
   const [fade, setFade] = useState(true);
   const [touchStartX, setTouchStartX] = useState(0);
-  const [loadedImages, setLoadedImages] = useState<boolean[]>([]);
+  const [loadedImages, setLoadedImages] =
+  useState<Record<string, boolean>>({});
   const modalRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
 
@@ -48,10 +49,6 @@ export default function GalleryPage() {
 
     return galleryItems.filter((item) => item.category === selectedCategory);
   }, [galleryItems, selectedCategory]);
-
-  useEffect(() => {
-    setLoadedImages(new Array(filteredItems.length).fill(false));
-  }, [filteredItems.length]);
 
   const closeModal = () => {
     setVisible(false);
@@ -187,7 +184,7 @@ export default function GalleryPage() {
           >
             <div
               className={`relative h-64 w-full bg-gray-100 transition-opacity duration-700 ${
-                loadedImages[index] ? "opacity-100" : "opacity-0"
+                loadedImages[item.src] ? "opacity-100" : "opacity-0"
               }`}
             >
               <Image
@@ -196,13 +193,12 @@ export default function GalleryPage() {
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1280px) 33vw, 25vw"
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
-                onLoad={() => {
-                  setLoadedImages((prev) => {
-                    const next = [...prev];
-                    next[index] = true;
-                    return next;
-                  });
-                }}
+onLoad={() => {
+  setLoadedImages((prev) => ({
+    ...prev,
+    [item.src]: true,
+  }));
+}}
                 unoptimized
               />
             </div>
