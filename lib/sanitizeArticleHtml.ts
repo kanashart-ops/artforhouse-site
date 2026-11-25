@@ -33,10 +33,10 @@ function attribute(attrs: string, name: string): string | null {
 function safeUrl(value: string | null, image: boolean): string | null {
   if (!value) return null;
   const url = value.trim();
-  if (!url || /[\\u0000-\\u0020\\u007f]/.test(url)) return null;
-  if (/^https?:\\/\\/[^/\\s]+/i.test(url)) return url;
+  if (!url || /[\u0000-\u0020\u007f]/.test(url)) return null;
+  if (/^https?:\/\/[^/\s]+/i.test(url)) return url;
   if (url.startsWith("/") && !url.startsWith("//")) return url;
-  if (!image && (/^mailto:[^\\s]+$/i.test(url) || /^tel:[+0-9-]+$/.test(url) || /^#[\\w-]+$/.test(url))) return url;
+  if (!image && (/^mailto:[^\s]+$/i.test(url) || /^tel:[+0-9-]+$/.test(url) || /^#[\w-]+$/.test(url))) return url;
   return null;
 }
 
@@ -44,8 +44,8 @@ export function sanitizeArticleHtml(input: string): string {
   // Remove active content entirely when it has a paired container.
   const html = input
     .replace(/<!--[^]*?-->/g, "")
-    .replace(/<\\s*(script|style|iframe|object|form|svg|math)\\b[^>]*>[^]*?<\\/\\s*\\1\\s*>/gi, "");
-  const tags = /<\\s*(\\/?)\\s*([a-z][a-z0-9]*)\\b([^<>]*)>/gi;
+    .replace(/<\s*(script|style|iframe|object|form|svg|math)\b[^>]*>[^]*?<\/\s*\1\s*>/gi, "");
+  const tags = /<\s*(\/?)\s*([a-z][a-z0-9]*)\b([^<>]*)>/gi;
 
   let result = "";
   let cursor = 0;
