@@ -74,6 +74,10 @@ export default function AdminPage() {
     useState<GalleryItem>(emptyGalleryItem);
   const [shopForm, setShopForm] = useState<ShopItem>(emptyShopItem);
   const [articleForm, setArticleForm] = useState<Article>(emptyArticle);
+  const [editingGalleryId, setEditingGalleryId] = useState<string | null>(null);
+  const [editingShopId, setEditingShopId] = useState<string | null>(null);
+  const [editingArticleSlug, setEditingArticleSlug] = useState<string | null>(null);
+  const [showArticlePreview, setShowArticlePreview] = useState(false);
 
   const [status, setStatus] = useState("Загрузка данных...");
   const [galleryUploadState, setGalleryUploadState] = useState<UploadState>({
@@ -340,6 +344,48 @@ export default function AdminPage() {
     }));
   }
 
+  function startGalleryEdit(item: GalleryItem) {
+    setGalleryForm({ ...item });
+    setEditingGalleryId(item.id || `${item.name}::${item.src}`);
+    setGalleryUploadState({ status: "idle", message: "" });
+    setStatus("Редактирование картины. Сохраните изменения.");
+    document.getElementById("admin-gallery-form")?.scrollIntoView({ behavior: "smooth" });
+  }
+
+  function cancelGalleryEdit() {
+    setEditingGalleryId(null);
+    setGalleryForm({ ...emptyGalleryItem });
+    setGalleryUploadState({ status: "idle", message: "" });
+  }
+
+  function startShopEdit(item: ShopItem) {
+    setShopForm({ ...item, media: item.media.map((media) => ({ ...media })) });
+    setEditingShopId(item.id || `${item.title}::${item.media[0]?.src || ""}`);
+    setShopUploadState({ status: "idle", message: "" });
+    setStatus("Редактирование товара. Сохраните изменения.");
+    document.getElementById("admin-shop-form")?.scrollIntoView({ behavior: "smooth" });
+  }
+
+  function cancelShopEdit() {
+    setEditingShopId(null);
+    setShopForm({ ...emptyShopItem, media: [] });
+    setShopUploadState({ status: "idle", message: "" });
+  }
+
+  function startArticleEdit(article: Article) {
+    setArticleForm({ ...article });
+    setEditingArticleSlug(article.slug);
+    setShowArticlePreview(false);
+    setStatus("Редактирование статьи. Адрес (slug) останется прежним.");
+    document.getElementById("admin-article-form")?.scrollIntoView({ behavior: "smooth" });
+  }
+
+  function cancelArticleEdit() {
+    setEditingArticleSlug(null);
+    setArticleForm({ ...emptyArticle, createdAt: new Date().toISOString() });
+    setShowArticlePreview(false);
+  }
+
   async function addGalleryItem() {
     if (!galleryForm.name.trim() || !galleryForm.src.trim()) {
       setStatus("Для галереи нужны фото, название и раздел.");
@@ -352,6 +398,28 @@ export default function AdminPage() {
       category: galleryForm.category.trim(),
       src: galleryForm.src.trim(),
     };
+
+    if (editingGalleryId) {
+      const response = await fetch("/api/admin/gallery", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: editingGalleryId, item: payload }),
+      });
+      const data = (await response.json().catch(() => null)) as
+        | { item?: GalleryItem; error?: string }
+        | null;
+      if (!response.ok || !data?.item) {
+        setStatus(data?.error || "Не удалось сохранить изменения в галерее.");
+        return;
+      }
+      const saved = data.item;
+      setGalleryItems((prev) => prev.map((entry) =>
+        (entry.id || `${entry.name}::${entry.src}`) === editingGalleryId ? saved : entry
+      ));
+      cancelGalleryEdit();
+      setStatus("Изменения картины сохранены.");
+      return;
+    }
 
     const res = await fetch("/api/admin/gallery", {
       method: "POST",
@@ -397,6 +465,28 @@ export default function AdminPage() {
       title: shopForm.title.trim(),
     };
 
+    if (editingShopId) {
+      const response = await fetch("/api/admin/shop", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: editingShopId, item: payload }),
+      });
+      const data = (await response.json().catch(() => null)) as
+        | { item?: ShopItem; error?: string }
+        | null;
+      if (!response.ok || !data?.item) {
+        setStatus(data?.error || "Не удалось сохранить изменения товара.");
+        return;
+      }
+      const saved = data.item;
+      setShopItems((prev) => prev.map((entry) =>
+        (entry.id || `${entry.title}::${entry.media[0]?.src || ""}`) === editingShopId ? saved : entry
+      ));
+      cancelShopEdit();
+      setStatus("Изменения товара сохранены.");
+      return;
+    }
+
     const res = await fetch("/api/admin/shop", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -428,6 +518,7 @@ export default function AdminPage() {
   }
 
   async function handleDeleteGalleryItem(item: GalleryItem) {
+    if (!window.confirm(`Удалить картину «${item.name}» из галереи?\\n\\nДействие нельзя отменить. Перед удалением скачайте резервную копию.`)) return;
     const res = await fetch("/api/admin/gallery", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
@@ -462,6 +553,7 @@ export default function AdminPage() {
   }
 
   async function handleDeleteShopItem(item: ShopItem) {
+    if (!window.confirm(`Удалить товар «${item.title}» из раздела «В наличии»?\\n\\nДействие нельзя отменить.`)) return;
     const res = await fetch("/api/admin/shop", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
@@ -501,6 +593,32 @@ export default function AdminPage() {
 
     if (!normalizedTitle || !slug || !articleForm.contentHtml.trim()) {
       setStatus("Для статьи заполните заголовок, slug и текст HTML.");
+      return;
+    }
+
+    if (editingArticleSlug) {
+      if (slug !== editingArticleSlug) {
+        setStatus("При редактировании нельзя менять slug: это адрес опубликованной статьи.");
+        return;
+      }
+      const response = await fetch("/api/admin/articles", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: editingArticleSlug, article: articleForm }),
+      });
+      const data = (await response.json().catch(() => null)) as
+        | { item?: Article; error?: string }
+        | null;
+      if (!response.ok || !data?.item) {
+        setStatus(data?.error || "Не удалось сохранить изменения статьи.");
+        return;
+      }
+      const saved = data.item;
+      setArticles((prev) => prev.map((entry) =>
+        entry.slug === editingArticleSlug ? saved : entry
+      ));
+      cancelArticleEdit();
+      setStatus("Изменения статьи сохранены.");
       return;
     }
 
@@ -645,6 +763,18 @@ export default function AdminPage() {
         </section>
       ) : (
         <>
+          <div className="mb-4 flex flex-wrap items-center gap-3">
+            <a
+              href="/api/admin/export"
+              className="rounded-full border border-emerald-600 bg-white px-5 py-2 text-sm font-semibold text-emerald-800 hover:bg-emerald-50"
+            >
+              Скачать резервный экспорт (JSON)
+            </a>
+            <span className="text-xs text-gray-500">
+              Картины, товары и статьи — без самих файлов Vercel Blob.
+            </span>
+          </div>
+
           <div className="mb-6 flex flex-wrap gap-3">
             {(["gallery", "shop", "articles"] as Tab[]).map((item) => (
               <button
@@ -668,9 +798,9 @@ export default function AdminPage() {
 
           {tab === "gallery" && (
             <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-              <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+              <div id="admin-gallery-form" className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
                 <h2 className="text-2xl font-bold">
-                  Добавить работу в галерею
+                  {editingGalleryId ? "Редактировать картину" : "Добавить работу в галерею"}
                 </h2>
 
                 <div className="mt-5 grid gap-4 md:grid-cols-2">
@@ -779,8 +909,14 @@ export default function AdminPage() {
                 >
                   {galleryUploadState.status === "uploading"
                     ? "Загрузка фото..."
-                    : "Добавить и сразу опубликовать"}
+                    : editingGalleryId ? "Сохранить изменения" : "Добавить и сразу опубликовать"}
                 </button>
+                {editingGalleryId && (
+                  <button type="button" onClick={cancelGalleryEdit}
+                    className="ml-3 mt-3 rounded-full border border-gray-300 px-5 py-3 text-sm font-semibold">
+                    Отмена
+                  </button>
+                )}
               </div>
 
               <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
@@ -819,6 +955,13 @@ export default function AdminPage() {
                       <p className="truncate text-xs text-gray-500">
                         {item.src}
                       </p>
+                      <button
+                        type="button"
+                        onClick={() => startGalleryEdit(item)}
+                        className="mr-2 mt-3 rounded-full border border-gray-300 px-3 py-1 text-xs font-semibold text-gray-800 hover:bg-white"
+                      >
+                        Изменить
+                      </button>
                       <button
                         type="button"
                         onClick={() => handleDeleteGalleryItem(item)}
@@ -868,9 +1011,9 @@ export default function AdminPage() {
 
           {tab === "shop" && (
             <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-              <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+              <div id="admin-shop-form" className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
                 <h2 className="text-2xl font-bold">
-                  Добавить картину в «В наличии»
+                  {editingShopId ? "Редактировать товар" : "Добавить картину в «В наличии»"}
                 </h2>
 
                 <div className="mt-5 grid gap-4 md:grid-cols-2">
@@ -1030,8 +1173,14 @@ export default function AdminPage() {
                 >
                   {shopUploadState.status === "uploading"
                     ? "Загрузка фото..."
-                    : "Добавить и сразу опубликовать"}
+                    : editingShopId ? "Сохранить изменения" : "Добавить и сразу опубликовать"}
                 </button>
+                {editingShopId && (
+                  <button type="button" onClick={cancelShopEdit}
+                    className="ml-3 mt-3 rounded-full border border-gray-300 px-5 py-3 text-sm font-semibold">
+                    Отмена
+                  </button>
+                )}
 
                 <p className="mt-4 text-xs leading-6 text-gray-500">
                   Цены на сайте ориентировочные, не являются публичной офертой.
@@ -1057,6 +1206,13 @@ export default function AdminPage() {
                       </p>
                       <button
                         type="button"
+                        onClick={() => startShopEdit(item)}
+                        className="mr-2 mt-3 rounded-full border border-gray-300 px-3 py-1 text-xs font-semibold text-gray-800 hover:bg-white"
+                      >
+                        Изменить
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => handleDeleteShopItem(item)}
                         className="mt-3 rounded-full border border-red-200 px-3 py-1 text-xs font-semibold text-red-700 transition hover:bg-red-50"
                       >
@@ -1071,8 +1227,10 @@ export default function AdminPage() {
 
           {tab === "articles" && (
             <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-              <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-                <h2 className="text-2xl font-bold">Добавить статью</h2>
+              <div id="admin-article-form" className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+                <h2 className="text-2xl font-bold">
+                  {editingArticleSlug ? "Редактировать статью" : "Добавить статью"}
+                </h2>
 
                 <div className="mt-5 grid gap-4">
                   <input
@@ -1097,6 +1255,8 @@ export default function AdminPage() {
                     }
                     className="w-full rounded-xl border border-gray-300 px-4 py-3"
                     placeholder="slug"
+                    readOnly={Boolean(editingArticleSlug)}
+                    title={editingArticleSlug ? "Адрес статьи нельзя менять при редактировании" : undefined}
                   />
 
                   <input
@@ -1109,6 +1269,15 @@ export default function AdminPage() {
                     }
                     className="w-full rounded-xl border border-gray-300 px-4 py-3"
                     placeholder="Короткое описание"
+                  />
+
+                  <input
+                    value={articleForm.coverImage || ""}
+                    onChange={(event) =>
+                      setArticleForm((prev) => ({ ...prev, coverImage: event.target.value }))
+                    }
+                    className="w-full rounded-xl border border-gray-300 px-4 py-3"
+                    placeholder="URL обложки (необязательно)"
                   />
 
                   <textarea
@@ -1129,8 +1298,30 @@ export default function AdminPage() {
                   onClick={addArticle}
                   className="mt-6 rounded-full bg-emerald-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800"
                 >
-                  Опубликовать статью
+                  {editingArticleSlug ? "Сохранить изменения" : "Опубликовать статью"}
                 </button>
+                <button type="button" onClick={() => setShowArticlePreview((current) => !current)}
+                  className="ml-3 mt-3 rounded-full border border-gray-300 px-5 py-3 text-sm font-semibold">
+                  {showArticlePreview ? "Скрыть предпросмотр" : "Предпросмотр"}
+                </button>
+                {editingArticleSlug && (
+                  <button type="button" onClick={cancelArticleEdit}
+                    className="ml-3 mt-3 rounded-full border border-gray-300 px-5 py-3 text-sm font-semibold">
+                    Отмена
+                  </button>
+                )}
+                {showArticlePreview && (
+                  <div className="mt-5 rounded-xl border border-gray-200 p-3">
+                    <p className="mb-2 text-sm font-semibold">Предпросмотр HTML (изолированное окно)</p>
+                    <iframe
+                      title="Предпросмотр статьи"
+                      sandbox=""
+                      referrerPolicy="no-referrer"
+                      srcDoc={articleForm.contentHtml}
+                      className="h-[420px] w-full rounded-lg border border-gray-200 bg-white"
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
@@ -1144,6 +1335,18 @@ export default function AdminPage() {
                     >
                       <p className="font-semibold">{article.title}</p>
                       <p className="text-sm text-gray-600">/{article.slug}</p>
+                      <button
+                        type="button"
+                        onClick={() => startArticleEdit(article)}
+                        className="mt-3 rounded-full border border-gray-300 px-3 py-1 text-xs font-semibold text-gray-800 hover:bg-white"
+                      >
+                        Изменить
+                      </button>
+                      <a href={`/articles/${encodeURIComponent(article.slug)}`} target="_blank"
+                        rel="noopener noreferrer"
+                        className="ml-2 mt-3 inline-block rounded-full border border-gray-300 px-3 py-1 text-xs font-semibold text-gray-800 hover:bg-white">
+                        Открыть
+                      </a>
                     </div>
                   ))}
                 </div>
