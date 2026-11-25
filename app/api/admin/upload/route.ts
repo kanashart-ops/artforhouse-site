@@ -124,7 +124,7 @@ export async function POST(req: Request) {
       "video/webm": "webm",
       "video/quicktime": "mov",
     };
-    const baseName = originalName.replace(/\\.[^.]*$/, "").slice(0, 100) || "upload";
+    const baseName = originalName.replace(/\.[^.]*$/, "").slice(0, 100) || "upload";
     const filename = `${Date.now()}-${baseName}.${extensions[mime]}`;
 
     const blob = await put(
