@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { cache } from "react";
 import { ARTIST_NAME, createPageMetadata, jsonLdStringify, publicImageUrl, SITE_URL } from "@/lib/seo";
 import { canOptimizeArtworkImage } from "@/lib/imageOptimization";
+import { sanitizeArticleHtml } from "@/lib/sanitizeArticleHtml";
 import { fetchArticleBySlug } from "@/lib/articles";
 import type { Article } from "@/lib/articles";
 
@@ -72,9 +73,9 @@ export default async function ArticlePage({
 
   if (!article) notFound();
 
-  const contentHtml = isApp
-    ? stripAppBreadcrumb(article.contentHtml)
-    : article.contentHtml;
+  const contentHtml = sanitizeArticleHtml(
+    isApp ? stripAppBreadcrumb(article.contentHtml) : article.contentHtml
+  );
 
   const imageUrl = publicImageUrl(article.coverImage);
   const date = new Date(article.createdAt);
@@ -109,16 +110,16 @@ export default async function ArticlePage({
         })}
       </p>
 
-      {article.coverImage && (
+      {imageUrl && (
         <div className="relative w-full mb-10">
           <Image
-            src={article.coverImage}
+            src={imageUrl}
             alt={article.title}
             width={1200}
             height={630}
             sizes="(max-width: 768px) 100vw, 768px"
             fetchPriority="high"
-            unoptimized={!canOptimizeArtworkImage(article.coverImage)}
+            unoptimized={!canOptimizeArtworkImage(imageUrl)}
             className="w-full max-h-[420px] object-cover rounded-xl"
           />
         </div>

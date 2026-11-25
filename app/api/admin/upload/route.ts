@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { put } from "@vercel/blob";
 import { isAdminAuthorized } from "@/lib/adminAuth";
+import { sameOriginAdminMutation } from "@/lib/adminSecurity";
 
 export const runtime = "nodejs";
 
@@ -15,6 +16,9 @@ type UploadFolder = keyof typeof blobFolders;
 
 export async function POST(req: Request) {
   try {
+    if (!sameOriginAdminMutation(req)) {
+      return NextResponse.json({ error: "Недопустимый источник запроса." }, { status: 403 });
+    }
     if (!(await isAdminAuthorized(req))) {
       return NextResponse.json(
         { error: "Unauthorized" },
@@ -64,6 +68,46 @@ export async function POST(req: Request) {
     }
 
     const blobDir = blobFolders[folder as UploadFolder];
+
+    // The server-upload route is subject to Vercel's request-body limit.
+    const maxBytes = 4 * 1024 * 1024;
+    if (file.size > maxBytes) {
+      return NextResponse.json(
+        { error: "Файл больше 4 МБ. Для больших файлов нужна прямая загрузка в Blob." },
+        { status: 413 }
+      );
+    }
+
+    const mime = file.type.toLowerCase();
+    const imageTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif"]);
+    const videoTypes = new Set(["video/mp4", "video/webm", "video/quicktime"]);
+    if (!(blobDir === "videos" ? videoTypes : imageTypes).has(mime)) {
+      return NextResponse.json(
+        { error: blobDir === "videos" ? "Допустимы MP4, WebM и MOV." : "Допустимы JPG, PNG, WebP, GIF и AVIF. SVG запрещён." },
+        { status: 415 }
+      );
+    }
+
+    // Verify magic bytes; extensions and client-provided MIME alone can be forged.
+    const head = new Uint8Array(await file.slice(0, 64).arrayBuffer());
+    const ascii = (offset: number, length: number) =>
+      String.fromCharCode(...head.slice(offset, offset + length));
+    const signatureValid =
+      mime === "image/jpeg" ? head[0] === 0xff && head[1] === 0xd8 && head[2] === 0xff :
+      mime === "image/png" ? head[0] === 0x89 && ascii(1, 3) === "PNG" && head[4] === 13 && head[5] === 10 :
+      mime === "image/gif" ? ["GIF87a", "GIF89a"].includes(ascii(0, 6)) :
+      mime === "image/webp" ? ascii(0, 4) === "RIFF" && ascii(8, 4) === "WEBP" :
+      mime === "image/avif" ? ascii(4, 4) === "ftyp" && ["avif", "avis"].includes(ascii(8, 4)) :
+      mime === "video/mp4" || mime === "video/quicktime" ? ascii(4, 4) === "ftyp" :
+      mime === "video/webm" ? head[0] === 0x1a && head[1] === 0x45 && head[2] === 0xdf && head[3] === 0xa3 :
+      false;
+    if (!signatureValid) {
+      return NextResponse.json(
+        { error: "Содержимое файла не соответствует его формату." },
+        { status: 415 }
+      );
+    }
+
 
     const originalName = file.name
       .replace(/[^a-zA-Z0-9._-]/g, "-")
