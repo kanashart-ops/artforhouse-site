@@ -60,6 +60,7 @@ function decodeSession(token: string | undefined | null): AdminSessionPayload | 
     return null;
   }
 
+  if (token.length > 4096) return null;
   const [encoded, signature] = token.split(".");
 
   if (!encoded || !signature) {
@@ -75,7 +76,7 @@ function decodeSession(token: string | undefined | null): AdminSessionPayload | 
       Buffer.from(encoded, "base64url").toString("utf8")
     ) as AdminSessionPayload;
 
-    if (!payload.username || typeof payload.expiresAt !== "number") {
+    if (!payload.username || !Number.isFinite(payload.expiresAt)) {
       return null;
     }
 
@@ -112,7 +113,7 @@ export function validateAdminLogin(username: string, password: string) {
     return !isProduction();
   }
 
-  return username === credentials.username && password === credentials.password;
+  return username === credentials.username && safeEqual(password, credentials.password ?? "");
 }
 
 export async function createAdminSession(username: string) {
@@ -149,7 +150,7 @@ export async function isAdminAuthorized(req?: Request) {
     return true;
   }
 
-  const providedPassword = req?.headers.get("x-admin-password");
-
-  return Boolean(providedPassword && providedPassword === credentials.password);
+  // Only signed session cookies authenticate protected admin API requests.
+  void req;
+  return false;
 }

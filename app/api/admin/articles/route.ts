@@ -1,13 +1,21 @@
 import { NextResponse } from "next/server";
 import { isAdminAuthorized } from "@/lib/adminAuth";
+import { sameOriginAdminMutation } from "@/lib/adminSecurity";
 import { getLocalArticles, saveLocalArticles, type Article } from "@/lib/articles";
 
-export async function GET() {
+export async function GET(req: Request) {
+  if (!(await isAdminAuthorized(req))) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const items = await getLocalArticles();
   return NextResponse.json({ items });
 }
 
 export async function PUT(req: Request) {
+  if (!sameOriginAdminMutation(req)) {
+    return NextResponse.json({ error: "Недопустимый источник запроса." }, { status: 403 });
+  }
+
   if (!(await isAdminAuthorized(req))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

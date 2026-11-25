@@ -88,13 +88,8 @@ export default function AdminPage() {
   const [galleryAdminPage, setGalleryAdminPage] = useState(1);
 
   async function fetchAdminData() {
-    const [configRes, galleryRes, shopRes, articlesRes] = await Promise.all([
-      fetch("/api/admin/config", { cache: "no-store" }),
-      fetch("/api/admin/gallery", { cache: "no-store" }),
-      fetch("/api/admin/shop", { cache: "no-store" }),
-      fetch("/api/admin/articles", { cache: "no-store" }),
-    ]);
-
+    const configRes = await fetch("/api/admin/config", { cache: "no-store" });
+    if (!configRes.ok) throw new Error("Не удалось получить настройки админки.");
     const configData = (await configRes.json()) as AdminConfig;
     setConfig(configData);
     setLoginForm((prev) => ({
@@ -102,16 +97,31 @@ export default function AdminPage() {
       password: prev.password,
     }));
 
-    setGalleryItems(
-      ((await galleryRes.json()) as { items?: GalleryItem[] }).items ?? []
-    );
-    setShopItems(
-      ((await shopRes.json()) as { items?: ShopItem[] }).items ?? []
-    );
-    setArticles(
-      ((await articlesRes.json()) as { items?: Article[] }).items ?? []
-    );
+    if (!configData.isAuthorized) {
+      setGalleryItems([]);
+      setShopItems([]);
+      setArticles([]);
+      setStatus("Требуется вход в админку.");
+      return;
+    }
 
+    const [galleryRes, shopRes, articlesRes] = await Promise.all([
+      fetch("/api/admin/gallery", { cache: "no-store" }),
+      fetch("/api/admin/shop", { cache: "no-store" }),
+      fetch("/api/admin/articles", { cache: "no-store" }),
+    ]);
+    if (!galleryRes.ok || !shopRes.ok || !articlesRes.ok) {
+      throw new Error("Не удалось загрузить данные админки.");
+    }
+
+    const [galleryData, shopData, articlesData] = await Promise.all([
+      galleryRes.json() as Promise<{ items?: GalleryItem[] }>,
+      shopRes.json() as Promise<{ items?: ShopItem[] }>,
+      articlesRes.json() as Promise<{ items?: Article[] }>,
+    ]);
+    setGalleryItems(galleryData.items ?? []);
+    setShopItems(shopData.items ?? []);
+    setArticles(articlesData.items ?? []);
     setStatus("Админка готова к работе.");
   }
 
