@@ -15,6 +15,9 @@ export const metadata: Metadata = {
   description:
     "Art For House — Арт Фор Хаус: картины художницы Анны Побитко, интерьерная живопись, масло и акрил, работы на заказ. Минск, Беларусь, доставка.",
   applicationName: SITE_NAME,
+  verification: {
+    other: { "yandex-verification": "af0e3cc1277745b7" },
+  },
   openGraph: {
     type: "website",
     locale: "ru_RU",
