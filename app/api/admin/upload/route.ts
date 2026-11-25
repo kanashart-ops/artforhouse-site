@@ -114,7 +114,18 @@ export async function POST(req: Request) {
       .replace(/^\.+/, "")
       .slice(0, 150) || "upload";
 
-    const filename = `${Date.now()}-${originalName}`;
+    const extensions: Record<string, string> = {
+      "image/jpeg": "jpg",
+      "image/png": "png",
+      "image/webp": "webp",
+      "image/gif": "gif",
+      "image/avif": "avif",
+      "video/mp4": "mp4",
+      "video/webm": "webm",
+      "video/quicktime": "mov",
+    };
+    const baseName = originalName.replace(/\\.[^.]*$/, "").slice(0, 100) || "upload";
+    const filename = `${Date.now()}-${baseName}.${extensions[mime]}`;
 
     const blob = await put(
       `${blobDir}/${filename}`,
