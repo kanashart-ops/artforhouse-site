@@ -7,16 +7,58 @@ import Footer from "@/components/Footer";
 import { Suspense } from "react";
 import GoogleAnalyticsTracker from "@/app/analytics";
 import { Analytics } from "@vercel/analytics/react"; // ✅ добавили Vercel Analytics
+import { ARTIST_NAME, DEFAULT_SOCIAL_IMAGE, jsonLdStringify, SITE_NAME, SITE_URL } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Art for House",
+  metadataBase: new URL(SITE_URL),
+  title: "Art For House — картины и интерьерная живопись",
   description:
-    "Интерьерные картины: масло, акрил, премиум жикле. Мировая доставка.",
+    "Оригинальная живопись Анны Побитко: картины маслом и акрилом, интерьерные работы и картины на заказ. Доставка по Беларуси и миру.",
+  applicationName: SITE_NAME,
+  openGraph: {
+    type: "website",
+    locale: "ru_RU",
+    siteName: SITE_NAME,
+    title: "Art For House — картины и интерьерная живопись",
+    description:
+      "Оригинальная живопись Анны Побитко: картины маслом и акрилом, интерьерные работы и картины на заказ.",
+    url: SITE_URL,
+    images: [{ url: DEFAULT_SOCIAL_IMAGE, alt: "Art For House — интерьерная живопись" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: [DEFAULT_SOCIAL_IMAGE],
+  },
   icons: {
     icon: "/favicon.png",
     shortcut: "/favicon.png",
     apple: "/favicon.png",
   },
+};
+
+const siteStructuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: SITE_NAME,
+      inLanguage: "ru",
+      publisher: { "@id": `${SITE_URL}/#artist` },
+    },
+    {
+      "@type": "Person",
+      "@id": `${SITE_URL}/#artist`,
+      name: ARTIST_NAME,
+      jobTitle: "Художница",
+      url: SITE_URL,
+      sameAs: [
+        "https://www.instagram.com/art_for_house.by/",
+        "https://www.tiktok.com/@artforhouse",
+      ],
+    },
+  ],
 };
 
 export default function RootLayout({
@@ -30,6 +72,10 @@ export default function RootLayout({
         {/* 🎨 Основные мета-теги */}
         <meta name="theme-color" content="#ffffff" />
         <link rel="icon" href="/favicon.png" type="image/png" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLdStringify(siteStructuredData) }}
+        />
 
         {/* ✅ Google Analytics */}
         <Script

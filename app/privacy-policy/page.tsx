@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: "Политика конфиденциальности | Art4House",
   description:
     "Политика конфиденциальности приложения Art4House для пользователей Google Play.",
+  alternates: { canonical: "/privacy-policy" },
 };
 
 export default function PrivacyPolicyPage() {

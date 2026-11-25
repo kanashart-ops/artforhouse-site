@@ -2,6 +2,13 @@
 import Link from "next/link";
 import { fetchAllArticles } from "@/lib/articles";
 import type { Article } from "@/lib/articles";
+import { createPageMetadata } from "@/lib/seo";
+
+export const metadata = createPageMetadata({
+  title: "Статьи о живописи и интерьере | Art For House",
+  description: "Статьи о картинах, живописи, оформлении интерьера и выборе искусства для дома от Art For House.",
+  path: "/articles",
+});
 
 export const revalidate = 60; // или можешь убрать
 

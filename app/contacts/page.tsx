@@ -7,6 +7,13 @@ import {
   Video,
 } from "lucide-react";
 import Link from "next/link";
+import { createPageMetadata } from "@/lib/seo";
+
+export const metadata = createPageMetadata({
+  title: "Контакты художницы | Art For House",
+  description: "Свяжитесь с художницей Анной Побитко по вопросам заказа картин, интерьерной живописи, росписи стен и сотрудничества.",
+  path: "/contacts",
+});
 
 export default function ContactsPage() {
   return (

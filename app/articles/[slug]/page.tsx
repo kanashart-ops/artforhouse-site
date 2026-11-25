@@ -1,5 +1,10 @@
 // app/articles/[slug]/page.tsx
 import { notFound } from "next/navigation";
+import Image from "next/image";
+import type { Metadata } from "next";
+import { cache } from "react";
+import { ARTIST_NAME, createPageMetadata, jsonLdStringify, publicImageUrl, SITE_URL } from "@/lib/seo";
+import { canOptimizeArtworkImage } from "@/lib/imageOptimization";
 import { fetchArticleBySlug } from "@/lib/articles";
 import type { Article } from "@/lib/articles";
 
@@ -7,6 +12,27 @@ type ArticlePageProps = {
   params: Promise<{ slug: string }>;
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
+
+const getArticle = cache(fetchArticleBySlug);
+
+export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const article = await getArticle(decodeURIComponent(slug));
+
+  if (!article) {
+    return { title: "Статья не найдена | Art For House", robots: { index: false } };
+  }
+
+  const date = new Date(article.createdAt);
+  return createPageMetadata({
+    title: `${article.title} | Art For House`,
+    description: article.excerpt?.trim() || article.title,
+    path: `/articles/${encodeURIComponent(article.slug)}`,
+    image: publicImageUrl(article.coverImage),
+    type: "article",
+    publishedTime: Number.isFinite(date.getTime()) ? date.toISOString() : undefined,
+  });
+}
 
 function firstString(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
@@ -42,9 +68,7 @@ export default async function ArticlePage({
   const appParam = firstString(sp.app);
   const isApp = appParam === "1";
 
-  const article: Article | null = await fetchArticleBySlug(
-    decodeURIComponent(slug)
-  );
+  const article: Article | null = await getArticle(decodeURIComponent(slug));
 
   if (!article) notFound();
 
@@ -52,8 +76,29 @@ export default async function ArticlePage({
     ? stripAppBreadcrumb(article.contentHtml)
     : article.contentHtml;
 
+  const imageUrl = publicImageUrl(article.coverImage);
+  const date = new Date(article.createdAt);
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: article.title,
+    description: article.excerpt?.trim() || article.title,
+    mainEntityOfPage: new URL(
+      `/articles/${encodeURIComponent(article.slug)}`,
+      SITE_URL
+    ).toString(),
+    author: { "@type": "Person", name: ARTIST_NAME, url: SITE_URL },
+    publisher: { "@type": "Organization", name: "Art For House", url: SITE_URL },
+    ...(Number.isFinite(date.getTime()) ? { datePublished: date.toISOString() } : {}),
+    ...(imageUrl ? { image: new URL(imageUrl, SITE_URL).toString() } : {}),
+  };
+
   return (
     <main className="max-w-3xl mx-auto px-6 py-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLdStringify(structuredData) }}
+      />
       <h1 className="text-4xl font-bold mb-4 text-gray-900">{article.title}</h1>
 
       <p className="text-sm text-gray-500 mb-8">
@@ -66,9 +111,14 @@ export default async function ArticlePage({
 
       {article.coverImage && (
         <div className="relative w-full mb-10">
-          <img
+          <Image
             src={article.coverImage}
             alt={article.title}
+            width={1200}
+            height={630}
+            sizes="(max-width: 768px) 100vw, 768px"
+            fetchPriority="high"
+            unoptimized={!canOptimizeArtworkImage(article.coverImage)}
             className="w-full max-h-[420px] object-cover rounded-xl"
           />
         </div>
