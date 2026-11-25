@@ -147,16 +147,17 @@ export default function HomePageClient({ articles }: HomePageClientProps) {
       >
         <div className="absolute inset-0 bg-black/55" />
         <div className="relative mx-auto flex min-h-[88vh] max-w-6xl flex-col justify-center px-6 py-20 text-white">
-          <p className="text-sm font-semibold uppercase tracking-[0.32em] text-amber-300">
-            Art for House
+          <p className="text-sm font-semibold uppercase tracking-[0.12em] text-amber-300 sm:tracking-[0.24em]">
+            Art For House · Арт Фор Хаус
           </p>
           <h1 className="mt-6 max-w-4xl text-5xl font-extrabold leading-tight md:text-7xl">
             Картины и роспись под интерьер, а не просто под пустую стену
           </h1>
           <p className="mt-6 max-w-3xl text-lg leading-8 text-stone-100 md:text-xl">
-            Помогаю подобрать формат, палитру и технику под ваш интерьер: масло,
-            акрил, интерьерные серии и настенная роспись. Работаю для домов,
-            квартир, офисов и коммерческих пространств.
+            Я Анна Побитко, художница и автор проекта Art For House (Арт Фор Хаус).
+            Создаю картины маслом и акрилом на заказ, интерьерные серии и роспись стен.
+            Помогаю подобрать сюжет, формат и палитру для дома, квартиры или офиса.
+            Работаю в Беларуси и организую доставку картин.
           </p>
 
           <div className="mt-10 flex flex-wrap gap-4">

@@ -5,8 +5,8 @@ import { getGalleryItems } from "@/lib/contentStore";
 export const dynamic = "force-dynamic";
 
 export const metadata = createPageMetadata({
-  title: "Галерея картин | Art For House",
-  description: "Оригинальные картины художницы Анны Побитко: масло, акрил, интерьерная живопись. Посмотрите галерею работ Art For House.",
+  title: "Галерея картин Анны Побитко | Art For House",
+  description: "Галерея Art For House (Арт Фор Хаус): картины художницы Анны Побитко — пейзажи, абстракция, интерьерные картины и роспись стен. Посмотрите работы.",
   path: "/gallery",
 });
 

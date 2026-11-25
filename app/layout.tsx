@@ -11,17 +11,17 @@ import { ARTIST_NAME, DEFAULT_SOCIAL_IMAGE, jsonLdStringify, SITE_NAME, SITE_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "Art For House — картины и интерьерная живопись",
+  title: "Art For House (Арт Фор Хаус) — картины Анны Побитко",
   description:
-    "Оригинальная живопись Анны Побитко: картины маслом и акрилом, интерьерные работы и картины на заказ. Доставка по Беларуси и миру.",
+    "Art For House — Арт Фор Хаус: картины художницы Анны Побитко, интерьерная живопись, масло и акрил, работы на заказ. Минск, Беларусь, доставка.",
   applicationName: SITE_NAME,
   openGraph: {
     type: "website",
     locale: "ru_RU",
     siteName: SITE_NAME,
-    title: "Art For House — картины и интерьерная живопись",
+    title: "Art For House (Арт Фор Хаус) — картины Анны Побитко",
     description:
-      "Оригинальная живопись Анны Побитко: картины маслом и акрилом, интерьерные работы и картины на заказ.",
+      "Арт Фор Хаус — авторские картины Анны Побитко, интерьерная живопись маслом и акрилом и картины на заказ.",
     url: SITE_URL,
     images: [{ url: DEFAULT_SOCIAL_IMAGE, alt: "Art For House — интерьерная живопись" }],
   },
@@ -44,6 +44,7 @@ const siteStructuredData = {
       "@id": `${SITE_URL}/#website`,
       url: SITE_URL,
       name: SITE_NAME,
+      alternateName: ["Арт Фор Хаус", "Артфорхаус", "ArtForHouse"],
       inLanguage: "ru",
       publisher: { "@id": `${SITE_URL}/#artist` },
     },
@@ -51,6 +52,7 @@ const siteStructuredData = {
       "@type": "Person",
       "@id": `${SITE_URL}/#artist`,
       name: ARTIST_NAME,
+      alternateName: "Anna Pobitko",
       jobTitle: "Художница",
       url: SITE_URL,
       sameAs: [

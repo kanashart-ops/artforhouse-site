@@ -16,6 +16,10 @@ export default function Footer() {
           </Link>
           r House. Все права защищены.
         </p>
+        <p className="mt-3 text-sm leading-6 text-gray-400">
+          Art For House (Арт Фор Хаус) — авторская живопись и картины на заказ
+          художницы Анны Побитко. Минск, Беларусь.
+        </p>
       </div>
 
       {/* Правый нижний угол */}

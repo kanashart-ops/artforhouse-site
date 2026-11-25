@@ -2,8 +2,8 @@ import HomePageClient from "@/components/HomePageClient";
 import { createPageMetadata } from "@/lib/seo";
 
 export const metadata = createPageMetadata({
-  title: "Art For House — авторские картины на заказ",
-  description: "Картины маслом и акрилом, интерьерная живопись и художественная роспись стен от Анны Побитко. Галерея работ и индивидуальные заказы.",
+  title: "Art For House (Арт Фор Хаус) — картины Анны Побитко",
+  description: "Арт Фор Хаус (Art For House) — авторские картины художницы Анны Побитко. Картины маслом и акрилом на заказ, интерьерная живопись и роспись стен в Минске, Беларуси и с доставкой.",
   path: "/",
 });
 import { fetchArticlesLimited } from "@/lib/articles";

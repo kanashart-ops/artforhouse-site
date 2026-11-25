@@ -5,8 +5,8 @@ import { getShopItems } from "@/lib/contentStore";
 export const dynamic = "force-dynamic";
 
 export const metadata = createPageMetadata({
-  title: "Картины в наличии | Art For House",
-  description: "Готовые картины Art For House в наличии. Узнайте о доступных работах, размерах и стоимости, свяжитесь с художницей.",
+  title: "Готовые картины в наличии | Art For House",
+  description: "Готовые картины художницы Анны Побитко в Art For House (Арт Фор Хаус). Посмотрите работы в наличии, размеры, цены и свяжитесь с художницей.",
   path: "/shop",
 });
 
