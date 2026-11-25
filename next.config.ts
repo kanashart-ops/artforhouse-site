@@ -9,6 +9,14 @@ export default function createNextConfig(phase: string): NextConfig {
     // Keeping them separate avoids corrupting the dev client manifest when build
     // runs while `next dev` is active.
     distDir: isDevServer ? ".next-dev" : ".next",
+    images: {
+      remotePatterns: [
+        {
+          protocol: "https",
+          hostname: "*.public.blob.vercel-storage.com",
+        },
+      ],
+    },
     outputFileTracingExcludes: {
       "/api/admin/upload": [
         "./public/**/*",
