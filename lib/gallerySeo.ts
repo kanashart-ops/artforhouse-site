@@ -1,6 +1,6 @@
 import type { GalleryItem } from "@/lib/contentStore";
 
-const TECHNICAL_NAME = /^(?:[a-z]{1,5}[-_]?\\d{1,6}|(?:img|image|photo|dsc|pict|pic)[-_]?\\d{1,8})$/i;
+const TECHNICAL_NAME = /^(?:[a-z]{1,5}[-_]?\d{1,6}|(?:img|image|photo|dsc|pict|pic)[-_]?\d{1,8})$/i;
 
 export function hasMeaningfulArtworkName(name: string): boolean {
   const value = name.trim();
