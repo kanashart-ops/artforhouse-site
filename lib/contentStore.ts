@@ -362,9 +362,10 @@ export async function deleteGalleryItem(identifier: {
     }
 
     if (identifier.id) {
-      await prisma.artwork.delete({
-        where: { id: identifier.id },
+      const deleted = await prisma.artwork.deleteMany({
+        where: { id: identifier.id, placement: ArtworkPlacement.GALLERY },
       });
+      if (!deleted.count) throw new Error("Gallery item not found.");
       return;
     }
 
@@ -495,9 +496,10 @@ export async function deleteShopItem(identifier: {
     }
 
     if (identifier.id) {
-      await prisma.artwork.delete({
-        where: { id: identifier.id },
+      const deleted = await prisma.artwork.deleteMany({
+        where: { id: identifier.id, placement: ArtworkPlacement.SHOP },
       });
+      if (!deleted.count) throw new Error("Shop item not found.");
       return;
     }
 
