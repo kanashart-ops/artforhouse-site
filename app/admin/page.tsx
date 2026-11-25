@@ -387,7 +387,7 @@ export default function AdminPage() {
   }
 
   async function addGalleryItem() {
-    if (!galleryForm.name.trim() || !galleryForm.src.trim()) {
+    if (!galleryForm.name.trim() || !galleryForm.src.trim() || !galleryForm.category.trim()) {
       setStatus("Для галереи нужны фото, название и раздел.");
       return;
     }
@@ -840,7 +840,29 @@ export default function AdminPage() {
                           {category}
                         </option>
                       ))}
+                      {galleryForm.category &&
+                        !galleryCategories.includes(galleryForm.category) && (
+                          <option value={galleryForm.category}>{galleryForm.category}</option>
+                        )}
                     </select>
+                  </label>
+
+                  <label className="block md:col-span-2">
+                    <span className="mb-2 block text-sm font-semibold">
+                      Новая категория или своё название раздела
+                    </span>
+                    <input
+                      value={galleryForm.category}
+                      maxLength={100}
+                      onChange={(event) =>
+                        setGalleryForm((prev) => ({
+                          ...prev,
+                          category: event.target.value,
+                        }))
+                      }
+                      className="w-full rounded-xl border border-gray-300 px-4 py-3"
+                      placeholder="Можно выбрать выше или ввести новую категорию"
+                    />
                   </label>
 
                   <label className="block">
