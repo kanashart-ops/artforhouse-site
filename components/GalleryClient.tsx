@@ -15,6 +15,7 @@ import {
 } from "@/lib/galleryCategories";
 import { useFocusTrap } from "@/lib/useFocusTrap";
 import { canOptimizeArtworkImage } from "@/lib/imageOptimization";
+import { galleryArtworkCaption, galleryImageAlt } from "@/lib/gallerySeo";
 
 export default function GalleryClient({ items }: { items: GalleryItem[] }) {
   const galleryItems = items;
@@ -131,7 +132,14 @@ export default function GalleryClient({ items }: { items: GalleryItem[] }) {
 
   return (
     <main className="mx-auto max-w-7xl p-6 md:p-10">
-      <h1 className="mb-3 text-center text-3xl font-bold text-gray-900">Галерея</h1>
+      <h1 className="mb-3 text-center text-3xl font-bold text-gray-900">
+        Галерея картин Анны Побитко
+      </h1>
+      <p className="mx-auto mb-6 max-w-3xl text-center text-base leading-7 text-gray-700">
+        Авторская живопись Art For House (Арт Фор Хаус): пейзажи, абстракция,
+        растительные и анималистические сюжеты, работы в интерьере и настенная
+        роспись. Выберите категорию и откройте интересующую картину.
+      </p>
 
       <div className="mb-8 text-center text-gray-700">
         <span className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-100 px-4 py-2">
@@ -177,13 +185,13 @@ export default function GalleryClient({ items }: { items: GalleryItem[] }) {
               setCurrentIndex(index);
               setTimeout(() => setVisible(true), 10);
             }}
-            aria-label={`Открыть ${item.name}`}
+            aria-label={`Открыть: ${galleryArtworkCaption(item)}`}
             aria-haspopup="dialog"
           >
             <div className="relative h-64 w-full bg-gray-100">
               <Image
                 src={item.src}
-                alt={`Картина ${item.name}`}
+                alt={galleryImageAlt(item)}
                 fill
                 sizes="(max-width: 639px) 100vw, (max-width: 767px) 50vw, (max-width: 1279px) 33vw, 25vw"
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -191,6 +199,14 @@ export default function GalleryClient({ items }: { items: GalleryItem[] }) {
                 fetchPriority={index === 0 ? "high" : undefined}
                 unoptimized={!canOptimizeArtworkImage(item.src)}
               />
+            </div>
+            <div className="border-t border-gray-100 bg-white px-3 py-3 text-left">
+              <p className="text-sm font-medium text-gray-900">
+                {galleryArtworkCaption(item)}
+              </p>
+              {item.category.trim() && (
+                <p className="mt-1 text-xs text-gray-600">{item.category}</p>
+              )}
             </div>
           </button>
         ))}
@@ -227,7 +243,7 @@ export default function GalleryClient({ items }: { items: GalleryItem[] }) {
             <div className="flex items-center justify-center">
               <Image
                 src={filteredItems[currentIndex].src}
-                alt={`Картина ${filteredItems[currentIndex].name}`}
+                alt={galleryImageAlt(filteredItems[currentIndex])}
                 width={1400}
                 height={900}
                 className={`rounded transition-all duration-300 ${

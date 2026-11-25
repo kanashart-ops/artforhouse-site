@@ -13,6 +13,7 @@ import { getPrismaClient, isDatabaseConfigured } from "@/lib/prisma";
 
 export type GalleryItem = {
   id?: string;
+  alt?: string;
   src: string;
   category: string;
   name: string;
@@ -84,6 +85,7 @@ function createUniqueSlug(base: string, usedSlugs: Set<string>) {
 function normalizeGalleryItem(item: GalleryItem): GalleryItem {
   return {
     id: item.id?.trim() || undefined,
+    alt: item.alt?.trim() || "",
     name: item.name.trim(),
     category: item.category.trim(),
     src: item.src.trim(),
@@ -144,6 +146,7 @@ async function getGalleryItemsFromDatabase(): Promise<GalleryItem[] | null> {
     items.push({
       id: artwork.id,
       src: primaryMedia.src,
+      alt: primaryMedia.alt ?? "",
       category: artwork.category ?? "",
       name: artwork.title,
     });
@@ -184,7 +187,7 @@ async function saveGalleryItemsToDatabase(items: GalleryItem[]) {
                 {
                   type: MediaKind.IMAGE,
                   src: normalized.src,
-                  alt: normalized.name || null,
+                  alt: normalized.alt || normalized.name || null,
                   sortOrder: 0,
                 },
               ],
@@ -318,7 +321,7 @@ export async function addGalleryItem(item: GalleryItem): Promise<GalleryItem> {
             {
               type: MediaKind.IMAGE,
               src: normalized.src,
-              alt: normalized.name || null,
+              alt: normalized.alt || normalized.name || null,
               sortOrder: 0,
             },
           ],
@@ -334,6 +337,7 @@ export async function addGalleryItem(item: GalleryItem): Promise<GalleryItem> {
     return {
       id: created.id,
       name: created.title,
+      alt: created.media[0]?.alt ?? normalized.alt ?? "",
       category: created.category ?? "",
       src: created.media[0]?.src ?? normalized.src,
     };

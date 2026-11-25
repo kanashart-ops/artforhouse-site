@@ -29,6 +29,7 @@ const emptyGalleryItem: GalleryItem = {
   name: "",
   category: GALLERY_CATEGORIES[0],
   src: "",
+  alt: "",
 };
 
 const emptyShopItem: ShopItem = {
@@ -397,6 +398,7 @@ export default function AdminPage() {
       name: galleryForm.name.trim(),
       category: galleryForm.category.trim(),
       src: galleryForm.src.trim(),
+      alt: galleryForm.alt?.trim() || "",
     };
 
     if (editingGalleryId) {
@@ -887,6 +889,26 @@ export default function AdminPage() {
                         }
                       }}
                     />
+                  </label>
+
+                  <label className="block md:col-span-2">
+                    <span className="mb-2 block text-sm font-semibold">
+                      Описание изображения (alt) для Google и Яндекса
+                    </span>
+                    <input
+                      type="text"
+                      value={galleryForm.alt ?? ""}
+                      maxLength={240}
+                      onChange={(event) =>
+                        setGalleryForm((prev) => ({ ...prev, alt: event.target.value }))
+                      }
+                      className="w-full rounded-xl border border-gray-300 px-4 py-3"
+                      placeholder="Например: Осенний лес у реки, картина маслом на холсте"
+                    />
+                    <span className="mt-2 block text-xs leading-5 text-gray-600">
+                      Опишите то, что действительно изображено. Не повторяйте ключевые слова.
+                      Если оставить пустым, сайт составит общее описание по названию и категории.
+                    </span>
                   </label>
 
                   <label className="block md:col-span-2">

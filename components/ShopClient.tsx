@@ -143,7 +143,7 @@ export default function ShopClient({ items }: { items: ShopItem[] }) {
               ) : (
                 <Image
                   src={item.media[0]?.src || "/images/hero-bg.jpg"}
-                  alt={item.title}
+                  alt={`${item.title} — готовая картина Art For House`}
                   width={600}
                   height={400}
                   sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
@@ -199,7 +199,7 @@ export default function ShopClient({ items }: { items: ShopItem[] }) {
                 {selectedItem.media[currentIndex]?.type === "image" ? (
                   <Image
                     src={selectedItem.media[currentIndex].src}
-                    alt={selectedItem.title}
+                    alt={`${selectedItem.title} — картина Art For House`}
                     width={1200}
                     height={800}
                     className="h-auto max-h-[80vh] w-auto object-contain"

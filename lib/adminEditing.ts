@@ -31,6 +31,7 @@ function readString(value: unknown, field: string, maxLength: number, required =
 
 export async function updateGalleryEntry(id: string, input: GalleryItem): Promise<GalleryItem | null> {
   const name = readString(input.name, "Название", 160, true);
+  const alt = readString(input.alt ?? "", "Описание изображения (alt)", 240);
   const category = readString(input.category, "Категория", 100, true);
   const src = readString(input.src, "Фото", 2048, true);
   if (!validMediaUrl(src)) throw new AdminValidationError("Некорректный адрес фотографии.");
@@ -51,18 +52,18 @@ export async function updateGalleryEntry(id: string, input: GalleryItem): Promis
           category,
           media: {
             deleteMany: {},
-            create: [{ type: MediaKind.IMAGE, src, alt: name, sortOrder: 0 }],
+            create: [{ type: MediaKind.IMAGE, src, alt: alt || name, sortOrder: 0 }],
           },
         },
       });
-      return { id: updated.id, name, category, src };
+      return { id: updated.id, name, category, src, alt };
     });
   }
 
   const items = await getGalleryItems();
   const index = items.findIndex((entry) => (entry.id || `${entry.name}::${entry.src}`) === id);
   if (index < 0) return null;
-  const item: GalleryItem = { id: items[index].id || id, name, category, src };
+  const item: GalleryItem = { id: items[index].id || id, name, category, src, alt };
   await saveGalleryItems(items.map((entry, pos) => pos === index ? item : entry));
   return item;
 }
