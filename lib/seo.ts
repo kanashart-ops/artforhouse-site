@@ -45,7 +45,7 @@ export function createPageMetadata({
     siteName: SITE_NAME,
     locale: "ru_RU",
     images: [{ url: socialImage, alt: "Art For House — картины и живопись" }],
-  } as const;
+  };
 
   return {
     title,
@@ -53,8 +53,8 @@ export function createPageMetadata({
     alternates: { canonical: path },
     openGraph:
       type === "article"
-        ? { ...common, type: "article", publishedTime }
-        : { ...common, type: "website" },
+        ? { ...common, type: "article" as const, publishedTime }
+        : { ...common, type: "website" as const },
     twitter: {
       card: "summary_large_image",
       title,
