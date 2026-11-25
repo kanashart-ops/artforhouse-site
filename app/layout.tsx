@@ -91,7 +91,7 @@ export default function RootLayout({
           `}
         </Script>
 
-        {/* ✅ Yandex.Metrika */}
+        {/* ✅ Yandex.Metrika — counter 114684042 */}
         <Script id="yandex-metrika" strategy="afterInteractive">
           {`
             (function(m,e,t,r,i,k,a){
@@ -102,13 +102,15 @@ export default function RootLayout({
               }
               k=e.createElement(t),a=e.getElementsByTagName(t)[0],
               k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-            })(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+            })(window, document, "script", "https://mc.yandex.ru/metrika/tag.js?id=114684042", "ym");
 
-            ym(104389322, "init", {
+            ym(114684042, "init", {
               ssr:true,
               webvisor:true,
               clickmap:true,
               ecommerce:"dataLayer",
+              referrer:document.referrer,
+              url:location.href,
               accurateTrackBounce:true,
               trackLinks:true
             });
@@ -117,7 +119,7 @@ export default function RootLayout({
         <noscript>
           <div>
             <img
-              src="https://mc.yandex.ru/watch/104389322"
+              src="https://mc.yandex.ru/watch/114684042"
               style={{ position: "absolute", left: "-9999px" }}
               alt=""
             />
