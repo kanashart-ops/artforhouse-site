@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
+import Link from "next/link";
 import Image from "next/image";
 
 type OrderStatus = "idle" | "loading" | "success" | "error";
@@ -8,6 +9,18 @@ type OrderStatus = "idle" | "loading" | "success" | "error";
 export default function OrderPage() {
   const [status, setStatus] = useState<OrderStatus>("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const [comment, setComment] = useState("");
+  const [selectedArtwork, setSelectedArtwork] = useState("");
+
+  useEffect(() => {
+    const artwork = new URLSearchParams(window.location.search).get("artwork")?.trim();
+    if (!artwork) return;
+    const value = artwork.slice(0, 140);
+    setSelectedArtwork(value);
+    setComment((previous) =>
+      previous.trim() ? previous : `Меня интересует работа «${value}». Хотелось бы уточнить детали.`
+    );
+  }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -38,6 +51,8 @@ export default function OrderPage() {
       }
 
       form.reset();
+      setComment("");
+      setSelectedArtwork("");
       setStatus("success");
     } catch (error) {
       setErrorMessage(
@@ -50,15 +65,15 @@ export default function OrderPage() {
   }
 
   return (
-    <main className="p-10 max-w-6xl mx-auto">
+    <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12 lg:px-10">
       {/* Заголовок */}
-      <h1 className="text-5xl font-extrabold mb-12 text-center text-gray-900">
+      <h1 className="mb-8 text-center text-3xl font-extrabold text-gray-900 sm:mb-12 sm:text-5xl">
         Заказ картин
       </h1>
 
       {/* Выбор техники */}
-      <section className="mb-16">
-        <h2 className="text-3xl font-semibold mb-8 text-center text-gray-900">
+      <section className="mb-12 sm:mb-16">
+        <h2 className="mb-6 text-center text-2xl font-semibold text-gray-900 sm:mb-8 sm:text-3xl">
           Выбор техники
         </h2>
         <p className="text-lg text-gray-700 text-center mb-12 max-w-3xl mx-auto">
@@ -66,7 +81,7 @@ export default function OrderPage() {
           Выберите стиль, который ближе именно вам.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-3 md:gap-8">
           {/* Масло */}
           <div className="p-6 bg-white shadow rounded-xl hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center">
             <Image
@@ -118,11 +133,11 @@ export default function OrderPage() {
       </section>
 
       {/* Процесс заказа */}
-      <section className="mb-16">
-        <h2 className="text-3xl font-semibold mb-8 text-center text-gray-900">
+      <section className="mb-12 sm:mb-16">
+        <h2 className="mb-6 text-center text-2xl font-semibold text-gray-900 sm:mb-8 sm:text-3xl">
           Процесс заказа
         </h2>
-        <ol className="space-y-6 text-lg text-gray-700 leading-relaxed max-w-4xl mx-auto">
+        <ol className="mx-auto max-w-4xl space-y-5 text-base leading-relaxed text-gray-700 sm:space-y-6 sm:text-lg">
           <li>
             <span className="font-bold text-amber-600">Обсуждение идеи —</span> мы вместе определяем стиль, сюжет и настроение будущей картины или росписи.
           </li>
@@ -148,8 +163,8 @@ export default function OrderPage() {
       </section>
 
       {/* Форма заказа */}
-      <section className="mb-20">
-        <h2 className="text-3xl font-semibold mb-6 text-center text-gray-900">
+      <section id="order-form" className="mb-16 scroll-mt-24 sm:mb-20">
+        <h2 className="mb-6 text-center text-2xl font-semibold text-gray-900 sm:text-3xl">
           Оставить заявку
         </h2>
         <p className="text-center text-gray-700 mb-8">
@@ -157,39 +172,69 @@ export default function OrderPage() {
           чтобы я могла с вами связаться.
         </p>
 
-        <form onSubmit={handleSubmit} className="max-w-lg mx-auto flex flex-col gap-4">
+        <div className="mx-auto max-w-xl rounded-3xl border border-gray-200 bg-white p-5 shadow-sm sm:p-8">
+          {selectedArtwork && (
+            <p className="mb-5 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900">
+              Вы выбрали: <strong>{selectedArtwork}</strong>
+            </p>
+          )}
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <label htmlFor="order-name" className="text-sm font-semibold text-gray-800">Ваше имя</label>
           <input
+            id="order-name"
             type="text"
             name="name"
             placeholder="Ваше имя"
             autoComplete="name"
             maxLength={100}
-            className="rounded border border-gray-300 bg-white p-3 text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-amber-500"
+            className="min-h-12 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-base text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
             required
           />
+          <label htmlFor="order-contact" className="text-sm font-semibold text-gray-800">Телефон или Telegram</label>
           <input
+            id="order-contact"
             type="text"
             name="contact"
             placeholder="Телефон или @Telegram"
             maxLength={150}
-            className="rounded border border-gray-300 bg-white p-3 text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-amber-500"
+            className="min-h-12 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-base text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
             required
           />
+          <label htmlFor="order-comment" className="text-sm font-semibold text-gray-800">
+            Пожелания к картине (необязательно)
+          </label>
           <textarea
+            id="order-comment"
             name="comment"
-            placeholder="Комментарий"
+            value={comment}
+            onChange={(event) => setComment(event.target.value)}
+            placeholder="Сюжет, размер, техника или название понравившейся работы"
             maxLength={2000}
-            className="rounded border border-gray-300 bg-white p-3 text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-amber-500"
+            className="min-h-12 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-base text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-200"
             rows={4}
           />
           <button
             type="submit"
             disabled={status === "loading"}
-            className="bg-black text-white py-3 px-6 rounded font-semibold hover:bg-gray-800 transition disabled:opacity-50"
+            className="min-h-12 w-full rounded-xl bg-gray-900 px-6 py-3 font-semibold text-white transition hover:bg-gray-800 disabled:cursor-wait disabled:opacity-50"
           >
             {status === "loading" ? "Отправка..." : "Отправить заявку"}
           </button>
-        </form>
+          </form>
+          <div className="mt-5 flex flex-wrap justify-center gap-3 text-sm font-medium">
+            <a href="https://t.me/AnnPab" target="_blank" rel="noopener noreferrer"
+              className="rounded-full border border-gray-300 px-4 py-2 text-gray-800 hover:bg-gray-50">
+              Написать в Telegram
+            </a>
+            <Link href="/contacts"
+              className="rounded-full border border-gray-300 px-4 py-2 text-gray-800 hover:bg-gray-50">
+              Другие контакты
+            </Link>
+          </div>
+          <p className="mt-4 text-center text-xs leading-5 text-gray-500">
+            Если отправка формы недоступна, можно связаться с художницей напрямую.
+          </p>
+        </div>
 
         <div role="status" aria-live="polite">
           {status === "success" && (
@@ -198,8 +243,8 @@ export default function OrderPage() {
             </p>
           )}
           {status === "error" && (
-            <p className="text-red-600 text-center mt-4">
-              {errorMessage}
+            <p className="mx-auto mt-4 max-w-xl rounded-xl bg-red-50 px-4 py-3 text-center text-sm text-red-700">
+              Заявка не отправлена: {errorMessage} Напишите художнице напрямую по ссылкам выше.
             </p>
           )}
         </div>
