@@ -103,16 +103,22 @@ export default function ShopClient({ items }: { items: ShopItem[] }) {
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link
-              href="/contacts"
+              href="/order#order-form"
               className="rounded-full bg-gray-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-gray-800"
             >
-              Связаться с художницей
+              Заказать картину
             </Link>
             <Link
               href="/gallery"
               className="rounded-full border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-900 transition hover:border-gray-900"
             >
               Посмотреть галерею
+            </Link>
+            <Link
+              href="/contacts"
+              className="rounded-full border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-900 transition hover:border-gray-900"
+            >
+              Контакты
             </Link>
           </div>
         </div>

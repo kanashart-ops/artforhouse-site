@@ -70,6 +70,20 @@ export default function OrderPage() {
       <h1 className="mb-8 text-center text-3xl font-extrabold text-gray-900 sm:mb-12 sm:text-5xl">
         Заказ картин
       </h1>
+      <div className="mb-12 flex flex-wrap justify-center gap-3">
+        <a
+          href="#order-form"
+          className="inline-flex min-h-12 items-center justify-center rounded-full bg-gray-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-gray-800"
+        >
+          Оставить заявку
+        </a>
+        <Link
+          href="/contacts"
+          className="inline-flex min-h-12 items-center justify-center rounded-full border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-50"
+        >
+          Связаться напрямую
+        </Link>
+      </div>
 
       {/* Выбор техники */}
       <section className="mb-12 sm:mb-16">
