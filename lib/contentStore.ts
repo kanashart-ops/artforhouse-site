@@ -10,6 +10,7 @@ import {
   orderGalleryCategories,
 } from "@/lib/galleryCategories";
 import { getPrismaClient, isDatabaseConfigured } from "@/lib/prisma";
+import { applyGallerySeoTitle } from "@/lib/gallerySeoCatalog";
 
 export type GalleryItem = {
   id?: string;
@@ -285,10 +286,18 @@ export async function getGalleryItems(): Promise<GalleryItem[]> {
   if (isDatabaseConfigured()) {
     const items = await getGalleryItemsFromDatabase();
     if (!items) throw new Error("Не удалось получить каталог галереи из PostgreSQL.");
-    return items;
+    return items.map(applyGallerySeoTitle);
   }
 
-  return readJsonFile<GalleryItem[]>(galleryFile, []);
+  // Local JSON often contains legacy items without IDs. Keep their original
+  // identity stable when a suggested display title replaces a filename code.
+  const items = await readJsonFile<GalleryItem[]>(galleryFile, []);
+  return items.map((item) =>
+    applyGallerySeoTitle({
+      ...item,
+      id: item.id || getLocalGalleryItemId(item),
+    })
+  );
 }
 
 export async function saveGalleryItems(items: GalleryItem[]): Promise<void> {
