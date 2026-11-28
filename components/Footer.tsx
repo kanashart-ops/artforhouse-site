@@ -2,8 +2,8 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-gray-900 text-white mt-10 relative">
-      <div className="max-w-6xl mx-auto p-6 text-center text-gray-300">
+    <footer className="relative mt-10 w-full bg-gray-900 text-white">
+      <div className="mx-auto max-w-6xl px-5 pb-3 pt-7 text-center text-gray-300 sm:px-6 sm:pb-10">
         {/* Центральный текст */}
         <p>
           © {new Date().getFullYear()} Art f
@@ -23,7 +23,7 @@ export default function Footer() {
       </div>
 
       {/* Правый нижний угол */}
-      <div className="absolute right-6 bottom-2 text-sm text-gray-400">
+      <div className="pb-5 text-center text-sm text-gray-400 sm:absolute sm:bottom-2 sm:right-6 sm:pb-0 sm:text-right">
         Created by{" "}
         <Link
           href="https://t.me/Art_aeee"

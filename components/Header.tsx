@@ -40,12 +40,12 @@ export default function Header() {
         <div className="flex items-center gap-3">
           <Link
             href="/"
-            className="text-2xl font-bold text-gray-900 transition hover:text-amber-600"
+            className="whitespace-nowrap text-lg font-bold text-gray-900 transition hover:text-amber-600 sm:text-2xl"
           >
             Art for House
           </Link>
 
-          <div className="ml-2 flex items-center gap-3">
+          <div className="ml-1 flex items-center gap-2 sm:ml-2 sm:gap-3">
             <Link
               href="https://www.instagram.com/art_for_house.by"
               target="_blank"
@@ -83,7 +83,7 @@ export default function Header() {
           </div>
         </div>
 
-        <nav className="hidden gap-6 text-gray-700 md:flex">
+        <nav className="hidden items-center gap-4 text-sm text-gray-700 xl:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -101,7 +101,7 @@ export default function Header() {
         <button
           ref={menuButtonRef}
           type="button"
-          className="text-gray-700 md:hidden"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-gray-700 transition hover:bg-gray-100 xl:hidden"
           onClick={() => setOpenPath(isOpen ? null : pathname)}
           aria-label={isOpen ? "Закрыть меню" : "Открыть меню"}
           aria-expanded={isOpen}
@@ -114,7 +114,7 @@ export default function Header() {
 
       {isOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/30 px-4 pt-20 md:hidden"
+          className="fixed inset-0 z-40 overflow-y-auto bg-black/40 px-4 pb-8 pt-20 xl:hidden"
           onClick={() => setOpenPath(null)}
         >
           <div
@@ -123,7 +123,7 @@ export default function Header() {
             role="dialog"
             aria-modal="true"
             aria-label="Мобильное меню"
-            className="mx-auto max-w-6xl rounded-3xl bg-white p-6 shadow-2xl"
+            className="mx-auto max-w-6xl rounded-3xl bg-white p-4 shadow-2xl sm:p-6"
             onClick={(event) => event.stopPropagation()}
           >
             <nav className="flex flex-col gap-3 text-gray-700">

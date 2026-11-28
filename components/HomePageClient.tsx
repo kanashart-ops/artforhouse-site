@@ -146,11 +146,11 @@ export default function HomePageClient({ articles }: HomePageClientProps) {
         }}
       >
         <div className="absolute inset-0 bg-black/55" />
-        <div className="relative mx-auto flex min-h-[88vh] max-w-6xl flex-col justify-center px-6 py-20 text-white">
+        <div className="relative mx-auto flex min-h-[78vh] max-w-6xl flex-col justify-center px-5 py-14 text-white sm:min-h-[88vh] sm:px-6 sm:py-20">
           <p className="text-sm font-semibold uppercase tracking-[0.12em] text-amber-300 sm:tracking-[0.24em]">
             Art For House · Арт Фор Хаус
           </p>
-          <h1 className="mt-6 max-w-4xl text-5xl font-extrabold leading-tight md:text-7xl">
+          <h1 className="mt-6 max-w-4xl text-4xl font-extrabold leading-tight sm:text-5xl md:text-7xl">
             Картины и роспись под интерьер, а не просто под пустую стену
           </h1>
           <p className="mt-6 max-w-3xl text-lg leading-8 text-stone-100 md:text-xl">
@@ -160,7 +160,7 @@ export default function HomePageClient({ articles }: HomePageClientProps) {
             Работаю в Беларуси и организую доставку картин.
           </p>
 
-          <div className="mt-10 flex flex-wrap gap-4">
+          <div className="mt-8 flex flex-wrap gap-3 sm:mt-10 sm:gap-4">
             <Link
               href="/order"
               className="rounded-full bg-white px-8 py-3 text-sm font-semibold text-stone-950 transition hover:bg-stone-200"
@@ -175,7 +175,7 @@ export default function HomePageClient({ articles }: HomePageClientProps) {
             </Link>
           </div>
 
-          <div className="mt-12 grid gap-4 md:grid-cols-4">
+          <div className="mt-10 grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
             <div className="rounded-3xl border border-white/10 bg-white/10 px-5 py-5 backdrop-blur">
               <p className="text-sm font-semibold text-amber-200">Что можно заказать</p>
               <p className="mt-2 text-sm leading-6 text-stone-100">

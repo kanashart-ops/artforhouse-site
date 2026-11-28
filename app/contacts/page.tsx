@@ -17,9 +17,9 @@ export const metadata = createPageMetadata({
 
 export default function ContactsPage() {
   return (
-    <main className="p-10 max-w-4xl mx-auto text-center bg-gray-50">
+    <main className="mx-auto max-w-4xl bg-gray-50 px-4 py-8 text-center sm:px-6 sm:py-12 lg:px-10">
       {/* Заголовок */}
-      <h1 className="text-5xl font-extrabold mb-8 text-gray-900">
+      <h1 className="mb-8 text-3xl font-extrabold text-gray-900 sm:text-5xl">
         Свяжитесь со мной
       </h1>
 
@@ -40,7 +40,7 @@ export default function ContactsPage() {
       </p>
 
       {/* Иконки соцсетей */}
-      <div className="flex flex-wrap justify-center gap-10 mb-12">
+      <div className="mb-12 flex flex-wrap justify-center gap-5 sm:gap-10">
         {/* Instagram */}
         <Link
           href="https://www.instagram.com/art_for_house.by?igsh=Y3pzeWl6eXV0aDJo"
