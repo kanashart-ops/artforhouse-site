@@ -84,17 +84,17 @@ export default function ShopClient({ items }: { items: ShopItem[] }) {
   const hasItems = shopItems.length > 0;
 
   return (
-    <main className="mx-auto max-w-6xl p-6 md:p-10">
-      <h1 className="mb-10 text-center text-4xl font-bold text-gray-900">
+    <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+      <h1 className="mb-8 text-center text-3xl font-bold text-gray-900 sm:mb-10 sm:text-4xl">
         Картины в наличии
       </h1>
 
       {!hasItems ? (
-        <div className="mx-auto max-w-3xl rounded-[2rem] border border-gray-200 bg-white p-8 text-center shadow-sm">
+        <div className="mx-auto max-w-3xl rounded-[2rem] border border-gray-200 bg-white p-5 text-center shadow-sm sm:p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">
             Раздел обновляется
           </p>
-          <h2 className="mt-3 text-3xl font-bold text-gray-900">
+          <h2 className="mt-3 text-2xl font-bold text-gray-900 sm:text-3xl">
             Готовых работ сейчас нет на витрине
           </h2>
           <p className="mt-4 text-base leading-7 text-gray-600">
@@ -117,12 +117,12 @@ export default function ShopClient({ items }: { items: ShopItem[] }) {
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
           {shopItems.map((item, index) => (
             <button
               key={item.id || `${item.title}-${index}`}
               type="button"
-              className="overflow-hidden rounded-lg border border-gray-200 bg-white text-left shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+              className="overflow-hidden rounded-xl border border-gray-200 bg-white text-left shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
               onClick={(event) => {
                 triggerRef.current = event.currentTarget;
                 setSelectedItem(item);
@@ -175,7 +175,7 @@ export default function ShopClient({ items }: { items: ShopItem[] }) {
         >
           <div
             ref={modalRef}
-            className="relative flex h-auto w-full max-w-5xl flex-col overflow-hidden rounded-lg bg-white shadow-lg sm:h-[85vh] sm:flex-row"
+            className="relative flex h-[100dvh] w-full max-w-5xl flex-col overflow-hidden bg-white shadow-lg sm:h-[85vh] sm:rounded-xl sm:flex-row"
             onClick={(event) => event.stopPropagation()}
             role="dialog"
             aria-modal="true"
@@ -183,7 +183,7 @@ export default function ShopClient({ items }: { items: ShopItem[] }) {
           >
             <button
               type="button"
-              className="absolute right-4 top-2 z-10 text-3xl font-bold text-gray-700 transition hover:text-black"
+              className="absolute right-3 top-2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/95 text-3xl font-bold text-gray-700 shadow transition hover:text-black"
               onClick={closeModal}
               aria-label="Закрыть карточку работы"
             >
@@ -191,7 +191,7 @@ export default function ShopClient({ items }: { items: ShopItem[] }) {
             </button>
 
             <div
-              className="relative flex-1 overflow-hidden bg-black"
+              className="relative h-[38dvh] shrink-0 overflow-hidden bg-black sm:h-auto sm:flex-1"
               onTouchStart={(event) => setTouchStartX(event.touches[0].clientX)}
               onTouchEnd={handleTouchEnd}
             >
@@ -202,7 +202,7 @@ export default function ShopClient({ items }: { items: ShopItem[] }) {
                     alt={`${selectedItem.title} — картина Art For House`}
                     width={1200}
                     height={800}
-                    className="h-auto max-h-[80vh] w-auto object-contain"
+                    className="max-h-[38dvh] max-w-full object-contain sm:max-h-[80vh]"
                     unoptimized
                   />
                 ) : (
@@ -210,31 +210,36 @@ export default function ShopClient({ items }: { items: ShopItem[] }) {
                     src={selectedItem.media[currentIndex]?.src}
                     controls
                     playsInline
-                    className="h-auto max-h-[80vh] w-auto object-contain"
+                    className="max-h-[38dvh] max-w-full object-contain sm:max-h-[80vh]"
                   />
                 )}
               </div>
 
-              <button
+              {selectedItem.media.length > 1 && <button
                 type="button"
-                className="absolute left-3 top-1/2 hidden -translate-y-1/2 rounded-full bg-black/50 p-2 text-3xl text-white transition hover:bg-black sm:block"
+                className="absolute left-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-3xl text-white transition hover:bg-black sm:left-3"
                 onClick={prevMedia}
                 aria-label="Предыдущее изображение"
               >
                 ‹
-              </button>
+              </button>}
 
-              <button
+              {selectedItem.media.length > 1 && <button
                 type="button"
-                className="absolute right-3 top-1/2 hidden -translate-y-1/2 rounded-full bg-black/50 p-2 text-3xl text-white transition hover:bg-black sm:block"
+                className="absolute right-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-3xl text-white transition hover:bg-black sm:right-3"
                 onClick={nextMedia}
                 aria-label="Следующее изображение"
               >
                 ›
-              </button>
+              </button>}
+              {selectedItem.media.length > 1 && (
+                <p className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-black/65 px-3 py-1 text-xs text-white" aria-live="polite">
+                  {currentIndex + 1} из {selectedItem.media.length}
+                </p>
+              )}
             </div>
 
-            <div className="flex max-h-[80vh] w-full flex-col overflow-y-auto border-t border-gray-200 bg-white p-5 sm:w-[380px] sm:border-l sm:border-t-0 sm:p-6">
+            <div className="flex min-h-0 w-full flex-1 flex-col overflow-y-auto border-t border-gray-200 bg-white p-5 pb-8 sm:w-[380px] sm:flex-none sm:border-l sm:border-t-0 sm:p-6">
               <h2
                 id="shop-dialog-title"
                 className="mb-3 text-center text-2xl font-bold text-gray-900 sm:text-left"
@@ -252,15 +257,23 @@ export default function ShopClient({ items }: { items: ShopItem[] }) {
                 {selectedItem.description}
               </p>
 
-              <button
-                type="button"
-                className="mt-auto w-full rounded-lg bg-amber-600 px-6 py-3 text-lg font-semibold text-white transition hover:bg-amber-700"
-                onClick={() => setShowContacts(true)}
-                aria-expanded={showContacts}
-                aria-controls="shop-contact-actions"
-              >
-                Купить
-              </button>
+              <div className="mt-auto flex flex-col gap-3">
+                <Link
+                  href={`/order?artwork=${encodeURIComponent(selectedItem.title)}`}
+                  className="flex min-h-12 w-full items-center justify-center rounded-xl bg-amber-600 px-5 py-3 text-center font-semibold text-white transition hover:bg-amber-700"
+                >
+                  Уточнить наличие и заказать
+                </Link>
+                <button
+                  type="button"
+                  className="min-h-11 w-full rounded-xl border border-gray-300 bg-white px-5 py-2 text-sm font-semibold text-gray-800 transition hover:bg-gray-50"
+                  onClick={() => setShowContacts((current) => !current)}
+                  aria-expanded={showContacts}
+                  aria-controls="shop-contact-actions"
+                >
+                  {showContacts ? "Скрыть контакты" : "Связаться напрямую"}
+                </button>
+              </div>
 
               {showContacts && (
                 <div
