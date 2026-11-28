@@ -132,36 +132,47 @@ export default function GalleryClient({ items }: { items: GalleryItem[] }) {
   };
 
   return (
-    <main className="mx-auto max-w-7xl px-3 py-6 sm:px-6 sm:py-8 lg:p-10">
-      <h1 className="mb-3 text-center text-2xl font-bold text-gray-900 sm:text-3xl">
-        Галерея картин Анны Побитко
-      </h1>
-      <p className="mx-auto mb-6 max-w-3xl text-center text-base leading-7 text-gray-700">
-        Авторская живопись Art For House (Арт Фор Хаус): пейзажи, абстракция,
-        растительные и анималистические сюжеты, работы в интерьере и настенная
-        роспись. Выберите категорию и откройте интересующую картину.
-      </p>
+    <main className="mx-auto max-w-7xl px-4 pb-20 pt-10 sm:px-6 sm:pt-14 lg:px-8">
+      <section className="mb-12 grid items-end gap-6 border-b border-[#e5ded4] pb-10 md:grid-cols-[1.05fr_0.95fr]">
+        <div>
+          <p className="af-eyebrow">Авторская живопись / Коллекции</p>
+          <h1 className="af-display mt-4 max-w-xl text-[clamp(3.2rem,7vw,6.6rem)] leading-[0.98] text-[#292621]">
+            Галерея <span className="italic text-[#d44d2c]">работ.</span>
+          </h1>
+          <p className="mt-4 text-sm font-semibold text-[#49423c]">Картины художницы Анны Побитко</p>
+        </div>
+        <div>
+          <p className="max-w-lg text-base leading-8 text-[#6b655e]">
+            Авторская живопись Art For House (Арт Фор Хаус): пейзажи, абстракция,
+            растительные и анималистические сюжеты, работы в интерьере и настенная
+            роспись. Выберите категорию и откройте интересующую картину.
+          </p>
+          <p className="mt-5 text-xs font-bold uppercase tracking-[0.19em] text-[#d44d2c]">
+            {galleryItems.length} работ в коллекции
+          </p>
+        </div>
+      </section>
 
-      <div className="mb-8 text-center text-gray-700">
-        <span className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-100 px-4 py-2">
-          <span className="font-medium">Категория:</span>
-          <span className="font-semibold text-gray-900">{selectedCategory}</span>
-          <span className="opacity-60">•</span>
-          <span>Найдено: {filteredItems.length}</span>
-        </span>
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3 text-sm text-[#68615a]">
+        <p>Выберите направление</p>
+        <p aria-live="polite">
+          <span className="font-medium text-[#292621]">{selectedCategory}</span>
+          <span className="px-2 text-[#c5bdb4]">/</span>
+          Найдено: {filteredItems.length}
+        </p>
       </div>
 
-      <div className="-mx-3 mb-8 flex gap-2 overflow-x-auto px-3 pb-2 sm:mx-0 sm:flex-wrap sm:justify-center sm:gap-3 sm:px-0">
+      <div className="-mx-4 mb-10 flex gap-1.5 overflow-x-auto px-4 pb-3 sm:mx-0 sm:flex-wrap sm:gap-2 sm:px-0">
         {categories.map((cat) => (
           <button
             key={cat}
             type="button"
             onClick={() => setSelectedCategory(cat)}
             aria-pressed={selectedCategory === cat}
-            className={`shrink-0 whitespace-nowrap rounded-full border px-4 py-2.5 text-sm transition sm:text-base ${
+            className={`shrink-0 whitespace-nowrap rounded-full border px-5 py-3 text-[13px] font-semibold transition duration-200 sm:text-sm ${
               selectedCategory === cat
-                ? "border-gray-900 bg-gray-900 text-white"
-                : "border-gray-300 text-gray-700 hover:bg-gray-100"
+                ? "border-[#ee5434] bg-[#ee5434] text-white shadow-[0_6px_18px_rgba(238,84,52,0.2)]"
+                : "border-[#ded8ce] bg-[#eeece7] text-[#3d3934] hover:border-[#d44d2c] hover:bg-white"
             }`}
           >
             {cat}
@@ -180,7 +191,7 @@ export default function GalleryClient({ items }: { items: GalleryItem[] }) {
           <button
             key={item.id || `${item.src}-${index}`}
             type="button"
-            className="group overflow-hidden rounded-lg shadow transition hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+            className="group overflow-hidden rounded-[22px] border border-[#e9e3da] bg-white text-left shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_45px_rgba(30,26,22,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ee5434]"
             onClick={(event) => {
               triggerRef.current = event.currentTarget;
               setCurrentIndex(index);
@@ -189,29 +200,38 @@ export default function GalleryClient({ items }: { items: GalleryItem[] }) {
             aria-label={`Открыть: ${galleryArtworkCaption(item)}`}
             aria-haspopup="dialog"
           >
-            <div className="relative h-40 w-full bg-gray-100 sm:h-56 lg:h-64">
+            <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#eeeae4]">
               <Image
                 src={item.src}
                 alt={galleryImageAlt(item)}
                 fill
                 sizes="(max-width: 639px) 50vw, (max-width: 767px) 50vw, (max-width: 1279px) 33vw, 25vw"
-                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                className="object-contain p-2 transition-transform duration-500 group-hover:scale-[1.03] sm:p-3"
                 loading={index === 0 ? "eager" : "lazy"}
                 fetchPriority={index === 0 ? "high" : undefined}
                 unoptimized={!canOptimizeArtworkImage(item.src)}
               />
             </div>
-            <div className="border-t border-gray-100 bg-white px-2 py-2 text-left sm:px-3 sm:py-3">
-              <p className="text-xs font-medium text-gray-900 sm:text-sm">
+            <div className="border-t border-[#eee9e2] bg-white px-3 py-3 text-left sm:px-4 sm:py-4">
+              <p className="line-clamp-2 text-xs font-semibold text-[#312d29] sm:text-sm">
                 {galleryArtworkCaption(item)}
               </p>
               {item.category.trim() && (
-                <p className="mt-1 text-xs text-gray-600">{item.category}</p>
+                <p className="mt-1 text-[11px] uppercase tracking-[0.08em] text-[#b05b45]">{item.category}</p>
               )}
             </div>
           </button>
         ))}
       </div>
+
+      <section className="mt-16 flex flex-col gap-6 rounded-[30px] bg-[#2c2926] px-6 py-10 text-white sm:flex-row sm:items-center sm:justify-between sm:px-10">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#ffab95]">Ваша идея — наша следующая работа</p>
+          <h2 className="af-display mt-3 max-w-xl text-3xl leading-tight sm:text-4xl">Не нашли точную картину? Создадим вашу.</h2>
+          <p className="mt-3 max-w-xl text-sm leading-6 text-white/70">Можно выбрать палитру, размер, сюжет и технику под конкретный интерьер.</p>
+        </div>
+        <Link href="/order" className="af-accent-button shrink-0">Обсудить картину <span aria-hidden="true">↗</span></Link>
+      </section>
 
       {currentIndex !== null && filteredItems[currentIndex] && (
         <div
@@ -290,7 +310,7 @@ export default function GalleryClient({ items }: { items: GalleryItem[] }) {
                 href={`/order?artwork=${encodeURIComponent(
                   `${filteredItems[currentIndex].name} — ${filteredItems[currentIndex].category}`
                 )}`}
-                className="mt-1 inline-flex min-h-11 items-center justify-center rounded-full bg-white px-5 py-2 text-sm font-semibold text-gray-900 transition hover:bg-amber-100"
+                className="af-accent-button mt-1"
               >
                 Заказать похожую работу
               </Link>
