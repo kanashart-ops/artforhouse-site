@@ -84,51 +84,52 @@ export default function ShopClient({ items }: { items: ShopItem[] }) {
   const hasItems = shopItems.length > 0;
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
-      <h1 className="mb-8 text-center text-3xl font-bold text-gray-900 sm:mb-10 sm:text-4xl">
-        Картины в наличии
-      </h1>
+    <main className="mx-auto max-w-7xl px-4 pb-20 pt-10 sm:px-6 sm:pt-14 lg:px-8">
+      <div className="mb-12 grid items-end gap-6 border-b border-[#e5ded4] pb-10 md:grid-cols-[1fr_0.8fr]">
+        <div>
+          <p className="af-eyebrow">Авторская коллекция / Art For House</p>
+          <h1 className="af-display mt-4 text-[clamp(3.2rem,7vw,6.6rem)] leading-[0.98] text-[#292621]">
+            Картины <span className="italic text-[#d44d2c]">в наличии.</span>
+          </h1>
+        </div>
+        <div>
+          <p className="max-w-md text-base leading-8 text-[#6b655e]">
+            Готовые работы Анны Побитко. Если подходящей картины сейчас нет,
+            создадим новую под размер, палитру и характер вашего интерьера.
+          </p>
+          {hasItems && <p className="mt-4 text-xs font-bold uppercase tracking-[0.16em] text-[#d44d2c]">В каталоге: {shopItems.length}</p>}
+        </div>
+      </div>
 
       {!hasItems ? (
-        <div className="mx-auto max-w-3xl rounded-[2rem] border border-gray-200 bg-white p-5 text-center shadow-sm sm:p-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">
-            Раздел обновляется
-          </p>
-          <h2 className="mt-3 text-2xl font-bold text-gray-900 sm:text-3xl">
-            Готовых работ сейчас нет на витрине
-          </h2>
-          <p className="mt-4 text-base leading-7 text-gray-600">
-            Можно оставить заявку на индивидуальную картину под интерьер,
-            размер стены или готовый подарок.
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <Link
-              href="/order#order-form"
-              className="rounded-full bg-gray-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-gray-800"
-            >
-              Заказать картину
-            </Link>
-            <Link
-              href="/gallery"
-              className="rounded-full border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-900 transition hover:border-gray-900"
-            >
-              Посмотреть галерею
-            </Link>
-            <Link
-              href="/contacts"
-              className="rounded-full border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-900 transition hover:border-gray-900"
-            >
-              Контакты
-            </Link>
+        <div className="grid overflow-hidden rounded-[34px] border border-[#e8e2d9] bg-white lg:grid-cols-[1.05fr_0.95fr]">
+          <div className="flex flex-col justify-center px-6 py-10 sm:px-10 sm:py-14">
+            <p className="af-eyebrow">Раздел обновляется</p>
+            <h2 className="af-display mt-5 max-w-lg text-4xl leading-[1.1] text-[#292621] sm:text-5xl">
+              Готовых работ сейчас нет на витрине
+            </h2>
+            <p className="mt-6 max-w-lg text-base leading-8 text-[#6b655e]">
+              Можно оставить заявку на индивидуальную картину под интерьер,
+              размер стены или готовый подарок.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link href="/order#order-form" className="af-accent-button">Заказать картину <span aria-hidden="true">↗</span></Link>
+              <Link href="/gallery" className="af-light-button">Посмотреть галерею</Link>
+              <Link href="/contacts" className="af-light-button">Контакты</Link>
+            </div>
+          </div>
+          <div className="relative min-h-[360px] bg-[#eee8df] sm:min-h-[470px]">
+            <Image src="/images/order/444.jpg" alt="Пример авторской живописи для индивидуального заказа"
+              fill sizes="(max-width: 1023px) 100vw, 45vw" className="object-cover" />
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 lg:gap-6">
           {shopItems.map((item, index) => (
             <button
               key={item.id || `${item.title}-${index}`}
               type="button"
-              className="overflow-hidden rounded-xl border border-gray-200 bg-white text-left shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+              className="group overflow-hidden rounded-[24px] border border-[#e8e2d9] bg-white text-left shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_45px_rgba(30,26,22,0.12)] focus-visible:ring-2 focus-visible:ring-[#ee5434]"
               onClick={(event) => {
                 triggerRef.current = event.currentTarget;
                 setSelectedItem(item);
@@ -144,7 +145,7 @@ export default function ShopClient({ items }: { items: ShopItem[] }) {
                   playsInline
                   preload="metadata"
                   aria-label={item.title}
-                  className="h-80 w-full rounded-t-lg bg-gray-50 object-contain"
+                  className="h-80 w-full bg-[#f0ede7] object-contain p-3 transition-transform duration-500 group-hover:scale-[1.02]"
                 />
               ) : (
                 <Image
@@ -156,20 +157,21 @@ export default function ShopClient({ items }: { items: ShopItem[] }) {
                   loading={index === 0 ? "eager" : "lazy"}
                   fetchPriority={index === 0 ? "high" : undefined}
                   unoptimized={!canOptimizeArtworkImage(item.media[0]?.src || "/images/hero-bg.jpg")}
-                  className="h-80 w-full rounded-t-lg bg-gray-50 object-contain"
+                  className="h-80 w-full bg-[#f0ede7] object-contain p-3 transition-transform duration-500 group-hover:scale-[1.02]"
                 />
               )}
-              <div className="p-5">
-                <h2 className="mb-1 text-xl font-bold text-gray-900">{item.title}</h2>
+              <div className="border-t border-[#eee9e2] p-5">
+                <h2 className="mb-1 text-lg font-semibold text-[#302d29]">{item.title}</h2>
                 <p className="mb-2 text-sm text-gray-700">{item.size}</p>
-                <p className="text-lg font-bold text-amber-700">{item.price}</p>
+                <p className="text-lg font-semibold text-[#d44d2c]">{item.price}</p>
+                <p className="mt-3 text-xs font-semibold uppercase tracking-[0.12em] text-[#8b8177]">Смотреть работу ↗</p>
               </div>
             </button>
           ))}
         </div>
       )}
 
-      <div className="mt-12 rounded-3xl border border-gray-200 bg-white/80 p-5 text-center text-sm leading-6 text-gray-600 shadow-sm">
+      <div className="mt-12 rounded-[22px] border border-[#e8e2d9] bg-white/70 p-5 text-center text-sm leading-6 text-[#777068]">
         Сайт не является интернет-магазином. Все цены на сайте указаны
         ориентировочно и уточняются индивидуально при обращении.
       </div>
@@ -266,7 +268,7 @@ export default function ShopClient({ items }: { items: ShopItem[] }) {
               <div className="mt-auto flex flex-col gap-3">
                 <Link
                   href={`/order?artwork=${encodeURIComponent(selectedItem.title)}`}
-                  className="flex min-h-12 w-full items-center justify-center rounded-xl bg-amber-600 px-5 py-3 text-center font-semibold text-white transition hover:bg-amber-700"
+                  className="flex min-h-12 w-full items-center justify-center rounded-full bg-[#ee5434] px-5 py-3 text-center font-semibold text-white transition hover:bg-[#cc452b]"
                 >
                   Уточнить наличие и заказать
                 </Link>
