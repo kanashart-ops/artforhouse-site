@@ -75,7 +75,7 @@ export default function RootLayout({
     <html lang="ru">
       <head>
         {/* 🎨 Основные мета-теги */}
-        <meta name="theme-color" content="#ffffff" />
+        <meta name="theme-color" content="#f7f5f0" />
         <link rel="icon" href="/favicon.png" type="image/png" />
         <script
           type="application/ld+json"
@@ -132,7 +132,7 @@ export default function RootLayout({
         </noscript>
       </head>
 
-      <body className="flex flex-col min-h-screen bg-white text-gray-900">
+      <body className="flex min-h-screen flex-col bg-[#f7f5f0] text-[#292621]">
         {/* 📊 Трекер маршрутов для Google Analytics */}
         <Suspense fallback={null}>
           <GoogleAnalyticsTracker />
