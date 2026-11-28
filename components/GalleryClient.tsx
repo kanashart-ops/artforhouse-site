@@ -7,6 +7,7 @@ import React, {
   useState,
 } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import type { GalleryItem } from "@/lib/contentStore";
 import {
   GALLERY_ALL_CATEGORY,
@@ -131,8 +132,8 @@ export default function GalleryClient({ items }: { items: GalleryItem[] }) {
   };
 
   return (
-    <main className="mx-auto max-w-7xl p-6 md:p-10">
-      <h1 className="mb-3 text-center text-3xl font-bold text-gray-900">
+    <main className="mx-auto max-w-7xl px-3 py-6 sm:px-6 sm:py-8 lg:p-10">
+      <h1 className="mb-3 text-center text-2xl font-bold text-gray-900 sm:text-3xl">
         Галерея картин Анны Побитко
       </h1>
       <p className="mx-auto mb-6 max-w-3xl text-center text-base leading-7 text-gray-700">
@@ -150,14 +151,14 @@ export default function GalleryClient({ items }: { items: GalleryItem[] }) {
         </span>
       </div>
 
-      <div className="mb-10 flex flex-wrap justify-center gap-3">
+      <div className="-mx-3 mb-8 flex gap-2 overflow-x-auto px-3 pb-2 sm:mx-0 sm:flex-wrap sm:justify-center sm:gap-3 sm:px-0">
         {categories.map((cat) => (
           <button
             key={cat}
             type="button"
             onClick={() => setSelectedCategory(cat)}
             aria-pressed={selectedCategory === cat}
-            className={`rounded-full border px-4 py-2 transition ${
+            className={`shrink-0 whitespace-nowrap rounded-full border px-4 py-2.5 text-sm transition sm:text-base ${
               selectedCategory === cat
                 ? "border-gray-900 bg-gray-900 text-white"
                 : "border-gray-300 text-gray-700 hover:bg-gray-100"
@@ -174,7 +175,7 @@ export default function GalleryClient({ items }: { items: GalleryItem[] }) {
         </p>
       )}
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 xl:grid-cols-4">
         {filteredItems.map((item, index) => (
           <button
             key={item.id || `${item.src}-${index}`}
@@ -188,20 +189,20 @@ export default function GalleryClient({ items }: { items: GalleryItem[] }) {
             aria-label={`Открыть: ${galleryArtworkCaption(item)}`}
             aria-haspopup="dialog"
           >
-            <div className="relative h-64 w-full bg-gray-100">
+            <div className="relative h-40 w-full bg-gray-100 sm:h-56 lg:h-64">
               <Image
                 src={item.src}
                 alt={galleryImageAlt(item)}
                 fill
-                sizes="(max-width: 639px) 100vw, (max-width: 767px) 50vw, (max-width: 1279px) 33vw, 25vw"
+                sizes="(max-width: 639px) 50vw, (max-width: 767px) 50vw, (max-width: 1279px) 33vw, 25vw"
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
                 loading={index === 0 ? "eager" : "lazy"}
                 fetchPriority={index === 0 ? "high" : undefined}
                 unoptimized={!canOptimizeArtworkImage(item.src)}
               />
             </div>
-            <div className="border-t border-gray-100 bg-white px-3 py-3 text-left">
-              <p className="text-sm font-medium text-gray-900">
+            <div className="border-t border-gray-100 bg-white px-2 py-2 text-left sm:px-3 sm:py-3">
+              <p className="text-xs font-medium text-gray-900 sm:text-sm">
                 {galleryArtworkCaption(item)}
               </p>
               {item.category.trim() && (
@@ -221,7 +222,7 @@ export default function GalleryClient({ items }: { items: GalleryItem[] }) {
         >
           <div
             ref={modalRef}
-            className={`relative flex w-full max-w-6xl flex-col items-center p-4 transition-transform duration-300 ${
+            className={`relative flex h-full w-full max-w-6xl flex-col items-center justify-center px-3 pb-4 pt-14 transition-transform duration-300 sm:p-8 ${
               visible ? "scale-100" : "scale-95"
             }`}
             onClick={(event) => event.stopPropagation()}
@@ -233,30 +234,30 @@ export default function GalleryClient({ items }: { items: GalleryItem[] }) {
           >
             <button
               type="button"
-              className="absolute right-6 top-4 text-4xl text-white transition hover:text-gray-300"
+              className="absolute right-3 top-2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-3xl text-white transition hover:bg-white/20 sm:right-6 sm:top-4"
               onClick={closeModal}
               aria-label="Закрыть"
             >
               ×
             </button>
 
-            <div className="flex items-center justify-center">
+            <div className="flex min-h-0 flex-1 items-center justify-center">
               <Image
                 src={filteredItems[currentIndex].src}
                 alt={galleryImageAlt(filteredItems[currentIndex])}
                 width={1400}
                 height={900}
-                className={`rounded transition-all duration-300 ${
+                className={`max-h-[65dvh] max-w-full rounded object-contain transition-all duration-300 ${
                   fade ? "opacity-100" : "opacity-0"
                 }`}
-                style={{ objectFit: "contain", maxHeight: "80vh" }}
+                style={{ height: "auto", width: "auto" }}
                 unoptimized
               />
             </div>
 
             <button
               type="button"
-              className="absolute left-4 top-1/2 hidden -translate-y-1/2 px-4 text-5xl font-bold text-white transition hover:text-gray-300 sm:block"
+              className="absolute bottom-28 left-2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-black/60 text-4xl font-bold text-white transition hover:bg-black/80 sm:bottom-auto sm:left-4 sm:top-1/2 sm:-translate-y-1/2"
               onClick={(event) => {
                 event.stopPropagation();
                 changeImage("prev");
@@ -268,7 +269,7 @@ export default function GalleryClient({ items }: { items: GalleryItem[] }) {
 
             <button
               type="button"
-              className="absolute right-4 top-1/2 hidden -translate-y-1/2 px-4 text-5xl font-bold text-white transition hover:text-gray-300 sm:block"
+              className="absolute bottom-28 right-2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-black/60 text-4xl font-bold text-white transition hover:bg-black/80 sm:bottom-auto sm:right-4 sm:top-1/2 sm:-translate-y-1/2"
               onClick={(event) => {
                 event.stopPropagation();
                 changeImage("next");
@@ -277,6 +278,23 @@ export default function GalleryClient({ items }: { items: GalleryItem[] }) {
             >
               ›
             </button>
+
+            <div className="mt-3 flex w-full flex-col items-center gap-2 px-10 text-center text-white">
+              <p className="text-sm font-medium sm:text-base">
+                {galleryArtworkCaption(filteredItems[currentIndex])}
+              </p>
+              <p className="text-xs text-white/70" aria-live="polite">
+                {currentIndex + 1} из {filteredItems.length}
+              </p>
+              <Link
+                href={`/order?artwork=${encodeURIComponent(
+                  `${filteredItems[currentIndex].name} — ${filteredItems[currentIndex].category}`
+                )}`}
+                className="mt-1 inline-flex min-h-11 items-center justify-center rounded-full bg-white px-5 py-2 text-sm font-semibold text-gray-900 transition hover:bg-amber-100"
+              >
+                Заказать похожую работу
+              </Link>
+            </div>
           </div>
         </div>
       )}
