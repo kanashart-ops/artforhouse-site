@@ -43,16 +43,22 @@ const galleryWorks = [
 const serviceCards = [
   {
     href: "/interior-paintings",
+    image: "/images/interior-bg.jpg",
+    imageAlt: "Интерьерная картина в комнате",
     title: "Интерьерные картины",
     text: "Подбор под конкретную стену, масштаб комнаты и общую палитру интерьера.",
   },
   {
     href: "/oil-paintings",
+    image: "/images/order/444.jpg",
+    imageAlt: "Авторская картина маслом",
     title: "Картины маслом",
     text: "Фактурные, глубокие по цвету работы для дома, кабинета и статусного подарка.",
   },
   {
     href: "/acrylic-paintings",
+    image: "/images/order/333.jpg",
+    imageAlt: "Авторская картина акрилом",
     title: "Картины акрилом",
     text: "Современные акценты, серии и крупные форматы для актуальных пространств.",
   },
@@ -136,67 +142,77 @@ export default function HomePageClient({ articles }: HomePageClientProps) {
   }, [modalIndex]);
 
   return (
-    <main className="bg-stone-50 text-stone-900">
-      <section
-        className="relative isolate overflow-hidden"
-        style={{
-          backgroundImage: "url('/images/1hero-bg.jpg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="absolute inset-0 bg-black/55" />
-        <div className="relative mx-auto flex min-h-[78vh] max-w-6xl flex-col justify-center px-5 py-14 text-white sm:min-h-[88vh] sm:px-6 sm:py-20">
-          <p className="text-sm font-semibold uppercase tracking-[0.12em] text-amber-300 sm:tracking-[0.24em]">
-            Art For House · Арт Фор Хаус
-          </p>
-          <h1 className="mt-6 max-w-4xl text-4xl font-extrabold leading-tight sm:text-5xl md:text-7xl">
-            Картины и роспись под интерьер, а не просто под пустую стену
-          </h1>
-          <p className="mt-6 max-w-3xl text-lg leading-8 text-stone-100 md:text-xl">
-            Я Анна Побитко, художница и автор проекта Art For House (Арт Фор Хаус).
-            Создаю картины маслом и акрилом на заказ, интерьерные серии и роспись стен.
-            Помогаю подобрать сюжет, формат и палитру для дома, квартиры или офиса.
-            Работаю в Беларуси и организую доставку картин.
-          </p>
+    <main className="bg-[#f7f5f0] text-[#292621]">
+      <section className="relative overflow-hidden bg-[#f7f5f0]">
+        <div className="mx-auto max-w-[1480px] px-5 pb-10 pt-12 sm:px-7 sm:pt-16 lg:px-10 lg:pt-20">
+          <div className="grid items-center gap-10 lg:grid-cols-[1.04fr_0.96fr] lg:gap-16">
+            <div className="max-w-3xl">
+              <p className="af-eyebrow">Авторская живопись · Art For House / Арт Фор Хаус</p>
+              <h1 className="af-display mt-6 text-[clamp(3.2rem,6.1vw,6.8rem)] leading-[0.98] text-[#292621]">
+                Искусство, <span className="italic text-[#da5434]">которое живёт</span> в вашем интерьере.
+              </h1>
+              <p className="mt-7 max-w-xl text-xl font-semibold leading-8 text-[#302d29]">
+                Картины и роспись под интерьер, а не просто под пустую стену.
+              </p>
+              <p className="mt-4 max-w-xl text-[15px] leading-8 text-[#68615a] sm:text-base">
+                Я Анна Побитко, художница и автор проекта Art For House (Арт Фор Хаус).
+                Создаю картины маслом и акрилом на заказ, интерьерные серии и роспись стен.
+                Помогаю подобрать сюжет, формат и палитру для дома, квартиры или офиса.
+                Работаю в Беларуси и организую доставку картин.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link href="/gallery" className="af-accent-button">Смотреть работы <span aria-hidden="true">↗</span></Link>
+                <Link href="/order" className="af-light-button">Обсудить заказ</Link>
+              </div>
+              <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-[#e1ddd6] pt-6 text-xs font-medium uppercase tracking-[0.12em] text-[#777068]">
+                <span>Масло и акрил</span>
+                <span>Интерьерные серии</span>
+                <span>Роспись стен</span>
+              </div>
+            </div>
 
-          <div className="mt-8 flex flex-wrap gap-3 sm:mt-10 sm:gap-4">
-            <Link
-              href="/order"
-              className="rounded-full bg-white px-8 py-3 text-sm font-semibold text-stone-950 transition hover:bg-stone-200"
-            >
-              Обсудить заказ
-            </Link>
-            <Link
-              href="/gallery"
-              className="rounded-full border border-white/30 px-8 py-3 text-sm font-semibold text-white transition hover:border-white"
-            >
-              Смотреть работы
-            </Link>
+            <div className="relative h-[450px] overflow-hidden rounded-[32px] bg-[#ded9d1] shadow-[0_35px_80px_rgba(54,44,37,0.12)] sm:h-[620px] lg:h-[680px]">
+              <Image
+                src="/images/1hero-bg.jpg"
+                alt="Интерьерная живопись Art For House — картины художницы Анны Побитко"
+                fill
+                sizes="(max-width: 1023px) 100vw, 48vw"
+                priority
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+              <div className="absolute bottom-5 left-5 right-5 flex items-center justify-between gap-3 rounded-[22px] border border-white/40 bg-white/90 px-5 py-4 shadow-xl backdrop-blur-md sm:bottom-7 sm:left-7 sm:right-7">
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#d44d2c]">Авторская мастерская</span>
+                  <p className="mt-1 text-sm font-semibold text-[#292621] sm:text-base">Картины под настроение вашего пространства</p>
+                </div>
+                <span className="shrink-0 rounded-full bg-[#ee5434] px-3 py-2 text-xs font-semibold text-white">AFH / 26</span>
+              </div>
+            </div>
           </div>
 
-          <div className="mt-10 grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
-            <div className="rounded-3xl border border-white/10 bg-white/10 px-5 py-5 backdrop-blur">
-              <p className="text-sm font-semibold text-amber-200">Что можно заказать</p>
-              <p className="mt-2 text-sm leading-6 text-stone-100">
+          <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:mt-14 lg:grid-cols-4">
+            <div className="rounded-[22px] border border-[#e8e2d9] bg-white px-5 py-5">
+              <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#d44d2c]">Что можно заказать</p>
+              <p className="mt-2 text-sm leading-6 text-[#645d55]">
                 Картину под интерьер, серию работ, подарок или настенную роспись.
               </p>
             </div>
-            <div className="rounded-3xl border border-white/10 bg-white/10 px-5 py-5 backdrop-blur">
-              <p className="text-sm font-semibold text-amber-200">Сроки</p>
-              <p className="mt-2 text-sm leading-6 text-stone-100">
+            <div className="rounded-[22px] border border-[#e8e2d9] bg-white px-5 py-5">
+              <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#d44d2c]">Сроки</p>
+              <p className="mt-2 text-sm leading-6 text-[#645d55]">
                 В среднем от 1 до 4 недель после согласования идеи и формата.
               </p>
             </div>
-            <div className="rounded-3xl border border-white/10 bg-white/10 px-5 py-5 backdrop-blur">
-              <p className="text-sm font-semibold text-amber-200">Стоимость</p>
-              <p className="mt-2 text-sm leading-6 text-stone-100">
+            <div className="rounded-[22px] border border-[#e8e2d9] bg-white px-5 py-5">
+              <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#d44d2c]">Стоимость</p>
+              <p className="mt-2 text-sm leading-6 text-[#645d55]">
                 Считаю индивидуально по размеру, технике и задаче, чтобы не закладывать в цену лишнее.
               </p>
             </div>
-            <div className="rounded-3xl border border-white/10 bg-white/10 px-5 py-5 backdrop-blur">
-              <p className="text-sm font-semibold text-amber-200">Как проходит работа</p>
-              <p className="mt-2 text-sm leading-6 text-stone-100">
+            <div className="rounded-[22px] border border-[#e8e2d9] bg-white px-5 py-5">
+              <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#d44d2c]">Как проходит работа</p>
+              <p className="mt-2 text-sm leading-6 text-[#645d55]">
                 Бриф, подбор решения, этапы согласования, финал и доставка.
               </p>
             </div>
@@ -204,14 +220,14 @@ export default function HomePageClient({ articles }: HomePageClientProps) {
         </div>
       </section>
 
-      <section className="border-b border-stone-200 bg-white">
-        <div className="mx-auto max-w-6xl px-6 py-16">
+      <section className="border-b border-[#e8e2d9] bg-white">
+        <div className="mx-auto max-w-7xl px-6 py-16">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">
+              <p className="af-eyebrow">
                 Оффер
               </p>
-              <h2 className="mt-2 text-3xl font-bold md:text-4xl">
+              <h2 className="af-display mt-3 text-4xl leading-tight md:text-5xl">
                 Понятный путь от идеи до готовой работы
               </h2>
             </div>
@@ -224,7 +240,7 @@ export default function HomePageClient({ articles }: HomePageClientProps) {
           </div>
 
           <div className="mt-8 grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-            <div className="rounded-[2rem] border border-stone-200 bg-stone-50 p-8">
+            <div className="rounded-[2rem] border border-[#e8e2d9] bg-[#f7f5f0] p-8">
               <h3 className="text-2xl font-semibold">Что вы получаете</h3>
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
                 <div className="rounded-2xl bg-white p-5 shadow-sm">
@@ -257,14 +273,14 @@ export default function HomePageClient({ articles }: HomePageClientProps) {
             <div className="rounded-[2rem] border border-amber-200 bg-gradient-to-br from-amber-50 via-white to-stone-100 p-8">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.22em] text-amber-700">
+                  <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#d44d2c]">
                     Процесс
                   </p>
                   <h3 className="mt-2 text-2xl font-semibold text-stone-950">
                     Как проходит работа
                   </h3>
                 </div>
-                <div className="rounded-full bg-amber-100 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-amber-800">
+                <div className="rounded-full bg-[#fde9e1] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-amber-800">
                   По этапам
                 </div>
               </div>
@@ -273,7 +289,7 @@ export default function HomePageClient({ articles }: HomePageClientProps) {
                 {processSteps.map((step, index) => (
                   <li
                     key={step.title}
-                    className="grid grid-cols-[3rem_1fr] items-start gap-4 rounded-2xl border border-stone-200 bg-white/90 px-4 py-4 shadow-sm"
+                    className="grid grid-cols-[3rem_1fr] items-start gap-4 rounded-2xl border border-[#e8e2d9] bg-white/90 px-4 py-4 shadow-sm"
                   >
                     <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-stone-950 text-sm font-semibold text-white shadow-sm">
                       {index + 1}
@@ -290,13 +306,13 @@ export default function HomePageClient({ articles }: HomePageClientProps) {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 py-16">
+      <section className="mx-auto max-w-7xl px-6 py-16">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">
+            <p className="af-eyebrow">
               Услуги
             </p>
-            <h2 className="mt-2 text-3xl font-bold md:text-4xl">
+            <h2 className="af-display mt-3 text-4xl leading-tight md:text-5xl">
               Выберите направление, которое ближе вашей задаче
             </h2>
           </div>
@@ -313,23 +329,30 @@ export default function HomePageClient({ articles }: HomePageClientProps) {
             <Link
               key={card.href}
               href={card.href}
-              className="rounded-[1.75rem] border border-stone-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-stone-900 hover:shadow-lg"
+              className="group overflow-hidden rounded-[28px] border border-[#e8e2d9] bg-white p-3 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_rgba(36,32,28,0.10)]"
             >
-              <h3 className="text-xl font-semibold">{card.title}</h3>
+              <div className="relative aspect-[5/4] overflow-hidden rounded-[20px] bg-[#eee8df]">
+                <Image src={card.image} alt={card.imageAlt} fill
+                  sizes="(max-width: 767px) 100vw, 33vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-105" />
+              </div>
+              <div className="px-3 pb-3 pt-5">
+              <h3 className="text-xl font-semibold text-[#292621]">{card.title}</h3>
               <p className="mt-3 text-sm leading-7 text-stone-600">{card.text}</p>
-              <p className="mt-6 text-sm font-semibold text-amber-700">
-                Перейти к странице услуги
+              <p className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-[#d44d2c]">
+                Подробнее о направлении <span aria-hidden="true">↗</span>
               </p>
+              </div>
             </Link>
           ))}
         </div>
       </section>
 
       <section className="bg-white py-16">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="grid gap-6 overflow-hidden rounded-[2rem] border border-stone-200 bg-[linear-gradient(135deg,#0f172a_0%,#1f2937_45%,#fafaf9_45%,#fff7ed_100%)] p-8 shadow-sm md:grid-cols-[1fr_0.9fr] md:items-center">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="grid gap-6 overflow-hidden rounded-[2rem] border border-[#e8e2d9] bg-[linear-gradient(135deg,#0f172a_0%,#1f2937_45%,#fafaf9_45%,#fff7ed_100%)] p-8 shadow-sm md:grid-cols-[1fr_0.9fr] md:items-center">
             <div className="text-white">
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-300">
+              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#ffa58b]">
                 Приложение
               </p>
               <h2 className="mt-3 max-w-2xl text-3xl font-bold md:text-4xl">
@@ -375,7 +398,7 @@ export default function HomePageClient({ articles }: HomePageClientProps) {
               <div className="rounded-[1.5rem] bg-stone-950 p-5 text-white">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-semibold uppercase tracking-[0.2em] text-amber-300">
+                    <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#ffa58b]">
                       Art4House TryOn
                     </p>
                     <p className="mt-2 text-2xl font-bold">Картина на вашей стене за пару минут</p>
@@ -397,13 +420,13 @@ export default function HomePageClient({ articles }: HomePageClientProps) {
       </section>
 
       <section className="bg-white py-16">
-        <div className="mx-auto max-w-6xl px-6">
+        <div className="mx-auto max-w-7xl px-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">
+              <p className="af-eyebrow">
                 Подборка работ
               </p>
-              <h2 className="mt-2 text-3xl font-bold md:text-4xl">
+              <h2 className="af-display mt-3 text-4xl leading-tight md:text-5xl">
                 Примеры, которые уже работают в интерьере
               </h2>
             </div>
@@ -420,7 +443,7 @@ export default function HomePageClient({ articles }: HomePageClientProps) {
               <button
                 key={work.src}
                 type="button"
-                className="overflow-hidden rounded-[1.75rem] border border-stone-200 bg-stone-50 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+                className="overflow-hidden rounded-[1.75rem] border border-[#e8e2d9] bg-[#f7f5f0] text-left shadow-sm transition hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
                 onClick={(event) => {
                   openButtonRef.current = event.currentTarget;
                   setModalIndex(index);
@@ -447,8 +470,8 @@ export default function HomePageClient({ articles }: HomePageClientProps) {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 py-16">
-        <div className="rounded-[2rem] border border-stone-200 bg-white p-8 shadow-sm">
+      <section className="mx-auto max-w-7xl px-6 py-16">
+        <div className="rounded-[32px] border border-[#e8e2d9] bg-white p-6 shadow-sm sm:p-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
               <h2 className="text-3xl font-bold">Работы уже нашли дом в разных странах</h2>
@@ -471,13 +494,13 @@ export default function HomePageClient({ articles }: HomePageClientProps) {
       </section>
 
       <section className="bg-white py-16">
-        <div className="mx-auto max-w-6xl px-6">
+        <div className="mx-auto max-w-7xl px-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">
+              <p className="af-eyebrow">
                 Статьи
               </p>
-              <h2 className="mt-2 text-3xl font-bold md:text-4xl">
+              <h2 className="af-display mt-3 text-4xl leading-tight md:text-5xl">
                 Материалы о живописи и подборе работ в интерьер
               </h2>
             </div>
@@ -499,7 +522,7 @@ export default function HomePageClient({ articles }: HomePageClientProps) {
                 <Link
                   key={article.slug}
                   href={`/articles/${article.slug}`}
-                  className="block rounded-[1.75rem] border border-stone-200 bg-stone-50 p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                  className="block rounded-[1.75rem] border border-[#e8e2d9] bg-[#f7f5f0] p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
                 >
                   {article.coverImage && (
                     <div className="relative mb-4 h-48 overflow-hidden rounded-2xl">
@@ -513,7 +536,7 @@ export default function HomePageClient({ articles }: HomePageClientProps) {
                       />
                     </div>
                   )}
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-700">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#d44d2c]">
                     {new Date(article.createdAt).toLocaleDateString("ru-RU", {
                       day: "2-digit",
                       month: "long",
@@ -534,7 +557,7 @@ export default function HomePageClient({ articles }: HomePageClientProps) {
       </section>
 
       <section className="mx-auto max-w-4xl px-6 py-16">
-        <p className="text-center text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">
+        <p className="text-center text-sm font-semibold uppercase tracking-[0.24em] text-[#d44d2c]">
           FAQ
         </p>
         <h2 className="mt-2 text-center text-3xl font-bold md:text-4xl">
@@ -544,7 +567,7 @@ export default function HomePageClient({ articles }: HomePageClientProps) {
           {faqs.map((item, index) => (
             <div
               key={item.question}
-              className="rounded-2xl border border-stone-200 bg-white p-2 shadow-sm"
+              className="rounded-2xl border border-[#e8e2d9] bg-white p-2 shadow-sm"
             >
               <button
                 type="button"
@@ -556,7 +579,7 @@ export default function HomePageClient({ articles }: HomePageClientProps) {
                 }
               >
                 <span>{item.question}</span>
-                <span className="text-2xl text-amber-700">
+                <span className="text-2xl text-[#d44d2c]">
                   {faqOpenIndex === index ? "−" : "+"}
                 </span>
               </button>
@@ -606,7 +629,7 @@ export default function HomePageClient({ articles }: HomePageClientProps) {
                 />
               </div>
               <div className="flex flex-col p-8">
-                <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">
+                <p className="af-eyebrow">
                   Пример работы
                 </p>
                 <h3 id="home-gallery-dialog-title" className="mt-3 text-3xl font-bold">
