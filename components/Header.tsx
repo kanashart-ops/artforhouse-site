@@ -47,7 +47,7 @@ export default function Header() {
       : "rounded-full px-3.5 py-2 text-sm font-medium text-[#383631] transition hover:bg-[#f5f2ee] hover:text-[#d44d2c]";
 
   return (
-    <header className="sticky top-0 z-[70] px-3 pt-3 sm:px-5 sm:pt-4 lg:px-7">
+    <header className="sticky top-0 z-40 px-3 pt-3 sm:px-5 sm:pt-4 lg:px-7">
       <div className="mx-auto max-w-[1480px] rounded-[26px] border border-[#e9e6df] bg-white/95 shadow-[0_8px_36px_rgba(27,25,22,0.07)] backdrop-blur-xl">
         <div className="flex min-h-[76px] items-center justify-between gap-3 px-4 sm:px-6 lg:gap-5 xl:px-7">
           <Link href="/" className="group flex shrink-0 flex-col leading-none" aria-label="Art For House — главная">
@@ -121,7 +121,14 @@ export default function Header() {
               aria-label="Мобильное меню"
               className="mx-auto max-w-2xl rounded-[28px] bg-white p-5 shadow-2xl sm:p-7"
               onClick={(event) => event.stopPropagation()}>
-              <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.23em] text-[#d44d2c]">Навигация</p>
+              <div className="mb-4 flex items-center justify-between gap-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.23em] text-[#d44d2c]">Навигация</p>
+                <button type="button" onClick={() => setOpenPath(null)}
+                  aria-label="Закрыть мобильное меню"
+                  className="flex h-11 w-11 items-center justify-center rounded-full bg-[#f7f5f0] text-[#292621]">
+                  <X size={21} />
+                </button>
+              </div>
               <nav className="grid gap-1" aria-label="Навигация на мобильных устройствах">
                 {[...mainLinks, ...serviceLinks, { href: "/order", label: "Заказать картину" }].map((link) => (
                   <Link key={link.href} href={link.href} onClick={() => setOpenPath(null)}
