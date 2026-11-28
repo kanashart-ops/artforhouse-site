@@ -95,14 +95,15 @@ export default async function ArticlePage({
   };
 
   return (
-    <main className="max-w-3xl mx-auto px-6 py-16">
+    <main className="mx-auto max-w-4xl px-4 pb-20 pt-12 sm:px-6 sm:pt-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdStringify(structuredData) }}
       />
-      <h1 className="text-4xl font-bold mb-4 text-gray-900">{article.title}</h1>
+      <p className="af-eyebrow">Art For House / Журнал</p>
+      <h1 className="af-display mt-5 text-4xl leading-[1.07] text-[#292621] sm:text-5xl lg:text-6xl">{article.title}</h1>
 
-      <p className="text-sm text-gray-500 mb-8">
+      <p className="mb-8 mt-5 border-b border-[#e8e2d9] pb-6 text-sm text-[#9b7868]">
         {new Date(article.createdAt).toLocaleDateString("ru-RU", {
           year: "numeric",
           month: "long",
@@ -120,23 +121,23 @@ export default async function ArticlePage({
             sizes="(max-width: 768px) 100vw, 768px"
             fetchPriority="high"
             unoptimized={!canOptimizeArtworkImage(imageUrl)}
-            className="w-full max-h-[420px] object-cover rounded-xl"
+            className="max-h-[520px] w-full rounded-[26px] object-cover"
           />
         </div>
       )}
 
       <article
         className="
-          text-lg leading-relaxed text-gray-900
+          text-[17px] leading-8 text-[#39342f]
           [&_p]:mt-3
           [&_h2]:mt-8 [&_h2]:mb-3 [&_h2]:text-3xl [&_h2]:font-semibold [&_h2]:text-gray-900
           [&_h3]:mt-6 [&_h3]:mb-2 [&_h3]:text-2xl [&_h3]:font-semibold [&_h3]:text-gray-900
           [&_h4]:mt-4 [&_h4]:mb-2 [&_h4]:text-xl [&_h4]:font-semibold [&_h4]:text-gray-900
           [&_ul]:list-disc [&_ul]:pl-6 [&_li]:mt-1
           [&_strong]:font-semibold
-          [&_a]:text-amber-600 hover:[&_a]:text-amber-700
+          [&_a]:text-[#d44d2c] hover:[&_a]:text-[#b93e22]
           [&_figure]:my-8
-          [&_img]:w-full [&_img]:rounded-xl [&_img]:object-cover
+          [&_img]:w-full [&_img]:rounded-[20px] [&_img]:object-cover
           [&_figcaption]:mt-2 [&_figcaption]:text-sm [&_figcaption]:text-gray-500 [&_figcaption]:text-center
           [&_iframe]:w-full [&_iframe]:aspect-video [&_iframe]:rounded-xl [&_iframe]:mt-6
         "
